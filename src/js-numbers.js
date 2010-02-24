@@ -214,7 +214,7 @@ if (! plt.lib.Numbers) {
 
     // cos: scheme-number -> scheme-number
     Numbers.cos = function(n) {
-	return n._cos();
+	return n.cos();
     };
 
 
@@ -273,6 +273,14 @@ if (! plt.lib.Numbers) {
 	return a;
     };
 
+
+
+
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
 
 
     //////////////////////////////////////////////////////////////////////
@@ -396,8 +404,6 @@ if (! plt.lib.Numbers) {
 
     // round: -> scheme-number
     // Round to the nearest integer.
-
-    
 
     // equals: scheme-number -> boolean
     // Produce true if the given number of the same type is equal.
@@ -600,7 +606,7 @@ if (! plt.lib.Numbers) {
 	return FloatPoint.makeInstance(Math.atan(this.n / this.d));
     };
     
-    Rational.prototype._cos = function(){
+    Rational.prototype.cos = function(){
 	return FloatPoint.makeInstance(Math.cos(this.n / this.d));
     };
     
@@ -967,7 +973,7 @@ if (! plt.lib.Numbers) {
 	return FloatPoint.makeInstance(Math.atan(this.n));
     };
     
-    FloatPoint.prototype._cos = function(){
+    FloatPoint.prototype.cos = function(){
 	return FloatPoint.makeInstance(Math.cos(this.n));
     };
     
@@ -1313,7 +1319,7 @@ if (! plt.lib.Numbers) {
 			Numbers.subtract(Rational.ZERO, this)))).log()));
     };
     
-    Complex.prototype._cos = function(){
+    Complex.prototype.cos = function(){
 	if (this.isReal())
 	    return Numbers.cos(this.r);
 	var iz = timesI(this);
