@@ -1,1 +1,10 @@
 js-numbers: a Javascript implementation of Scheme's numeric tower
+
+
+
+
+TODO
+----
+Bring over the numeric test cases from Moby
+Integrate regular, unboxed fixnums.
+Integrate bignums.
