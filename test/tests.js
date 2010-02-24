@@ -1,3 +1,7 @@
+// See http://jania.pe.kr/aw/moin.cgi/JSSpec/Manual for definition
+// of test case API.
+
+
 var N = plt.lib.Numbers;
 describe('Constructions', {
     'integer construction' : function() { 
