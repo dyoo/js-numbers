@@ -1,11 +1,51 @@
 js-numbers: a Javascript implementation of Scheme's numeric tower
 
+Main developer: Danny Yoo (dyoo@cs.wpi.edu)
+
+Contributors:
+    Zhe Zhang
+    Ethan Cecchetti
+
+======================================================================
+
+WARNING WARNING
+
+This is nowhere near good documentation yet.  I'm still migrating
+content and tests over from the Moby-scheme project.  Use at your own
+risk.
 
 
+======================================================================
+Examples
 
+[fill me in]
+
+
+======================================================================
+API
+
+[fill me in]
+
+
+======================================================================
 TODO
-----
-Bring over the numeric test cases from Moby.
-Add real documentation.
-Integrate regular, unboxed fixnums.
-Integrate bignums.
+
+* Bring over the numeric test cases from Moby.
+
+* Add real documentation.
+
+* Integrate regular, unboxed fixnums.
+
+* Integrate bignums.
+
+* Add js minimization build process.  Use google closure to do it
+   aggressively.
+
+
+* Find out: what is the implementation mentioned in:
+
+Deniz A. Gursel, Ugur Cekmez, R. Emre Basar.  "Implementation of
+Scheme Numeric System for JavaScript"
+http://ab.org.tr/ab10/bildiri/161.pdf
+
+I suspect it's worldwithweb, but it's hard to find.
