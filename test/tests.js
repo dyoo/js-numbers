@@ -3,9 +3,28 @@
 
 
 var N = plt.lib.Numbers;
+var Rational = N.Rational;
+var FloatPoint = N.FloatPoint;
+var Complex = N.Complex;
+
+
 describe('Constructions', {
-    'integer construction' : function() { 
-	value_of(1).should_be(1) 
+    'rational construction' : function() { 
+	value_of(N.isSchemeNumber(N.Rational.makeInstance(42)))
+	    .should_be_true(); 
+
+	value_of(N.isSchemeNumber(N.Rational.makeInstance(21, 2)))
+	    .should_be_true(); 
+
+	value_of(N.isSchemeNumber(N.Rational.makeInstance(2, 1)))
+	    .should_be_true(); 
+
+
+	value_of(N.isSchemeNumber(N.Rational.makeInstance(-17, -171)))
+	    .should_be_true(); 
+
+	value_of(N.isSchemeNumber(N.Rational.makeInstance(17, -171)))
+	    .should_be_true(); 
     }
 })
 

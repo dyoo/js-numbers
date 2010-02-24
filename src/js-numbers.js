@@ -15,8 +15,21 @@ if (! plt.lib.Numbers) {
 
 
 (function() {
-
+    // Abbreviation
     var Numbers = plt.lib.Numbers;
+
+
+
+    // addLifts: (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
+    // Applies a binary function, ensuring that both scheme numbers are
+    // lifted to the same level.
+    var addLifts = function(binaryFunction) {
+	return function(x, y) {
+	    if (x._level < y._level) x = x._lift(y);
+	    if (y._level < x._level) y = y._lift(x);
+	    return binaryFunction(x, y);
+	}
+    }
 
 
     // throwRuntimeError: string -> void
@@ -27,15 +40,37 @@ if (! plt.lib.Numbers) {
     }
 
 
-    // isNumber: any -> boolean
+    // isSchemeNumber: any -> boolean
     // Returns true if the thing is a scheme number.
-    Numbers.isNumber = function(thing) {
+    Numbers.isSchemeNumber = function(thing) {
 	return (thing !== undefined &&
 		thing !== null &&
 		(thing instanceof Rational ||
 		 thing instanceof FloatPoint ||
 		 thing instanceof Complex));
     }
+
+    // isFinite: scheme-number -> boolean
+    Numbers.isFinite = function(n) {
+	return n.isFinite();
+    };
+
+    Numbers.isRational = function(n) {
+	return n.isRational();
+    };
+
+    Numbers.isReal = function(n) {
+	return n.isReal();
+    };
+
+    Numbers.isExact = function(n) {
+	return n.isExact();
+    }
+
+    // isInteger: scheme-number -> boolean
+    Numbers.isInteger = function(n) { 
+	return n.isInteger();
+    };
 
     // toFixnum: scheme-number -> javascript-number
     Numbers.toFixnum = function(num) {
@@ -45,57 +80,83 @@ if (! plt.lib.Numbers) {
     // toFloat: scheme-number -> javascript-number
     Numbers.toFloat = function(num) {
 	return num.toFloat();
-    };
-    
-    // abs: scheme-number -> scheme-number
-    Numbers.abs = function(n) {
-	return n.abs();
-    };
-    
-    // isFinite: scheme-number -> boolean
-    Numbers.isFinite = function(n) {
-	return n.isFinite();
-    };
+    };    
 
     // toExact: scheme-number -> scheme-number
     Numbers.toExact = function(x) {
 	return x.toExact();
     };
 
+    // toComplex: scheme-number -> scheme-number
+    Numbers.toComplex = function(x) {
+	return x.toComplex();
+    }
+
+
+    //////////////////////////////////////////////////////////////////////
+
+
     // add: scheme-number scheme-number -> scheme-number
-    Numbers.add = function(x, y) {
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
+    Numbers.add = addLifts(function(x, y) {
 	return x.add(y);
-    };
+    });
 
     // subtract: scheme-number scheme-number -> scheme-number
-    Numbers.subtract = function(x, y) {
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
+    Numbers.subtract = addLifts(function(x, y) {
 	return x.subtract(y);
-    };
+    });
     
     // mulitply: scheme-number scheme-number -> scheme-number
-    Numbers.multiply = function(x, y) {
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
+    Numbers.multiply = addLifts(function(x, y) {
 	return x.multiply(y);
-    };
+    });
     
     // divide: scheme-number scheme-number -> scheme-number
-    Numbers.divide = function(x, y) {
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
+    Numbers.divide = addLifts(function(x, y) {
 	return x.divide(y);
-    };
+    });
     
     // equals: scheme-number scheme-number -> boolean
-    Numbers.equals = function(x, y) {
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
+    Numbers.equals = addLifts(function(x, y) {
 	return x.equals(y);
-    };
+    });
+
+    // greaterThanOrEqual: scheme-number scheme-number -> boolean
+    Numbers.greaterThanOrEqual = addLifts(function(x, y){
+	if (!(x.isReal() && y.isReal()))
+	    Numbers.throwRuntimeError(
+		"greaterThanOrEqual: couldn't be applied to complex number");
+	return x.greaterThanOrEqual(y);
+    });
+ 
+    // lessThanOrEqual: scheme-number scheme-number -> boolean
+    Numbers.lessThanOrEqual = addLifts(function(x, y){
+	if (!(x.isReal() && y.isReal()))
+	    Numbers.throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number");
+	return x.lessThanOrEqual(y);    	
+    });
+
+    // greaterThan: scheme-number scheme-number -> boolean
+    Numbers.greaterThan = addLifts(function(x, y){
+	if (!(x.isReal() && y.isReal()))
+	    Numbers.throwRuntimeError("greaterThan: couldn't be applied to complex number");
+	return x.greaterThan(y);	
+    });
+    
+    // lessThan: scheme-number scheme-number -> boolean
+    Numbers.lessThan = addLifts(function(x, y){
+	if (!(x.isReal() && y.isReal()))
+	    Numbers.throwRuntimeError("lessThan: couldn't be applied to complex number");
+	return x.lessThan(y);
+    });
+    
+    // expt: scheme-number scheme-number -> scheme-number
+    Numbers.expt = addLifts(function(x, y){
+	return x.expt(y);
+    });
+    
+
+
 
     // eqv: scheme-number scheme-number -> boolean
     Numbers.eqv = function(x, y) {
@@ -107,49 +168,9 @@ if (! plt.lib.Numbers) {
     // approxEqual: scheme-number scheme-number scheme-number -> boolean
     Numbers.approxEqual = function(x, y, delta) {
 	return Numbers.lessThan(Numbers.abs(Numbers.subtract(x, y)),
-                                    delta);
+                                delta);
     };
     
-    // greaterThanOrEqual: scheme-number scheme-number -> boolean
-    Numbers.greaterThanOrEqual = function(x, y){
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
-
-	if (!(x.isReal() && y.isReal()))
-	    Numbers.throwRuntimeError(
-		"greaterThanOrEqual: couldn't be applied to complex number");
-	return x.greaterThanOrEqual(y);
-    };
- 
-    // lessThanOrEqual: scheme-number scheme-number -> boolean
-    Numbers.lessThanOrEqual = function(x, y){
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
-	if (!(x.isReal() && y.isReal()))
-	    Numbers.throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number");
-	return x.lessThanOrEqual(y);    	
-    };
-
-    // greaterThan: scheme-number scheme-number -> boolean
-    Numbers.greaterThan = function(x, y){
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
-	
-	if (!(x.isReal() && y.isReal()))
-	    Numbers.throwRuntimeError("greaterThan: couldn't be applied to complex number");
-	return x.greaterThan(y);
-	
-    };
-    
-    // lessThan: scheme-number scheme-number -> boolean
-    Numbers.lessThan = function(x, y){
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
-
-	if (!(x.isReal() && y.isReal()))
-	    Numbers.throwRuntimeError("lessThan: couldn't be applied to complex number");
-	return x.lessThan(y);
-    };
 
     // modulo: scheme-number scheme-number -> scheme-number
     Numbers.modulo = function(m, n) {
@@ -172,23 +193,94 @@ if (! plt.lib.Numbers) {
 	}
     };
  
-    // sqr: scheme-number -> scheme-number
-    Numbers.sqr = function(x) {
-	return Numbers.multiply(x, x);
+    Numbers.numerator = function(n) {
+	return n.numerator();
     };
+
+
+    Numbers.denominator = function(n) {
+	return n.denominator();
+    };
+
+    Numbers.sqrt = function(n) {
+	return n.sqrt();
+    }
+
+    // abs: scheme-number -> scheme-number
+    Numbers.abs = function(n) {
+	return n.abs();
+    };
+    
+    Numbers.floor = function(n) {
+	return n.floor();
+    };
+
+    Numbers.ceiling = function(n) {
+	return n.ceiling();
+    };
+
+    Numbers.conjugate = function(n) {
+	return n.conjugate();
+    };
+
+    Numbers.magnitude = function(n) {
+	return n.magnitude();
+    };
+
+    Numbers.log = function(n) {
+	return n.log();
+    }
+
+
+    Numbers.angle = function(n) {
+	return n.angle();
+    };
+
+    Numbers.atan = function(n) {
+	return n.atan();
+    };
+
+    // cos: scheme-number -> scheme-number
+    Numbers.cos = function(n) {
+	return n.cos();
+    };
+
+    Numbers.sin = function(n) {
+	return n.sin();
+    };
+
+    Numbers.acos = function(n) {
+	return n.acos();
+    };
+
+    Numbers.asin = function(n) {
+	return n.asin();
+    }
+
+    Numbers.imaginaryPart = function(n) {
+	return n.imaginaryPart();
+    }
+
+    Numbers.realPart = function(n) {
+	return n.realPart();
+    }
+
+    Numbers.round = function(n) {
+	return n.round();
+    }
+
 
     // exp: scheme-number -> scheme-number
     Numbers.exp = function(x) {
 	return x.exp();
     };
-    
-    // expt: scheme-number scheme-number -> scheme-number
-    Numbers.expt = function(x, y){
-	if (x._level < y._level) x = x._lift(y);
-	if (y._level < x._level) y = y._lift(x);
-	return x.expt(y);
+
+
+    // sqr: scheme-number -> scheme-number
+    Numbers.sqr = function(x) {
+	return Numbers.multiply(x, x);
     };
-    
+
     // gcd: scheme-number [scheme-number ...] -> scheme-number
     Numbers.gcd = function(first, rest) {
 	var result = Math.abs(first.toFixnum());
@@ -212,13 +304,6 @@ if (! plt.lib.Numbers) {
     };
 
 
-    // cos: scheme-number -> scheme-number
-    Numbers.cos = function(n) {
-	return n.cos();
-    };
-
-
-
     // toString: scheme-number -> string
     Numbers.toString = function(x) {
 	return x.toString();
@@ -229,6 +314,7 @@ if (! plt.lib.Numbers) {
     //////////////////////////////////////////////////////////////////////
 
     // Helpers
+
 
     // negate: scheme-number -> scheme-number
     // multiplies a number times -1.
@@ -1407,4 +1493,12 @@ if (! plt.lib.Numbers) {
 	return this.r.round();
     };
     
+
+
+    
+
+    Numbers.Rational = Rational;
+    Numbers.FloatPoint = FloatPoint;
+    Numbers.Complex = Complex;
+
 })();
