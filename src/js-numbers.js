@@ -1,15 +1,15 @@
 // Scheme numbers.
 
-if (typeof(plt) === 'undefined') {
-    var plt = {};
+if (! this['plt']) {
+    this['plt'] = {};
 }
 
-if (! plt.lib) {
-    plt.lib = {};
+if (! this['plt']['lib']) {
+    this['plt']['lib'] = {};
 }
 
-if (! plt.lib.Numbers) {
-    plt.lib.Numbers = {};
+if (! this['plt']['lib']['Numbers']) {
+    this['plt']['lib']['Numbers'] = {};
 }
 
 
