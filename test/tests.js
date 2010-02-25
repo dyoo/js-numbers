@@ -8,25 +8,253 @@ var FloatPoint = N.FloatPoint;
 var Complex = N.Complex;
 
 
-describe('Constructions', {
-    'rational construction' : function() { 
-	value_of(N.isSchemeNumber(N.Rational.makeInstance(42)))
+describe('rational constructions', {
+    'constructions' : function() { 
+	value_of(N.isSchemeNumber(N.makeRational(42)))
 	    .should_be_true(); 
 
-	value_of(N.isSchemeNumber(N.Rational.makeInstance(21, 2)))
+	value_of(N.isSchemeNumber(N.makeRational(21, 2)))
 	    .should_be_true(); 
 
-	value_of(N.isSchemeNumber(N.Rational.makeInstance(2, 1)))
+	value_of(N.isSchemeNumber(N.makeRational(2, 1)))
 	    .should_be_true(); 
 
 
-	value_of(N.isSchemeNumber(N.Rational.makeInstance(-17, -171)))
+	value_of(N.isSchemeNumber(N.makeRational(-17, -171)))
 	    .should_be_true(); 
 
-	value_of(N.isSchemeNumber(N.Rational.makeInstance(17, -171)))
+	value_of(N.isSchemeNumber(N.makeRational(17, -171)))
 	    .should_be_true(); 
+    },
+
+
+    'reductions' : function() {
+	value_of(N.equals(N.makeRational(1, 2),
+
+			  N.makeRational(5, 10)))
+	    .should_be_true();
+	value_of(N.equals(N.makeRational(1, 2),
+
+			  N.makeRational(6, 10)))
+
+	value_of(N.equals(N.makeRational(1, 2),
+
+			  N.makeRational(-1, -2)))
+	    .should_be_true();
     }
-})
+
+});
+
+
+
+describe('built-in constants', { 
+    'pi': function() {
+ 	value_of(N.isSchemeNumber(N.pi)).should_be_true() },
+    'e': function() {
+	value_of(N.isSchemeNumber(N.e)).should_be_true() },
+    'nan' : function() {
+	value_of(N.isSchemeNumber(N.nan)).should_be_true() },
+    'inf' : function() {
+	value_of(N.isSchemeNumber(N.inf)).should_be_true() },
+    'negative_one' : function() {
+	value_of(N.isSchemeNumber(N.negative_one)).should_be_true() },
+    'zero' : function() { 
+	value_of(N.isSchemeNumber(N.zero)).should_be_true() },
+    'one' : function() {
+	value_of(N.isSchemeNumber(N.one)).should_be_true() },
+    'i' : function() {
+	value_of(N.isSchemeNumber(N.i)).should_be_true() },
+    'negative_i' : function() {
+	value_of(N.isSchemeNumber(N.negative_i)).should_be_true()}
+});
+
+
+describe('equal', {
+    'equal of nan': function() {
+	value_of(N.equals(N.nan, N.nan)).should_be_false();
+    }
+});
+
+
+describe('eqv', {
+    'eqv of nan' : function() {
+	value_of(N.eqv(N.nan,
+		       N.makeFloatPoint(Number.NaN))).should_be_true();
+    }
+});
+
+
+describe('isSchemeNumber', {
+});
+
+
+describe('isFinite', {
+});
+
+
+describe('isRational', {
+});
+
+
+describe('isReal', {
+});
+
+
+describe('isExact', {
+});
+
+
+describe('isInteger', {
+});
+
+
+describe('toFixnum', {
+});
+
+
+describe('toFloat', {
+});
+
+
+describe('toExact', {
+});
+
+
+describe('toComplex', {
+});
+
+
+describe('add', {
+});
+
+
+describe('subtract', {
+});
+
+
+describe('multiply', {
+});
+
+
+describe('divide', {
+});
+
+
+describe('greaterThanOrEqual', {
+});
+
+
+describe('lessThanOrEqual', {
+});
+
+
+describe('greaterThan', {
+});
+
+
+describe('lessThan', {
+});
+
+
+describe('expt', {
+});
+
+
+describe('modulo', {
+});
+
+
+describe('numerator', {
+});
+
+
+describe('denominator', {
+});
+
+
+describe('sqrt', {
+});
+
+
+describe('abs', {
+});
+
+
+describe('floor', {
+});
+
+
+describe('ceiling', {
+});
+
+
+describe('conjugate', {
+});
+
+
+describe('magnitude', {
+});
+
+
+describe('log', {
+});
+
+
+describe('angle', {
+});
+
+
+describe('atan', {
+});
+
+
+describe('cos', {
+});
+
+
+describe('sin', {
+});
+
+
+describe('acos', {
+});
+
+
+describe('asin', {
+});
+
+
+describe('imaginaryPart', {
+});
+
+
+describe('realPart', {
+});
+
+
+describe('round', {
+});
+
+
+describe('exp', {
+});
+
+
+describe('sqr', {
+});
+
+
+describe('gcd', {
+});
+
+
+describe('lcm', {
+});
+
+
+describe('toString', {
+});
+
 
 
 

@@ -121,6 +121,19 @@ if (! plt.lib.Numbers) {
 	return x.equals(y);
     });
 
+    // eqv: scheme-number scheme-number -> boolean
+    Numbers.eqv = function(x, y) {
+	return ((x === y) ||
+		(x._level === y._level && 
+		 x.eqv(y)));
+    };
+
+    // approxEqual: scheme-number scheme-number scheme-number -> boolean
+    Numbers.approxEqual = function(x, y, delta) {
+	return Numbers.lessThan(Numbers.abs(Numbers.subtract(x, y)),
+                                delta);
+    };
+    
     // greaterThanOrEqual: scheme-number scheme-number -> boolean
     Numbers.greaterThanOrEqual = addLifts(function(x, y){
 	if (!(x.isReal() && y.isReal()))
@@ -154,22 +167,6 @@ if (! plt.lib.Numbers) {
     Numbers.expt = addLifts(function(x, y){
 	return x.expt(y);
     });
-    
-
-
-
-    // eqv: scheme-number scheme-number -> boolean
-    Numbers.eqv = function(x, y) {
-	return ((x === y) ||
-		(x._level === y._level && 
-		 x.equals(y)));
-    };
-
-    // approxEqual: scheme-number scheme-number scheme-number -> boolean
-    Numbers.approxEqual = function(x, y, delta) {
-	return Numbers.lessThan(Numbers.abs(Numbers.subtract(x, y)),
-                                delta);
-    };
     
 
     // modulo: scheme-number scheme-number -> scheme-number
@@ -494,6 +491,8 @@ if (! plt.lib.Numbers) {
     // equals: scheme-number -> boolean
     // Produce true if the given number of the same type is equal.
 
+    // eqv: scheme-number -> boolean
+    // Produce true if the given number of the same type is equivalent.
 
 
 
@@ -541,6 +540,12 @@ if (! plt.lib.Numbers) {
     };
 
     Rational.prototype.equals = function(other) {
+	return other instanceof Rational &&
+	    this.n == other.n &&
+	    this.d == other.d;
+    };
+
+    Rational.prototype.eqv = function(other) {
 	return other instanceof Rational &&
 	    this.n == other.n &&
 	    this.d == other.d;
@@ -860,9 +865,15 @@ if (! plt.lib.Numbers) {
 
     FloatPoint.prototype.equals = function(other, aUnionFind) {
 	return ((other instanceof FloatPoint) &&
+		((this.n === other.n)));
+    };
+
+    FloatPoint.prototype.eqv = function(other, aUnionFind) {
+	return ((other instanceof FloatPoint) &&
 		((this.n === other.n) ||
 		 (isNaN(this.n) && isNaN(other.n))));
     };
+
 
     FloatPoint.prototype.isRational = function() {
         return this.isFinite() && this.n == Math.floor(this.n);
@@ -1201,6 +1212,14 @@ if (! plt.lib.Numbers) {
 	return result;
     };
 
+    Complex.prototype.eqv = function(other) {
+	var result = ((other instanceof Complex) && 
+		      (Numbers.equals(this.r, other.r)) &&
+		      (Numbers.equals(this.i, other.i)));
+	return result;
+    };
+
+
 
     Complex.prototype.greaterThan = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
@@ -1495,10 +1514,23 @@ if (! plt.lib.Numbers) {
     
 
 
-    
+    Numbers.makeRational = Rational.makeInstance;
+    Numbers.makeFloatPoint = FloatPoint.makeInstance;
+    Numbers.makeComplex = Complex.makeInstance;
 
+    
     Numbers.Rational = Rational;
     Numbers.FloatPoint = FloatPoint;
     Numbers.Complex = Complex;
 
+    Numbers.pi = FloatPoint.pi;
+    Numbers.e = FloatPoint.e;
+    Numbers.nan = FloatPoint.nan;
+    Numbers.inf = FloatPoint.inf;
+    Numbers.negative_one = Rational.NEGATIVE_ONE;
+    Numbers.zero = Rational.ZERO;
+    Numbers.one = Rational.ONE;
+
+    Numbers.i = plusI;
+    Numbers.negative_i = minusI;
 })();
