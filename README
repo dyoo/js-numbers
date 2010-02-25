@@ -30,6 +30,11 @@ API
 ======================================================================
 TODO
 
+* Absorb implementations of:
+
+  atan2, cosh, sinh, makePolar, makeRectangular, quotient, remainder,
+  sgn
+
 * Bring over the numeric test cases from Moby.
 
 * Add real documentation.

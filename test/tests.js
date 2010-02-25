@@ -252,6 +252,9 @@ describe('lcm', {
 });
 
 
+describe('integerSqrt', {
+});
+
 describe('toString', {
 });
 

@@ -301,6 +301,24 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
+    Numbers.integerSqrt = function(x) {
+	var result = Numbers.sqrt(x);
+	if (Numbers.isRational(result)) {
+	    return Rational.makeInstance(Numbers.toFixnum(result));
+	} else if (Numbers.isReal(result)) {
+	    return Rational.makeInstance(Numbers.toFixnum(result));
+	} else {
+	    // it must be complex.
+	    return Complex.makeInstance(
+		Rational.makeInstance
+		(Numbers.toFixnum(Numbers.realPart(result))),
+		Rational.makeInstance
+		(Numbers.toFixnum(Numbers.imaginaryPart(result))));
+	}
+    };
+
+
+
     // toString: scheme-number -> string
     Numbers.toString = function(x) {
 	return x.toString();
@@ -721,11 +739,11 @@ if (! this['plt']['lib']['Numbers']) {
 	return FloatPoint.makeInstance(Math.asin(this.n / this.d));
     };
     
-    Rational.prototype.imag_dash_part = function(){
+    Rational.prototype.imaginaryPart = function(){
 	return Rational.ZERO;
     };
     
-    Rational.prototype.real_dash_part = function(){
+    Rational.prototype.realPart = function(){
 	return this;
     };
 
@@ -1104,11 +1122,11 @@ if (! this['plt']['lib']['Numbers']) {
 	return FloatPoint.makeInstance(Math.asin(this.n));
     };
     
-    FloatPoint.prototype.imag_dash_part = function(){
+    FloatPoint.prototype.imaginaryPart = function(){
 	return Rational.ZERO;
     };
     
-    FloatPoint.prototype.real_dash_part = function(){
+    FloatPoint.prototype.realPart = function(){
 	return this;
     };
     
@@ -1500,11 +1518,11 @@ if (! this['plt']['lib']['Numbers']) {
 	return this.r.floor();
     };
     
-    Complex.prototype.imag_dash_part = function(){
+    Complex.prototype.imaginaryPart = function(){
 	return this.i;
     };
     
-    Complex.prototype.real_dash_part = function(){
+    Complex.prototype.realPart = function(){
 	return this.r;
     };
     
