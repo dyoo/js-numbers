@@ -65,7 +65,7 @@ describe('built-in constants', {
     'i' : function() {
 	value_of(N.isSchemeNumber(N.i)).should_be_true() },
     'negative_i' : function() {
-	value_of(N.isSchemeNumber(N.negative_i)).should_be_true()}
+	value_of(N.isSchemeNumber(N.negative_i)).should_be_true() }
 });
 
 

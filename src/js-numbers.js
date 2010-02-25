@@ -1138,7 +1138,7 @@ if (! this['plt']['lib']['Numbers']) {
     // Complex numbers
     //////////////////////////////////////////////////////////////////////    
     
-    Complex = function(r, i){
+    var Complex = function(r, i){
 	this.r = r;
 	this.i = i;
     };
@@ -1230,21 +1230,21 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.greaterThanOrEqual = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    Numbers.throwRuntimeError(">: expects argument of type real number");
+	    Numbers.throwRuntimeError(">=: expects argument of type real number");
 	}
 	return Numbers.greaterThanOrEqual(this.r, other.r);
     };
 
     Complex.prototype.lessThan = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    Numbers.throwRuntimeError(">: expects argument of type real number");
+	    Numbers.throwRuntimeError("<: expects argument of type real number");
 	}
 	return Numbers.lessThan(this.r, other.r);
     };
 
     Complex.prototype.lessThanOrEqual = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    Numbers.throwRuntimeError(">: expects argument of type real number");
+	    Numbers.throwRuntimeError("<=: expects argument of type real number");
 	}
 	return Numbers.lessThanOrEqual(this.r, other.r);
     };
@@ -1353,7 +1353,7 @@ if (! this['plt']['lib']['Numbers']) {
 	var sum = Numbers.add(
 	    Numbers.multiply(this.r, this.r),
 	    Numbers.multiply(this.i, this.i));
-	return sum.sqrt();
+	return Numbers.sqrt(sum);
     };
     
     Complex.prototype.isReal = function(){
@@ -1362,11 +1362,11 @@ if (! this['plt']['lib']['Numbers']) {
     
     Complex.prototype.sqrt = function(){
 	if (this.isReal())
-	    return this.r.sqrt();
+	    return Numbers.sqrt(this.r);
 	// http://en.wikipedia.org/wiki/Square_root#Square_roots_of_negative_and_complex_numbers	
 	var r_plus_x = Numbers.add(this.magnitude(), this.r);
 
-	var r = halve(r_plus_x).sqrt();
+	var r = Numbers.sqrt(halve(r_plus_x));
 
 	var i = Numbers.divide(this.i, Numbers.multiply(r_plus_x, FloatPoint.makeInstance(2)).sqrt());
 	
@@ -1462,30 +1462,30 @@ if (! this['plt']['lib']['Numbers']) {
     
     Complex.prototype.acos = function(){
 	if (this.isReal())
-	    return this.r.acos();
+	    return Numbers.acos(this.r);
 	var pi_half = halve(FloatPoint.pi);
 	var iz = timesI(this);
-	var root = Numbers.subtract(Rational.ONE, this.multiply(this)).sqrt();
-	var l = timesI(Numbers.add(iz, root).log());
+	var root = Numbers.sqrt(Numbers.subtract(Rational.ONE, Numbers.sqr(this)));
+	var l = timesI(Numbers.log(Numbers.add(iz, root)));
 	return Numbers.add(pi_half, l);
     };
     
     Complex.prototype.asin = function(){
 	if (this.isReal())
-	    return this.r.asin();
+	    return Numbers.asin(this.r);
 
 	var oneNegateThisSq = 
 	    Numbers.subtract(
 		Rational.ONE, 
 		this.multiply(this));
-	var sqrtOneNegateThisSq = oneNegateThisSq.sqrt();
+	var sqrtOneNegateThisSq = Numbers.sqrt(oneNegateThisSq);
 	return Numbers.multiply(
 	    Rational.TWO,
-	    (Numbers.divide(
+	    Numbers.atan(Numbers.divide(
 		this, 
 		Numbers.add(
 		    Rational.ONE,
-		    sqrtOneNegateThisSq))).atan());
+		    sqrtOneNegateThisSq))));
     };
     
     Complex.prototype.ceiling = function(){
@@ -1517,11 +1517,6 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers.makeRational = Rational.makeInstance;
     Numbers.makeFloatPoint = FloatPoint.makeInstance;
     Numbers.makeComplex = Complex.makeInstance;
-
-    
-    Numbers.Rational = Rational;
-    Numbers.FloatPoint = FloatPoint;
-    Numbers.Complex = Complex;
 
     Numbers.pi = FloatPoint.pi;
     Numbers.e = FloatPoint.e;
