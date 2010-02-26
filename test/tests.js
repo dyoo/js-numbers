@@ -198,6 +198,14 @@ describe('isSchemeNumber', {
     'strings': function() {
 	value_of(N.isSchemeNumber("42")).should_be_false();
 	value_of(N.isSchemeNumber(42)).should_be_true();
+	value_of(N.isSchemeNumber(N.makeRational(42, 42))).should_be_true();
+	value_of(N.isSchemeNumber(N.makeFloat(42.2))).should_be_true();
+	value_of(N.isSchemeNumber(N.makeComplex(17))).should_be_true();
+	value_of(N.isSchemeNumber(N.makeComplex(17, 1))).should_be_true();
+	value_of(N.isSchemeNumber(N.makeComplex(N.makeFloat(17), 1))).should_be_true();
+	value_of(N.isSchemeNumber(undefined)).should_be_false();
+	value_of(N.isSchemeNumber(null)).should_be_false();
+	value_of(N.isSchemeNumber(false)).should_be_false();
     }
 });
 

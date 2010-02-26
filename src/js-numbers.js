@@ -1361,6 +1361,7 @@ if (! this['plt']['lib']['Numbers']) {
     // Constructs a complex number from two basic number r and i.  r and i can
     // either be plt.type.Rational or plt.type.FloatPoint.
     Complex.makeInstance = function(r, i){
+	if (i === undefined) { i = 0; }
 	if (typeof(r) === 'number') {
 	    r = (r === Math.floor(r) ? Rational.makeInstance(r) :
 		 FloatPoint.makeInstance(r));
