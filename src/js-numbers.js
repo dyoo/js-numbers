@@ -246,7 +246,6 @@ if (! this['plt']['lib']['Numbers']) {
 	    } else {
 		return Rational.makeInstance(x).expt(Rational.makeInstance(y));
 	    }
-	    return Rational.makeInstance(x).expt(Rational.makeInstance(y));
 	}
 	return x.expt(y);
     });
