@@ -215,6 +215,9 @@ describe('cos', {
 describe('sin', {
 });
 
+describe('tan', {
+});
+
 
 describe('acos', {
 });

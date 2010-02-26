@@ -40,8 +40,10 @@ TODO
 
 * Absorb implementations of:
 
-  atan2, cosh, sinh, makePolar, makeRectangular, quotient, remainder,
+  tan, atan2, cosh, sinh, makePolar, makeRectangular, quotient, remainder,
   sgn
+
+* implement Complex.tan.
 
 * Bring over the numeric test cases from Moby.
 
