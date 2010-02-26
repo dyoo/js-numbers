@@ -81,7 +81,7 @@ describe('equal', {
     },
     'mixed rational/complex': function() {
 	value_of(N.equals(N.makeRational(2),
-			  N.makeComplex(2, 0)).should_be_true());
+			  N.makeComplex(2, 0))).should_be_true();
     }
 });
 

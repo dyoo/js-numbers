@@ -742,9 +742,8 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     
-    Rational.prototype._level = function() {
-	return 0;
-    };
+    Rational.prototype._level = 0;
+
     
     
     Rational.prototype._lift = function(target) {
@@ -1061,9 +1060,8 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    FloatPoint.prototype._level = function() {
-	return 1;
-    };
+    FloatPoint.prototype._level = 1;
+
     
     FloatPoint.prototype._lift = function(target) {
 	return Complex.makeInstance(this, Rational.ZERO);
