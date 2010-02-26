@@ -75,13 +75,42 @@ describe('equal', {
     'nan': function() {
 	value_of(N.equals(N.nan, N.nan)).should_be_false();
     },
-    'mixed rational float': function() {
+
+
+    'rational / float': function() {
 	value_of(N.equals(N.makeRational(2),
 			  N.makeFloatPoint(2))).should_be_true();
+	value_of(N.equals(N.makeRational(2),
+			  N.makeFloatPoint(2.1))).should_be_false();
     },
-    'mixed rational/complex': function() {
+
+    'rational / complex': function() {
 	value_of(N.equals(N.makeRational(2),
 			  N.makeComplex(2, 0))).should_be_true();
+	value_of(N.equals(N.makeRational(2),
+			  N.makeComplex(2, 1))).should_be_false();
+	value_of(N.equals(N.makeRational(2),
+			  N.makeComplex(0, 0))).should_be_false();
+    },
+
+    'complex / complex': function() {
+	value_of(N.equals(N.makeComplex(17, 2),
+			  N.makeComplex(17, 2))).should_be_true();
+	value_of(N.equals(N.makeComplex(17, 2),
+			  N.makeComplex(2, 17))).should_be_false();
+	value_of(N.equals(N.makeComplex(17, 2),
+			  N.makeComplex(17, 17))).should_be_false();
+	value_of(N.equals(N.makeComplex(2, 17),
+			  N.makeComplex(17, 17))).should_be_false();
+
+	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100), 0),
+			  N.makeComplex(N.makeFloatPoint(100), 0))).should_be_true();
+	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100), 0),
+			  N.makeComplex(N.makeRational(100), 0))).should_be_true();
+	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100.1), 0),
+			  N.makeComplex(N.makeRational(100), 0))).should_be_false();
+	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100), 0),
+			  N.makeComplex(N.makeRational(100), 1))).should_be_false();
     }
 });
 
