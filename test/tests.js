@@ -54,6 +54,8 @@ describe('built-in constants', {
 	value_of(N.isSchemeNumber(N.e)).should_be_true() },
     'nan' : function() {
 	value_of(N.isSchemeNumber(N.nan)).should_be_true() },
+    'negative_inf' : function() {
+	value_of(N.isSchemeNumber(N.negative_inf)).should_be_true() },
     'inf' : function() {
 	value_of(N.isSchemeNumber(N.inf)).should_be_true() },
     'negative_one' : function() {
@@ -70,16 +72,34 @@ describe('built-in constants', {
 
 
 describe('equal', {
-    'equal of nan': function() {
+    'nan': function() {
 	value_of(N.equals(N.nan, N.nan)).should_be_false();
+    },
+    'mixed rational float': function() {
+	value_of(N.equals(N.makeRational(2),
+			  N.makeFloatPoint(2))).should_be_true();
+    },
+    'mixed rational/complex': function() {
+	value_of(N.equals(N.makeRational(2),
+			  N.makeComplex(2, 0)).should_be_true());
     }
 });
 
 
 describe('eqv', {
-    'eqv of nan' : function() {
+    'nan' : function() {
 	value_of(N.eqv(N.nan,
 		       N.makeFloatPoint(Number.NaN))).should_be_true();
+    },
+
+    'inf' : function() {
+	value_of(N.eqv(N.inf, N.inf)).should_be_true();
+	value_of(N.eqv(N.negative_inf, N.negative_inf)).should_be_true();
+    },
+
+    'mixed types' : function() {
+	value_of(N.eqv(N.makeFloatPoint(42),
+		       N.makeRational(42))).should_be_false();
     }
 });
 

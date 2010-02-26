@@ -1732,6 +1732,7 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['pi'] = FloatPoint.pi;
     Numbers['e'] = FloatPoint.e;
     Numbers['nan'] = FloatPoint.nan;
+    Numbers['negative_inf'] = FloatPoint.neginf;
     Numbers['inf'] = FloatPoint.inf;
     Numbers['negative_one'] = Rational.NEGATIVE_ONE;
     Numbers['zero'] = Rational.ZERO;
