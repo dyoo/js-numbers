@@ -6,6 +6,11 @@ Contributors:
     Zhe Zhang
     Ethan Cecchetti
 
+Bignum implementation taken from Tom Wu's JSBN library at
+
+    http://www-cs-students.stanford.edu/~tjw/jsbn/
+
+
 ======================================================================
 
 WARNING WARNING
@@ -42,6 +47,12 @@ TODO
 * Integrate regular, unboxed fixnums.
 
 * Integrate bignums.
+
+    - There are two bignum libraries to look into:
+
+    jbsn:  http://www-cs-students.stanford.edu/~tjw/jsbn/
+    BigInteger: http://silentmatt.com/biginteger/
+
 
 * Add js minimization build process.  Use google closure to do it
    aggressively.
