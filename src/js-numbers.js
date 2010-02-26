@@ -1429,8 +1429,8 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.eqv = function(other) {
 	var result = ((other instanceof Complex) && 
-		      (equals(this.r, other.r)) &&
-		      (equals(this.i, other.i)));
+		      (eqv(this.r, other.r)) &&
+		      (eqv(this.i, other.i)));
 	return result;
     };
 
@@ -1725,7 +1725,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     Numbers['makeRational'] = Rational.makeInstance;
-    Numbers['makeFloatPoint'] = FloatPoint.makeInstance;
+    Numbers['makeFloat'] = FloatPoint.makeInstance;
     Numbers['makeComplex'] = Complex.makeInstance;
     Numbers['pi'] = FloatPoint.pi;
     Numbers['e'] = FloatPoint.e;

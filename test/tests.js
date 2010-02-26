@@ -76,12 +76,26 @@ describe('equal', {
 	value_of(N.equals(N.nan, N.nan)).should_be_false();
     },
 
+    'fixnum / fixnum': function() {
+	value_of(N.equals(42, 42)).should_be_true();
+	value_of(N.equals(42, 43)).should_be_false();
+    },
+
+    'fixnum / rational': function() {
+	value_of(N.equals(42, N.makeRational(84, 2))).should_be_true();
+	value_of(N.equals(42, N.makeRational(84, 3))).should_be_false();
+    },
+    
+    'fixnum / float ' : function() {
+	value_of(N.equals(1024, N.makeFloat(1024))).should_be_true();
+	value_of(N.equals(1024, N.makeFloat(1024.0001))).should_be_false();
+    },
 
     'rational / float': function() {
 	value_of(N.equals(N.makeRational(2),
-			  N.makeFloatPoint(2))).should_be_true();
+			  N.makeFloat(2))).should_be_true();
 	value_of(N.equals(N.makeRational(2),
-			  N.makeFloatPoint(2.1))).should_be_false();
+			  N.makeFloat(2.1))).should_be_false();
     },
 
     'rational / complex': function() {
@@ -103,13 +117,13 @@ describe('equal', {
 	value_of(N.equals(N.makeComplex(2, 17),
 			  N.makeComplex(17, 17))).should_be_false();
 
-	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100), 0),
-			  N.makeComplex(N.makeFloatPoint(100), 0))).should_be_true();
-	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100), 0),
+	value_of(N.equals(N.makeComplex(N.makeFloat(100), 0),
+			  N.makeComplex(N.makeFloat(100), 0))).should_be_true();
+	value_of(N.equals(N.makeComplex(N.makeFloat(100), 0),
 			  N.makeComplex(N.makeRational(100), 0))).should_be_true();
-	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100.1), 0),
+	value_of(N.equals(N.makeComplex(N.makeFloat(100.1), 0),
 			  N.makeComplex(N.makeRational(100), 0))).should_be_false();
-	value_of(N.equals(N.makeComplex(N.makeFloatPoint(100), 0),
+	value_of(N.equals(N.makeComplex(N.makeFloat(100), 0),
 			  N.makeComplex(N.makeRational(100), 1))).should_be_false();
     }
 });
@@ -118,7 +132,7 @@ describe('equal', {
 describe('eqv', {
     'nan' : function() {
 	value_of(N.eqv(N.nan,
-		       N.makeFloatPoint(Number.NaN))).should_be_true();
+		       N.makeFloat(Number.NaN))).should_be_true();
     },
 
     'inf' : function() {
@@ -126,14 +140,65 @@ describe('eqv', {
 	value_of(N.eqv(N.negative_inf, N.negative_inf)).should_be_true();
     },
 
-    'mixed types' : function() {
-	value_of(N.eqv(N.makeFloatPoint(42),
-		       N.makeRational(42))).should_be_false();
+
+    'fixnum / fixnum': function() {
+	value_of(N.eqv(42, 42)).should_be_true();
+	value_of(N.eqv(42, 43)).should_be_false();
+    },
+
+    'fixnum / rational': function() {
+	value_of(N.eqv(42, N.makeRational(84, 2))).should_be_false();
+	value_of(N.eqv(42, N.makeRational(84, 3))).should_be_false();
+    },
+    
+    'fixnum / float ' : function() {
+	value_of(N.eqv(1024, N.makeFloat(1024))).should_be_false();
+	value_of(N.eqv(1024, N.makeFloat(1024.0001))).should_be_false();
+    },
+
+    'rational / float': function() {
+	value_of(N.eqv(N.makeRational(2),
+		       N.makeFloat(2))).should_be_false();
+	value_of(N.eqv(N.makeRational(2),
+		       N.makeFloat(2.1))).should_be_false();
+    },
+
+    'rational / complex': function() {
+	value_of(N.eqv(N.makeRational(2),
+		       N.makeComplex(2, 0))).should_be_false();
+	value_of(N.eqv(N.makeRational(2),
+		       N.makeComplex(2, 1))).should_be_false();
+	value_of(N.eqv(N.makeRational(2),
+		       N.makeComplex(0, 0))).should_be_false();
+    },
+
+    'complex / complex': function() {
+	value_of(N.eqv(N.makeComplex(17, 2),
+		       N.makeComplex(17, 2))).should_be_true();
+	value_of(N.eqv(N.makeComplex(17, 2),
+		       N.makeComplex(2, 17))).should_be_false();
+	value_of(N.eqv(N.makeComplex(17, 2),
+		       N.makeComplex(17, 17))).should_be_false();
+	value_of(N.eqv(N.makeComplex(2, 17),
+		       N.makeComplex(17, 17))).should_be_false();
+
+ 	value_of(N.eqv(N.makeComplex(N.makeFloat(100), 0),
+ 		       N.makeComplex(N.makeFloat(100), 0))).should_be_true();
+ 	value_of(N.eqv(N.makeComplex(N.makeFloat(100), 0),
+ 		       N.makeComplex(N.makeRational(100), 0))).should_be_false();
+ 	value_of(N.eqv(N.makeComplex(N.makeFloat(100.1), 0),
+ 		       N.makeComplex(N.makeRational(100), 0))).should_be_false();
+ 	value_of(N.eqv(N.makeComplex(N.makeFloat(100), 0),
+ 		       N.makeComplex(N.makeRational(100), 1))).should_be_false();
     }
 });
 
 
 describe('isSchemeNumber', {
+    'strings': function() {
+	value_of(N.isSchemeNumber("42")).should_be_false();
+	value_of(N.isSchemeNumber(42)).should_be_true();
+    }
 });
 
 
