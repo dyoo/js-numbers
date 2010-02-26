@@ -189,12 +189,12 @@ if (! this['plt']['lib']['Numbers']) {
 
     // approxEqual: scheme-number scheme-number scheme-number -> boolean
     var approxEqual = function(x, y, delta) {
-	return Numbers.lessThan(Numbers.abs(subtract(x, y)),
+	return lessThan(abs(subtract(x, y)),
                                 delta);
     };
     
     // greaterThanOrEqual: scheme-number scheme-number -> boolean
-    Numbers['greaterThanOrEqual'] = addLifts(function(x, y){
+    var greaterThanOrEqual = addLifts(function(x, y){
 	if (typeof(x) === 'number') {
 	    return x >= y;
 	}
@@ -205,7 +205,7 @@ if (! this['plt']['lib']['Numbers']) {
     });
  
     // lessThanOrEqual: scheme-number scheme-number -> boolean
-    Numbers['lessThanOrEqual'] = addLifts(function(x, y){
+    var lessThanOrEqual = addLifts(function(x, y){
 	if (typeof(x) === 'number') {
 	    return x <= y;
 	}
@@ -215,7 +215,7 @@ if (! this['plt']['lib']['Numbers']) {
     });
 
     // greaterThan: scheme-number scheme-number -> boolean
-    Numbers['greaterThan'] = addLifts(function(x, y){
+    var greaterThan = addLifts(function(x, y){
 	if (typeof(x) === 'number') {
 	    return x > y;
 	}
@@ -225,7 +225,7 @@ if (! this['plt']['lib']['Numbers']) {
     });
     
     // lessThan: scheme-number scheme-number -> boolean
-    Numbers['lessThan'] = addLifts(function(x, y){
+    var lessThan = addLifts(function(x, y){
 	if (typeof(x) === 'number') {
 	    return x < y;
 	}
@@ -235,7 +235,7 @@ if (! this['plt']['lib']['Numbers']) {
     });
     
     // expt: scheme-number scheme-number -> scheme-number
-    Numbers['expt'] = addLifts(function(x, y){
+    var expt = addLifts(function(x, y){
 	if (typeof(x) === 'number') {
 	    if (y >= 0) {
 		var pow = Math.pow(x, y);
@@ -253,7 +253,7 @@ if (! this['plt']['lib']['Numbers']) {
     
 
     // modulo: scheme-number scheme-number -> scheme-number
-    Numbers['modulo'] = function(m, n) {
+    var modulo = function(m, n) {
 	var result;
 	if (typeof(m) === 'number') {
 	    result = m % n;
@@ -271,34 +271,34 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 	result = Rational.makeInstance(toFixnum(m) % toFixnum(n));
 	// The sign of the result should match the sign of n.
-	if (Numbers.lessThan(n, Rational.ZERO)) {
-	    if (Numbers.lessThanOrEqual(result, Rational.ZERO)) {
+	if (lessThan(n, Rational.ZERO)) {
+	    if (lessThanOrEqual(result, Rational.ZERO)) {
 		return result;
 	    }
 	    return add(result, n);
 
 	} else {
-	    if (Numbers.lessThan(result, Rational.ZERO)) {
+	    if (lessThan(result, Rational.ZERO)) {
 		return add(result, n);
 	    }
 	    return result;
 	}
     };
  
-    Numbers['numerator'] = function(n) {
+    var numerator = function(n) {
 	if (typeof(n) === 'number')
 	    return n;
 	return n.numerator();
     };
 
 
-    Numbers['denominator'] = function(n) {
+    var denominator = function(n) {
 	if (typeof(n) === 'number')
 	    return 1;
 	return n.denominator();
     };
 
-    Numbers['sqrt'] = function(n) {
+    var sqrt = function(n) {
 	if (typeof(n) === 'number') {
 	    if (n >= 0) {
 		var result = Math.sqrt(n);
@@ -315,38 +315,38 @@ if (! this['plt']['lib']['Numbers']) {
     }
 
     // abs: scheme-number -> scheme-number
-    Numbers['abs'] = function(n) {
+    var abs = function(n) {
 	if (typeof(n) === 'number') {
 	    return Math.abs(n);
 	}
 	return n.abs();
     };
     
-    Numbers['floor'] = function(n) {
+    var floor = function(n) {
 	if (typeof(n) === 'number')
 	    return n;
 	return n.floor();
     };
 
-    Numbers['ceiling'] = function(n) {
+    var ceiling = function(n) {
 	if (typeof(n) === 'number')
 	    return n;
 	return n.ceiling();
     };
 
-    Numbers['conjugate'] = function(n) {
+    var conjugate = function(n) {
 	if (typeof(n) === 'number')
 	    return n;
 	return n.conjugate();
     };
 
-    Numbers['magnitude'] = function(n) {
+    var magnitude = function(n) {
 	if (typeof(n) === 'number')
 	    return Math.abs(n);
 	return n.magnitude();
     };
 
-    Numbers['log'] = function(n) {
+    var log = function(n) {
 	if (typeof(n) === 'number') {
 	    // FIXME: do something faster
 	    return Rational.makeInstance(n).log();
@@ -354,7 +354,7 @@ if (! this['plt']['lib']['Numbers']) {
 	return n.log();
     }
 
-    Numbers['angle'] = function(n) {
+    var angle = function(n) {
 	if (typeof(n) === 'number') {
 	    if (n > 0)
 		return Rational.ZERO;
@@ -364,7 +364,7 @@ if (! this['plt']['lib']['Numbers']) {
 	return n.angle();
     };
 
-    Numbers['atan'] = function(n) {
+    var atan = function(n) {
 	if (typeof(n) === 'number') {
 	    // FIXME: do something faster
 	    return Rational.makeInstance(n).atan();
@@ -444,7 +444,7 @@ if (! this['plt']['lib']['Numbers']) {
     
     // integerSqrt: scheme-number -> scheme-number
     Numbers['integerSqrt'] = function(x) {
-	var result = Numbers.sqrt(x);
+	var result = sqrt(x);
 	if (isRational(result)) {
 	    return Rational.makeInstance(toFixnum(result));
 	} else if (isReal(result)) {
@@ -453,9 +453,9 @@ if (! this['plt']['lib']['Numbers']) {
 	    // it must be complex.
 	    return Complex.makeInstance(
 		Rational.makeInstance
-		(toFixnum(Numbers.realPart(result))),
+		(toFixnum(realPart(result))),
 		Rational.makeInstance
-		(toFixnum(Numbers.imaginaryPart(result))));
+		(toFixnum(imaginaryPart(result))));
 	}
     };
 
@@ -512,8 +512,8 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(n) === 'number') {
 	    return Complex.makeInstance(n, 0);
 	}
-	return Complex.makeInstance(Numbers.realPart(n),
-				    Numbers.imaginaryPart(n));
+	return Complex.makeInstance(realPart(n),
+				    imaginaryPart(n));
     }
 
     // negate: scheme-number -> scheme-number
@@ -1078,9 +1078,9 @@ if (! this['plt']['lib']['Numbers']) {
 
     // sign: Number -> {-1, 0, 1}
     var sign = function(n) {
-	if (Numbers.lessThan(n, Rational.ZERO)) {
+	if (lessThan(n, Rational.ZERO)) {
 	    return -1;
-	} else if (Numbers.greaterThan(n, Rational.ZERO)) {
+	} else if (greaterThan(n, Rational.ZERO)) {
 	    return 1;
 	} else {
 	    return 0;
@@ -1232,7 +1232,7 @@ if (! this['plt']['lib']['Numbers']) {
     
     FloatPoint.prototype.log = function(){
 	if (this.n < 0)
-	    return Numbers.log(toComplex(this));
+	    return log(toComplex(this));
 	else
 	    return FloatPoint.makeInstance(Math.log(this.n));
     };
@@ -1342,7 +1342,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     Complex.prototype.toString = function() {
-	if (Numbers.greaterThanOrEqual(
+	if (greaterThanOrEqual(
 	    this.i,
 	    Rational.ZERO)) {
             return toString(this.r) + "+" + toString(this.i)+"i";
@@ -1407,35 +1407,35 @@ if (! this['plt']['lib']['Numbers']) {
 	if (! this.isReal() || ! other.isReal()) {
 	    throwRuntimeError(">: expects argument of type real number");
 	}
-	return Numbers.greaterThan(this.r, other.r);
+	return greaterThan(this.r, other.r);
     };
 
     Complex.prototype.greaterThanOrEqual = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
 	    throwRuntimeError(">=: expects argument of type real number");
 	}
-	return Numbers.greaterThanOrEqual(this.r, other.r);
+	return greaterThanOrEqual(this.r, other.r);
     };
 
     Complex.prototype.lessThan = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
 	    throwRuntimeError("<: expects argument of type real number");
 	}
-	return Numbers.lessThan(this.r, other.r);
+	return lessThan(this.r, other.r);
     };
 
     Complex.prototype.lessThanOrEqual = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
 	    throwRuntimeError("<=: expects argument of type real number");
 	}
-	return Numbers.lessThanOrEqual(this.r, other.r);
+	return lessThanOrEqual(this.r, other.r);
     };
 
 
     Complex.prototype.abs = function(){
 	if (!equals(this.i, Rational.ZERO).valueOf())
 	    throwRuntimeError("abs: expects argument of type real number");
-	return this.r.abs();
+	return abs(this.r);
     };
     
     Complex.prototype.toFixnum = function(){
@@ -1447,14 +1447,14 @@ if (! this['plt']['lib']['Numbers']) {
     Complex.prototype.numerator = function() {
 	if (!this.isReal())
 	    throwRuntimeError("numerator: can only be applied to real number");
-	return this.n.numerator();
+	return numerator(this.n);
     };
     
 
     Complex.prototype.denominator = function() {
 	if (!this.isReal())
 	    throwRuntimeError("floor: can only be applied to real number");
-	return this.n.denominator();
+	return denominator(this.n);
     };
 
     Complex.prototype.add = function(other){
@@ -1498,7 +1498,7 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 
 
-	var con = other.conjugate();
+	var con = conjugate(other);
 	var up = toComplex(multiply(this, con));
 
 	// Down is guaranteed to be real by this point.
@@ -1523,7 +1523,7 @@ if (! this['plt']['lib']['Numbers']) {
 	var sum = add(
 	    multiply(this.r, this.r),
 	    multiply(this.i, this.i));
-	return Numbers.sqrt(sum);
+	return sqrt(sum);
     };
     
     Complex.prototype.isReal = function(){
@@ -1532,42 +1532,42 @@ if (! this['plt']['lib']['Numbers']) {
     
     Complex.prototype.sqrt = function(){
 	if (this.isReal())
-	    return Numbers.sqrt(this.r);
+	    return sqrt(this.r);
 	// http://en.wikipedia.org/wiki/Square_root#Square_roots_of_negative_and_complex_numbers	
-	var r_plus_x = add(this.magnitude(), this.r);
+	var r_plus_x = add(magnitude(this), this.r);
 
-	var r = Numbers.sqrt(halve(r_plus_x));
+	var r = sqrt(halve(r_plus_x));
 
-	var i = divide(this.i, multiply(r_plus_x, FloatPoint.makeInstance(2)).sqrt());
+	var i = divide(this.i, sqrt(multiply(r_plus_x, FloatPoint.makeInstance(2))));
 	
 
 	return Complex.makeInstance(r, i);
     };
     
     Complex.prototype.log = function(){
-	var m = this.magnitude();
-	var theta = this.angle();
+	var m = magnitude(this);
+	var theta = angle(this);
 	var result = add(
-	    m.log(),
+	    log(m),
 	    timesI(theta));
 	return result;
     };
     
     Complex.prototype.angle = function(){
 	if (this.isReal()) {
-	    return this.r.angle();
+	    return angle(this.r);
 	}
 	if (equals(Rational.ZERO, this.r)) {
 	    var tmp = halve(FloatPoint.pi);
-	    return Numbers.greaterThan(this.i, Rational.ZERO) ? 
+	    return greaterThan(this.i, Rational.ZERO) ? 
 		tmp : negate(tmp);
 	} else {
-	    var tmp = divide(this.i.abs(), this.r.abs()).atan();
-	    if (Numbers.greaterThan(this.r, Rational.ZERO)) {
-		return Numbers.greaterThan(this.i, Rational.ZERO) ? 
+	    var tmp = atan(divide(abs(this.i), abs(this.r)));
+	    if (greaterThan(this.r, Rational.ZERO)) {
+		return greaterThan(this.i, Rational.ZERO) ? 
 		    tmp : negate(tmp);
 	    } else {
-		return Numbers.greaterThan(this.i, Rational.ZERO) ? 
+		return greaterThan(this.i, Rational.ZERO) ? 
 		    subtract(FloatPoint.pi, tmp) : subtract(tmp, FloatPoint.pi);
 	    }
 	}
@@ -1587,16 +1587,16 @@ if (! this['plt']['lib']['Numbers']) {
 	    plusI,
 	    multiply(
 		FloatPoint.makeInstance(0.5),
-		(divide(
+		log(divide(
 		    add(plusI, this),
 		    add(
 			plusI,
-			subtract(Rational.ZERO, this)))).log()));
+			subtract(Rational.ZERO, this))))));
     };
     
     Complex.prototype.cos = function(){
 	if (this.isReal())
-	    return Numbers.cos(this.r);
+	    return cos(this.r);
 	var iz = timesI(this);
 	var iz_negate = negate(iz);
 	
@@ -1616,13 +1616,13 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     Complex.prototype.expt= function(y){
-	var expo = multiply(y, this.log());
+	var expo = multiply(y, log(this));
 	return expo.exp();
     };
     
     Complex.prototype.exp = function(){
 	var r = this.r.exp();
-	var cos_a = Numbers.cos(this.i);
+	var cos_a = cos(this.i);
 	var sin_a = this.i.sin();
 
 	return multiply(
@@ -1632,26 +1632,26 @@ if (! this['plt']['lib']['Numbers']) {
     
     Complex.prototype.acos = function(){
 	if (this.isReal())
-	    return Numbers.acos(this.r);
+	    return acos(this.r);
 	var pi_half = halve(FloatPoint.pi);
 	var iz = timesI(this);
-	var root = Numbers.sqrt(subtract(Rational.ONE, Numbers.sqr(this)));
-	var l = timesI(Numbers.log(add(iz, root)));
+	var root = sqrt(subtract(Rational.ONE, sqr(this)));
+	var l = timesI(log(add(iz, root)));
 	return add(pi_half, l);
     };
     
     Complex.prototype.asin = function(){
 	if (this.isReal())
-	    return Numbers.asin(this.r);
+	    return asin(this.r);
 
 	var oneNegateThisSq = 
 	    subtract(
 		Rational.ONE, 
 		this.multiply(this));
-	var sqrtOneNegateThisSq = Numbers.sqrt(oneNegateThisSq);
+	var sqrtOneNegateThisSq = sqrt(oneNegateThisSq);
 	return multiply(
 	    Rational.TWO,
-	    Numbers.atan(divide(
+	    atan(divide(
 		this, 
 		add(
 		    Rational.ONE,
@@ -1661,13 +1661,13 @@ if (! this['plt']['lib']['Numbers']) {
     Complex.prototype.ceiling = function(){
 	if (!this.isReal())
 	    throwRuntimeError("ceiling: can only be applied to real number");
-	return this.r.ceiling();
+	return ceiling(this.r);
     };
     
     Complex.prototype.floor = function(){
 	if (!this.isReal())
 	    throwRuntimeError("floor: can only be applied to real number");
-	return this.r.floor();
+	return floor(this.r);
     };
     
     Complex.prototype.imaginaryPart = function(){
@@ -1714,7 +1714,24 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['equals'] = equals;
     Numbers['eqv'] = eqv;
     Numbers['approxEqual'] = approxEqual;
-    
+    Numbers['greaterThanOrEqual'] = greaterThanOrEqual;
+    Numbers['lessThanOrEqual'] = lessThanOrEqual;
+    Numbers['greaterThan'] = greaterThan;
+    Numbers['lessThan'] = lessThan;
+    Numbers['expt'] = expt;
+    Numbers['modulo'] = modulo;
+    Numbers['numerator'] = numerator;
+    Numbers['denominator'] = denominator;
+    Numbers['sqrt'] = sqrt;
+    Numbers['abs'] = abs;
+    Numbers['floor'] = floor;
+    Numbers['ceiling'] = ceiling;
+    Numbers['conjugate'] = conjugate;
+    Numbers['magnitude'] = magnitude;
+    Numbers['log'] = log;
+    Numbers['angle'] = angle;
+    Numbers['atan'] = atan;
+
 
     //////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////
