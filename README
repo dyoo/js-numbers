@@ -2,22 +2,25 @@ js-numbers: a Javascript implementation of Scheme's numeric tower
 
 Main developer: Danny Yoo (dyoo@cs.wpi.edu)
 
+
 Contributors:
     Zhe Zhang
     Ethan Cecchetti
 
-Bignum implementation taken from Tom Wu's JSBN library at
+The bignum implementation (content from jsbn.js and jsbn2.js) is from
+Tom Wu's JSBN library at:
 
     http://www-cs-students.stanford.edu/~tjw/jsbn/
+
 
 
 ======================================================================
 
 WARNING WARNING
 
-This is nowhere near good documentation yet.  I'm still migrating
-content and tests over from the Moby-scheme project.  Use at your own
-risk.
+This is nowhere near good documentation yet, or good test cases for
+that matter.  I'm still migrating content and tests over from the
+Moby-scheme project.  Use at your own risk.
 
 
 ======================================================================
@@ -52,6 +55,7 @@ TODO
 
     jbsn:  http://www-cs-students.stanford.edu/~tjw/jsbn/
     BigInteger: http://silentmatt.com/biginteger/
+
 
 
 * Add js minimization build process.  Use google closure to do it
