@@ -92,7 +92,7 @@ describe('fromFixnum', {
 
 
 
-describe('equal', {
+describe('equals', {
     'nan': function() {
 	value_of(N.equals(N.nan, N.nan)).should_be_false();
     },
@@ -103,6 +103,7 @@ describe('equal', {
     },
 
     'fixnum / rational': function() {
+	value_of(N.equals(0, N.zero)).should_be_true();
 	value_of(N.equals(42, N.makeRational(84, 2))).should_be_true();
 	value_of(N.equals(42, N.makeRational(84, 3))).should_be_false();
     },
@@ -307,42 +308,127 @@ describe('isRational', {
 	assertFalse(N.isRational(N.nan));
     },
     'complex': function() {
-    }
+	assertTrue(N.isRational(N.makeComplex(0, 0)));
+	assertTrue(N.isRational(N.makeComplex(N.e, 0)));
+	assertTrue(N.isRational(N.makeComplex(N.pi, 0)));
+	assertFalse(N.isRational(N.makeComplex(N.nan, 0)));
+	assertFalse(N.isRational(N.makeComplex(0, 1)));
+	assertFalse(N.isRational(N.makeComplex(0, N.negative_inf)));
+    },
+
+    'others': function() {
+	assertFalse(N.isRational("0"));
+	assertFalse(N.isRational("hello"));
+	assertFalse(N.isRational({}));
+	assertFalse(N.isRational([]));
+	assertFalse(N.isRational(false));
+    },
 });
 
 
 describe('isReal', {
     'fixnums': function() {
+	assertTrue(N.isReal(237489));
+	assertTrue(N.isReal(0));
+	assertTrue(N.isReal(-12345));
     },
+
     'rationals': function() {
+	assertTrue(N.isReal(N.makeRational(0, 1)));
+	assertTrue(N.isReal(N.makeRational(0, 12342)));
+	assertTrue(N.isReal(N.makeRational(-2324, 12342)));
+	assertTrue(N.isReal(N.makeRational(1, 2)));
     },
+
     'floats': function() {
+ 	assertTrue(N.isReal(N.makeFloat(1.0)));
+ 	assertTrue(N.isReal(N.makeFloat(25.0)));
+ 	assertTrue(N.isReal(N.e));
+	assertTrue(N.isReal(N.pi));
+	assertTrue(N.isReal(N.inf));
+	assertTrue(N.isReal(N.negative_inf));
+	assertTrue(N.isReal(N.nan));
     },
+
     'complex': function() {
+	assertTrue(N.isReal(N.makeComplex(0, 0)));
+	assertTrue(N.isReal(N.makeComplex(N.e, 0)));
+	assertTrue(N.isReal(N.makeComplex(N.pi, 0)));
+	assertTrue(N.isReal(N.makeComplex(N.nan, 0)));
+	assertTrue(N.isReal(N.makeComplex(N.inf, 0)));
+	assertTrue(N.isReal(N.makeComplex(N.negative_inf, 0)));
+	assertFalse(N.isReal(N.makeComplex(0, 1)));
+	assertFalse(N.isReal(N.makeComplex(0, N.negative_inf)));
+	assertFalse(N.isReal(N.makeComplex(N.pi, N.inf)));
+	assertFalse(N.isReal(N.makeComplex(234, N.nan)));
+    },
+
+    'others': function() {
+	assertFalse(N.isReal("0"));
+	assertFalse(N.isReal("hello"));
+	assertFalse(N.isReal([]));
+	assertFalse(N.isReal({}));
+	assertFalse(N.isReal(false));
     }
 });
 
 
 describe('isExact', {
     'fixnums': function() {
+	assertTrue(N.isExact(19));	
+	assertTrue(N.isExact(0));
+	assertTrue(N.isExact(-1));
+	assertTrue(N.isExact(1));
     },
+
     'rationals': function() {
+	assertTrue(N.isExact(N.makeRational(19)));	
+	assertTrue(N.isExact(N.makeRational(0)));
+	assertTrue(N.isExact(N.makeRational(-1)));
+	assertTrue(N.isExact(N.makeRational(1)));
+	assertTrue(N.isExact(N.makeRational(1, 2)));
+	assertTrue(N.isExact(N.makeRational(1, 29291)));
     },
+
     'floats': function() {
+	assertFalse(N.isExact(N.e));
+	assertFalse(N.isExact(N.pi));
+	assertFalse(N.isExact(N.inf));
+	assertFalse(N.isExact(N.negative_inf));
+	assertFalse(N.isExact(N.nan));
+	assertFalse(N.isExact(N.makeFloat(0)));
+	assertFalse(N.isExact(N.makeFloat(1111.1)));
     },
+
     'complex': function() {
+	assertTrue(N.isExact(N.makeComplex(0, 0)));
+	assertTrue(N.isExact(N.makeComplex(N.makeRational(1,2),
+					   N.makeRational(1, 17))));
+	assertFalse(N.isExact(N.makeComplex(N.e,
+					    N.makeRational(1, 17))));
+	assertFalse(N.isExact(N.makeComplex(N.makeRational(1,2),
+					    N.pi)));
+	assertFalse(N.isExact(N.makeComplex(N.makeRational(1,2),
+					    N.nan)));
+
+	assertFalse(N.isExact(N.makeComplex(N.negative_inf,
+					    N.nan)));
     }
 });
 
 
 describe('isInteger', {
     'fixnums': function() {
+	assertTrue(N.isInteger(1));
+	assertTrue(N.isInteger(1));
     },
     'rationals': function() {
     },
     'floats': function() {
     },
     'complex': function() {
+    },
+    'others': function() {
     }
 });
 

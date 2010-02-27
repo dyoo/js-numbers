@@ -53,7 +53,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     // onThrowRuntimeError: string -> void
     // By default, will throw a new Error with the given message.
-    // Override Numbers.onThrowRuntimeError if you need to do something special.
+    // Override Numbers['onThrowRuntimeError'] if you need to do something special.
     var onThrowRuntimeError = function(msg) {
 	throw new Error(msg);
     }
@@ -81,12 +81,14 @@ if (! this['plt']['lib']['Numbers']) {
 
     // isRational: scheme-number -> boolean
     var isRational = function(n) {
-	return typeof(n) === 'number' || n.isRational();
+	return (typeof(n) === 'number' || 
+		(isSchemeNumber(n) && n.isRational()));
     };
 
     // isReal: scheme-number -> boolean
     var isReal = function(n) {
-	return typeof(n) === 'number' || n.isReal();
+	return (typeof(n) === 'number' || 
+		(isSchemeNumber(n) && n.isReal()));
     };
 
     // isExact: scheme-number -> boolean
@@ -1390,14 +1392,13 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-
     Complex.prototype.isFinite = function() {
 	return isSchemeNumberFinite(this.r) && isSchemeNumberFinite(this.i);
-    }
+    };
 
 
     Complex.prototype.isRational = function() {
-	return isRational(this.r) && equals(this.i, Rational.ZERO);
+	return isRational(this.r) && equals(this.i, 0);
     };
 
     Complex.prototype.isInteger = function() {
@@ -1747,6 +1748,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 
 
+    // External interface.
 
     Numbers['fromFixnum'] = fromFixnum;
     Numbers['makeRational'] = Rational.makeInstance;
