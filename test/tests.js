@@ -420,15 +420,34 @@ describe('isExact', {
 describe('isInteger', {
     'fixnums': function() {
 	assertTrue(N.isInteger(1));
-	assertTrue(N.isInteger(1));
+	assertTrue(N.isInteger(-1));
     },
+
     'rationals': function() {
+	assertTrue(N.isInteger(N.makeRational(1, 1)));
+	assertFalse(N.isInteger(N.makeRational(1, 2)));
+	assertFalse(N.isInteger(N.makeRational(9999, 10000)));
+	assertFalse(N.isInteger(N.makeRational(9999, 1000)));
     },
+
     'floats': function() {
+	assertFalse(N.isInteger(N.makeFloat(2.3)));
+	assertTrue(N.isInteger(N.makeFloat(4.0)));
+	assertFalse(N.isInteger(N.inf));
+	assertFalse(N.isInteger(N.negative_inf));
+	assertFalse(N.isInteger(N.nan));
     },
+
     'complex': function() {
+	assertTrue(N.isInteger(N.makeComplex(42, 0)));
+	assertFalse(N.isInteger(N.makeComplex(42, 42)));
+	assertFalse(N.isInteger(N.i));
+	assertFalse(N.isInteger(N.negative_i));
     },
+
     'others': function() {
+	assertFalse(N.isInteger("hello"));
+	assertFalse(N.isInteger("0"));
     }
 });
 

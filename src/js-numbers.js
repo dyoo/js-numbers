@@ -98,7 +98,8 @@ if (! this['plt']['lib']['Numbers']) {
 
     // isInteger: scheme-number -> boolean
     var isInteger = function(n) { 
-	return typeof(n) === 'number' || n.isInteger();
+	return (typeof(n) === 'number' || 
+		(isSchemeNumber(n) && n.isInteger()));
     };
 
     // toFixnum: scheme-number -> javascript-number
