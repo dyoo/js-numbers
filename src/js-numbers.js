@@ -273,6 +273,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     // modulo: scheme-number scheme-number -> scheme-number
     var modulo = function(m, n) {
+	// FIXME: check that m and n are of integral type.
 	var result;
 	if (typeof(m) === 'number') {
 	    result = m % n;
@@ -288,7 +289,7 @@ if (! this['plt']['lib']['Numbers']) {
 		    return result;
 	    }
 	}
-	result = Rational.makeInstance(toFixnum(m) % toFixnum(n));
+	result = Rational.makeInstance(Math.floor(toFixnum(m)) % Math.floor(toFixnum(n)));
 	// The sign of the result should match the sign of n.
 	if (lessThan(n, Rational.ZERO)) {
 	    if (lessThanOrEqual(result, Rational.ZERO)) {
@@ -480,16 +481,16 @@ if (! this['plt']['lib']['Numbers']) {
     var integerSqrt = function(x) {
 	var result = sqrt(x);
 	if (isRational(result)) {
-	    return Rational.makeInstance(toFixnum(result));
+	    return Rational.makeInstance(Math.floor(toFixnum(result)));
 	} else if (isReal(result)) {
-	    return Rational.makeInstance(toFixnum(result));
+	    return Rational.makeInstance(Math.floor(toFixnum(result)));
 	} else {
 	    // it must be complex.
 	    return Complex.makeInstance(
 		Rational.makeInstance
-		(toFixnum(realPart(result))),
+		(Math.floor(toFixnum(realPart(result)))),
 		Rational.makeInstance
-		(toFixnum(imaginaryPart(result))));
+		(Math.floor(toFixnum(imaginaryPart(result)))));
 	}
     };
 
@@ -827,7 +828,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     Rational.prototype.toFixnum = function() {
-	return Math.floor(this.n / this.d);  
+	return this.n / this.d;
     };
 
     Rational.prototype.numerator = function() {
@@ -1192,7 +1193,7 @@ if (! this['plt']['lib']['Numbers']) {
     
     
     FloatPoint.prototype.toFixnum = function() {
-	return Math.floor(this.n);  
+	return this.n;  
     };
     
     FloatPoint.prototype.numerator = function() {

@@ -8,6 +8,31 @@ var FloatPoint = N.FloatPoint;
 var Complex = N.Complex;
 
 
+
+var assertTrue = function(aVal) {
+    value_of(aVal).should_be_true();
+}
+
+var assertFalse = function(aVal) {
+    value_of(aVal).should_be_false();
+}
+
+var assertEquals = function(expected, aVal) {
+    value_of(aVal).should_be(expected);
+}
+
+var assertFails = function(thunk) {
+    var isFailed = false;
+    try {
+	thunk(); 
+    } catch (e) {
+	isFailed = true;
+    }
+    value_of(isFailed).should_be_true();
+}
+
+
+
 describe('rational constructions', {
     'constructions' : function() { 
 	value_of(N.isSchemeNumber(N.makeRational(42)))
@@ -276,14 +301,6 @@ describe('isSchemeNumber', {
 });
 
 
-var assertTrue = function(aVal) {
-    value_of(aVal).should_be_true();
-}
-
-var assertFalse = function(aVal) {
-    value_of(aVal).should_be_false();
-}
-
 
 describe('isRational', {
     'fixnums': function() {
@@ -292,12 +309,14 @@ describe('isRational', {
 	assertTrue(N.isRational(238977428));
 	assertTrue(N.isRational(-2371));
     },
+
     'rationals': function() {
 	assertTrue(N.isRational(N.makeRational(0, 1)));
 	assertTrue(N.isRational(N.makeRational(1, 100)));
 	assertTrue(N.isRational(N.makeRational(9999, 10000)));
 	assertTrue(N.isRational(N.makeRational(1, 4232)));
     },
+
     'floats': function() {
  	assertTrue(N.isRational(N.makeFloat(1.0)));
  	assertTrue(N.isRational(N.makeFloat(25.0)));
@@ -307,6 +326,7 @@ describe('isRational', {
 	assertFalse(N.isRational(N.negative_inf));
 	assertFalse(N.isRational(N.nan));
     },
+
     'complex': function() {
 	assertTrue(N.isRational(N.makeComplex(0, 0)));
 	assertTrue(N.isRational(N.makeComplex(N.e, 0)));
@@ -454,26 +474,44 @@ describe('isInteger', {
 
 describe('toFixnum', {
     'fixnums': function() {
+	assertEquals(42, N.toFixnum(42));
+	assertEquals(-20, N.toFixnum(-20));
+	assertEquals(0, N.toFixnum(0));
     },
+
     'rationals': function() {
+	assertEquals(0, N.toFixnum(N.zero));
+	assertEquals(17/2, N.toFixnum(N.makeRational(17, 2)));
+	assertEquals(1926/3, N.toFixnum(N.makeRational(1926, 3)));
+	assertEquals(-11150/17, N.toFixnum(N.makeRational(-11150, 17)));
     },
+
     'floats': function() {
+	assertEquals(12345.6789, N.toFixnum(N.makeFloat(12345.6789)));
+	assertEquals(Math.PI, N.toFixnum(N.pi));
+	assertEquals(Math.E, N.toFixnum(N.e));
+	assertEquals(Number.POSITIVE_INFINITY, N.toFixnum(N.inf));
+	assertEquals(Number.NEGATIVE_INFINITY, N.toFixnum(N.negative_inf));
+	assertTrue(isNaN(N.toFixnum(N.nan)));
     },
+
     'complex': function() {
+	assertFails(function() { N.toFixnum(N.makeComplex(2, 1)) });
+	assertFails(function() { N.toFixnum(N.i) });
+	assertFails(function() { N.toFixnum(N.negative_i) });
+	assertEquals(2, N.toFixnum(N.makeComplex(2, 0)));
+	assertEquals(1/2, N.toFixnum(N.makeComplex(N.makeRational(1, 2),
+						   0)));
+	assertEquals(Number.POSITIVE_INFINITY,
+		     N.toFixnum(N.makeComplex(N.inf, 0)));
+
+	assertEquals(Number.NEGATIVE_INFINITY,
+		     N.toFixnum(N.makeComplex(N.negative_inf, 0)));
+	assertTrue(isNaN(N.toFixnum(N.makeComplex(N.nan, 0))));
+
     }
 });
 
-
-describe('toFloat', {
-    'fixnums': function() {
-    },
-    'rationals': function() {
-    },
-    'floats': function() {
-    },
-    'complex': function() {
-    }
-});
 
 
 describe('toExact', {
