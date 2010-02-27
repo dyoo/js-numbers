@@ -1,14 +1,24 @@
 js-numbers: a Javascript implementation of Scheme's numeric tower
 
-Main developer: Danny Yoo (dyoo@cs.wpi.edu)
+Developer:
+    Danny Yoo (dyoo@cs.wpi.edu)
+
+License:
+    BSD
+
+Summary: js-numbers implements the "numeric tower" commonly associated
+with the Scheme language.  The operations in this package
+automatically coerse between fixnums, bignums, rationals, floating
+point, and complex numbers.
 
 
 Contributors:
     Zhe Zhang
     Ethan Cecchetti
 
-The bignum implementation (content from jsbn.js and jsbn2.js) is from
-Tom Wu's JSBN library at:
+Other sources:
+    The bignum implementation (content from jsbn.js and jsbn2.js) used
+    in js-numbers comes from Tom Wu's JSBN library at:
 
     http://www-cs-students.stanford.edu/~tjw/jsbn/
 
@@ -18,13 +28,19 @@ Tom Wu's JSBN library at:
 
 WARNING WARNING
 
-This is nowhere near good documentation yet, or good test cases for
-that matter.  I'm still migrating content and tests over from the
-Moby-scheme project.  Use at your own risk.
+This package is currently being factored out of an existing project,
+Moby-Scheme.  As such, the code here is in major flux, and this is
+nowhere near ready from public consumption yet.  We're still in the
+middle of migrating over the test cases from Moby-Scheme over to this
+package, and furthermore, I'm taking the time to redo some of the
+implementation.  So this is going to be buggy for a bit.  Use at your
+own risk.
 
 
 ======================================================================
 Examples
+
+
 
 [fill me in]
 
@@ -32,7 +48,214 @@ Examples
 ======================================================================
 API
 
-[fill me in]
+
+Loading js-numbers.js will define a namespace called
+
+    plt.lib.Numbers
+
+which contains following constants and functions:
+
+
+
+pi: scheme-number
+
+e: scheme-number
+
+nan: scheme-number
+    Not-A-Number
+
+inf: scheme-number
+    infinity
+
+negative_inf: scheme-number
+    negative infinity
+
+zero: scheme-number
+
+one: scheme-number
+
+negative_one: scheme-number
+
+i: scheme-number
+    The square root of -1.
+
+negative_i: scheme-number
+    The negative of i.
+
+
+fromFixnum: (javascript-number | string) -> scheme-number
+    Convert from a regular javascript number or string to a scheme-number.
+
+
+makeRational: javascript-number javascript-number? -> scheme-number
+    Low level constructor: Constructs a rational with the given
+    numerator and denominator.  If only one argument is given, assumes
+    the denominator is 1.
+
+makeFloat: javascript-number -> scheme-number
+    Low level constructor: constructs a floating-point number.
+
+
+makeComplex: scheme-number scheme-number -> scheme-number
+
+    Constructs a complex number; the real and imaginary parts of the
+    input must be basic scheme numbers (i.e. not complex).
+
+
+isSchemeNumber: any -> boolean
+    Produces true if the thing is a scheme number.
+
+isFinite: scheme-number -> boolean
+    Computes whether the number is finite or not.
+
+isRational: scheme-number -> boolean
+    Produces true if the number is rational.
+
+isReal: scheme-number -> boolean
+    Produces true if the number is a real.
+
+isExact: scheme-number -> boolean
+    Produces true if the number is being represented exactly.
+
+isInteger: scheme-number -> boolean
+    Produces true if the number is an integer.
+
+toFixnum: scheme-number -> javascript-number
+    Produces the javascript number closest in interpretation to the
+    given scheme-number.
+
+toExact: scheme-number -> scheme-number
+    Converts the number to an exact scheme-number.
+
+add: scheme-number scheme-number -> scheme-number
+    Adds the two numbers together.
+
+subtract: scheme-number scheme-number -> scheme-number
+    Subtracts the first number from the second.
+
+mulitply: scheme-number scheme-number -> scheme-number
+    Multiplies the two numbers together.
+
+divide: scheme-number scheme-number -> scheme-number
+    Divides the first number by the second.
+
+equals: scheme-number scheme-number -> boolean
+    Produces true if the two numbers are equal.
+
+eqv: scheme-number scheme-number -> boolean
+    Produces true if the two numbers are equivalent.
+
+approxEqual: scheme-number scheme-number scheme-number -> boolean
+    Produces true if the two numbers are approximately equal, within the
+    bounds of the third argument.
+
+greaterThanOrEqual: scheme-number scheme-number -> boolean
+    Produces true if the first number is greater than or equal to the second.
+
+lessThanOrEqual: scheme-number scheme-number -> boolean
+    Produces true if the first number is less than or equal to the second.
+
+greaterThan: scheme-number scheme-number -> boolean
+    Produces true if the first number is greater than the second.
+
+lessThan: scheme-number scheme-number -> boolean
+    Produces true if the first number is less than the second.
+
+expt: scheme-number scheme-number -> scheme-number
+    Produces the first number exponentiated to the second number.
+
+exp: scheme-number -> scheme-number
+    Produces e exponentiated to the given number.
+
+modulo: scheme-number scheme-number -> scheme-number
+    Produces the modulo of the two numbers.
+
+numerator: scheme-number -> scheme-number
+    Produces the numerator of the rational number.
+
+denominator: scheme-number -> scheme-number
+    Produces the denominator of the rational number.
+
+sqrt: scheme-number -> scheme-number
+    Produces the square root.
+
+abs: scheme-number -> scheme-number
+    Produces the absolute value.
+
+floor: scheme-number -> scheme-number
+    Produces the floor.
+
+round: scheme-number -> scheme-number
+    Produces the number rounded to the nearest integer.
+
+ceiling: scheme-number -> scheme-number
+    Produces the ceiling.
+
+conjugate: scheme-number -> scheme-number
+    Produces the complex conjugate.
+
+magnitude: scheme-number -> scheme-number
+    Produces the complex magnitude.
+
+log: scheme-number -> scheme-number
+    Produces the natural log (base e) of the given number.
+
+angle: scheme-number -> scheme-number
+    Produces the complex angle.
+
+cos: scheme-number -> scheme-number
+    Produces the cosine.
+
+sin: scheme-number -> scheme-number
+    Produces the sin.
+
+tan: scheme-number -> scheme-number
+    Produces the tangent.
+
+asin: scheme-number -> scheme-number
+    Produces the arc sine;
+
+acos: scheme-number -> scheme-number
+    Produces the arc cosine.
+
+atan: scheme-number -> scheme-number
+    Produces the arc tangent.
+
+realPart: scheme-number -> scheme-number
+    Produces the real part of the complex number.
+
+imaginaryPart: scheme-number -> scheme-number
+    Produces the imaginary part of the complex number.
+
+sqr: scheme-number -> scheme-number
+    Produces the square.
+
+integerSqrt: scheme-number -> scheme-number
+    Produces the integer square root.
+
+gcd: scheme-number [scheme-number ...] -> scheme-number
+    Produces the greatest common divisor.
+
+lcm: scheme-number [scheme-number ...] -> scheme-number
+    Produces the least common mulitple.
+
+toString: scheme-number -> string
+    Produces a string representation of the number.
+
+
+
+
+
+
+======================================================================
+Test suite
+
+Open tests/index.html, which should run our test suite over all the
+public functions in js-numbers.
+
+If you notice a good test case is missing, please let the developer
+know, and we'll be happy to add it in.
+
 
 
 ======================================================================
@@ -40,16 +263,12 @@ TODO
 
 * Absorb implementations of:
 
-  tan, atan2, cosh, sinh, makePolar, makeRectangular, quotient, remainder,
+  atan2, cosh, sinh, makePolar, makeRectangular, quotient, remainder,
   sgn
-
-* implement Complex.tan.
 
 * Bring over the numeric test cases from Moby.
 
 * Add real documentation.
-
-* Integrate regular, unboxed fixnums.
 
 * Integrate bignums.
 
@@ -58,10 +277,8 @@ TODO
     jbsn:  http://www-cs-students.stanford.edu/~tjw/jsbn/
     BigInteger: http://silentmatt.com/biginteger/
 
-
-
-* Add js minimization build process.  Use google closure to do it
-   aggressively.
+We're going to use jsbn: it looks more mature, given that it's been around
+for a longer time than the BigInteger package.
 
 
 * Find out: what is the implementation mentioned in:
@@ -71,3 +288,8 @@ Scheme Numeric System for JavaScript"
 http://ab.org.tr/ab10/bildiri/161.pdf
 
 I suspect it's worldwithweb, but it's hard to find.
+
+======================================================================
+History
+
+February 2010: initial refactoring from the moby-scheme source tree.

@@ -692,7 +692,7 @@ if (! this['plt']['lib']['Numbers']) {
     // Produce the power to the input.
 
     // exp: -> scheme-number
-    // Produce the power to e.
+    // Produce e raised to the given power.
     
     // acos: -> scheme-number
     // Produce the arc cosine.
@@ -1724,7 +1724,27 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
 
+    var fromFixnum = function(x) {
+	if (typeof(x) === 'string') {
+	    x = Number(x);
+	}
+	if (typeof(x) === 'number') {
+	    if (Math.floor(x) === x) {
+		return Rational.makeInstance(x);
+	    } else {
+		return FloatPoint.makeInstance(x);
+	    }
+	} else {
+	    throwRuntimeError(
+		"fromFixnum: cannot interpret " + x 
+		    + " as a scheme-number");
+	}
+    };
 
+
+
+
+    Numbers['fromFixnum'] = fromFixnum;
     Numbers['makeRational'] = Rational.makeInstance;
     Numbers['makeFloat'] = FloatPoint.makeInstance;
     Numbers['makeComplex'] = Complex.makeInstance;
