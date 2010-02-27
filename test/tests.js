@@ -275,12 +275,36 @@ describe('isSchemeNumber', {
 });
 
 
+var assertTrue = function(aVal) {
+    value_of(aVal).should_be_true();
+}
+
+var assertFalse = function(aVal) {
+    value_of(aVal).should_be_false();
+}
+
+
 describe('isRational', {
     'fixnums': function() {
+	assertTrue(N.isRational(0));
+	assertTrue(N.isRational(1));
+	assertTrue(N.isRational(238977428));
+	assertTrue(N.isRational(-2371));
     },
     'rationals': function() {
+	assertTrue(N.isRational(N.makeRational(0, 1)));
+	assertTrue(N.isRational(N.makeRational(1, 100)));
+	assertTrue(N.isRational(N.makeRational(9999, 10000)));
+	assertTrue(N.isRational(N.makeRational(1, 4232)));
     },
     'floats': function() {
+ 	assertTrue(N.isRational(N.makeFloat(1.0)));
+ 	assertTrue(N.isRational(N.makeFloat(25.0)));
+ 	assertTrue(N.isRational(N.e));
+	assertTrue(N.isRational(N.pi));
+	assertFalse(N.isRational(N.inf));
+	assertFalse(N.isRational(N.negative_inf));
+	assertFalse(N.isRational(N.nan));
     },
     'complex': function() {
     }

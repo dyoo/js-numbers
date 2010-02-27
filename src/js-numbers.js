@@ -72,7 +72,11 @@ if (! this['plt']['lib']['Numbers']) {
 
     // isFinite: scheme-number -> boolean
     var isSchemeNumberFinite = function(n) {	
-	return typeof(n) === 'number' || n.isFinite();
+	if (typeof(n) === 'number') {
+	    return isFinite(n);
+	} else {
+	    return n.isFinite();
+	}
     };
 
     // isRational: scheme-number -> boolean
@@ -986,10 +990,10 @@ if (! this['plt']['lib']['Numbers']) {
 	if (isNaN (n) || isNaN(d)) {
 	    return FloatPoint.nan;
 	}
-	if (! isFinite(d)) {
+	if (! isSchemeNumberFinite(d)) {
 	    return Rational.ZERO;
 	}
-	if (! isFinite(n)) {
+	if (! isSchemeNumberFinite(n)) {
 	    return FloatPoint.makeInstance(n);
 	}
 
@@ -1093,7 +1097,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     FloatPoint.prototype.isRational = function() {
-        return this.isFinite() && this.n === Math.floor(this.n);
+        return this.isFinite();
     };
 
     FloatPoint.prototype.isInteger = function() {
