@@ -275,18 +275,6 @@ describe('isSchemeNumber', {
 });
 
 
-describe('isFinite', {
-    'fixnums': function() {
-    },
-    'rationals': function() {
-    },
-    'floats': function() {
-    },
-    'complex': function() {
-    }
-});
-
-
 describe('isRational', {
     'fixnums': function() {
     },

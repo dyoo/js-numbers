@@ -105,9 +105,6 @@ makeComplex: scheme-number scheme-number -> scheme-number
 isSchemeNumber: any -> boolean
     Produces true if the thing is a scheme number.
 
-isFinite: scheme-number -> boolean
-    Computes whether the number is finite or not.
-
 isRational: scheme-number -> boolean
     Produces true if the number is rational.
 

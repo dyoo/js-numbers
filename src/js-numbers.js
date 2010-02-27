@@ -1761,7 +1761,6 @@ if (! this['plt']['lib']['Numbers']) {
 
     Numbers['onThrowRuntimeError'] = onThrowRuntimeError;
     Numbers['isSchemeNumber'] = isSchemeNumber;
-    Numbers['isFinite'] = isSchemeNumberFinite;
     Numbers['isRational'] = isRational;
     Numbers['isReal'] = isReal;
     Numbers['isExact'] = isExact;
