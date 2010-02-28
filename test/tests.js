@@ -74,7 +74,7 @@ describe('rational constructions', {
 });
 
 
-
+    
 describe('built-in constants', { 
     'pi': function() {
  	value_of(isSchemeNumber(pi)).should_be_true() },
@@ -99,19 +99,37 @@ describe('built-in constants', {
 });
 
 
-describe('fromFixnum', {
+describe('fromString', {	
     'fixnums': function() {
-	value_of(equals(fromFixnum(42),
-			  makeRational(42))).should_be_true();
-	value_of(equals(fromFixnum("43"),
-			  makeRational(43))).should_be_true();
-	value_of(equals(fromFixnum("42"),
-			  makeRational(43))).should_be_false();
+	assertEquals(43, fromString("43"));
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
     'floats': function() {
-	value_of(equals(fromFixnum("42.1"),
+	assertEquals(makeFloat(42.1), fromString("42.1"));
+    },
+    'complex': function() {
+    }});
+
+	
+describe('fromFixnum', {
+    'fixnums': function() {
+	value_of(equals(fromFixnum(42),
+			  makeRational(42))).should_be_true();
+	value_of(equals(fromFixnum(43),
+			  makeRational(43))).should_be_true();
+	value_of(equals(fromFixnum(42),
+			  makeRational(43))).should_be_false();
+    },
+    'bignums': function() {
+    },
+
+    'rationals': function() {
+    },
+    'floats': function() {
+	value_of(equals(fromFixnum(42.1),
 			  makeFloat(42.1))).should_be_true();
     },
     'complex': function() {
@@ -312,6 +330,8 @@ describe('isRational', {
 	assertTrue(isRational(238977428));
 	assertTrue(isRational(-2371));
     },
+    'bignums': function() {
+    },
 
     'rationals': function() {
 	assertTrue(isRational(makeRational(0, 1)));
@@ -354,6 +374,8 @@ describe('isReal', {
 	assertTrue(isReal(237489));
 	assertTrue(isReal(0));
 	assertTrue(isReal(-12345));
+    },
+    'bignums': function() {
     },
 
     'rationals': function() {
@@ -403,6 +425,8 @@ describe('isExact', {
 	assertTrue(isExact(-1));
 	assertTrue(isExact(1));
     },
+    'bignums': function() {
+    },
 
     'rationals': function() {
 	assertTrue(isExact(makeRational(19)));	
@@ -446,6 +470,9 @@ describe('isInteger', {
 	assertTrue(isInteger(-1));
     },
 
+    'bignums': function() {
+    },
+
     'rationals': function() {
 	assertTrue(isInteger(makeRational(1, 1)));
 	assertFalse(isInteger(makeRational(1, 2)));
@@ -480,6 +507,9 @@ describe('toFixnum', {
 	assertEquals(42, toFixnum(42));
 	assertEquals(-20, toFixnum(-20));
 	assertEquals(0, toFixnum(0));
+    },
+
+    'bignums': function() {
     },
 
     'rationals': function() {
@@ -524,6 +554,9 @@ describe('toExact', {
 	assertEquals(-1, toExact(-1));
     },
 
+    'bignums': function() {
+    },
+
     'rationals': function() {
 	assertEquals(makeRational(1, 2), toExact(makeRational(1, 2)));
 	assertEquals(makeRational(1, 9999), toExact(makeRational(1, 9999)));
@@ -533,6 +566,9 @@ describe('toExact', {
 
     'floats': function() {
 	assertEquals(makeRational(1, 2), toExact(makeFloat(0.5)));
+	assertEquals(makeRational(1, 10), toExact(makeFloat(0.1)));
+	assertEquals(makeRational(9, 10), toExact(makeFloat(0.9)));
+	assertEquals(makeRational(102347, 10), toExact(makeFloat(10234.7)));
 	assertEquals(-1, toExact(makeFloat(-1)));
 	assertEquals(0, toExact(makeFloat(0)));	
 	assertEquals(1024, toExact(makeFloat(1024)));
@@ -897,6 +933,10 @@ describe('modulo', {
 describe('numerator', {
     'fixnums': function() {
     },
+
+    'bignums': function() {
+    },
+
     'rationals': function() {
     },
     'floats': function() {
@@ -908,6 +948,8 @@ describe('numerator', {
 
 describe('denominator', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -921,6 +963,8 @@ describe('denominator', {
 describe('sqrt', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -933,6 +977,8 @@ describe('sqrt', {
 describe('abs', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -944,6 +990,8 @@ describe('abs', {
 
 describe('floor', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -958,6 +1006,8 @@ describe('floor', {
 describe('ceiling', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -969,6 +1019,8 @@ describe('ceiling', {
 
 describe('conjugate', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -982,6 +1034,8 @@ describe('conjugate', {
 describe('magnitude', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -993,6 +1047,8 @@ describe('magnitude', {
 
 describe('log', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -1006,6 +1062,8 @@ describe('log', {
 describe('angle', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1017,6 +1075,8 @@ describe('angle', {
 
 describe('atan', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -1030,6 +1090,8 @@ describe('atan', {
 describe('cos', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1042,6 +1104,8 @@ describe('cos', {
 describe('sin', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1052,6 +1116,8 @@ describe('sin', {
 
 describe('tan', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -1065,6 +1131,8 @@ describe('tan', {
 describe('acos', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1076,6 +1144,8 @@ describe('acos', {
 
 describe('asin', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -1089,6 +1159,8 @@ describe('asin', {
 describe('imaginaryPart', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1101,6 +1173,8 @@ describe('imaginaryPart', {
 describe('realPart', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1112,6 +1186,8 @@ describe('realPart', {
 
 describe('round', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -1126,6 +1202,8 @@ describe('exp', {
     'fixnums': function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1138,6 +1216,8 @@ describe('exp', {
 describe('sqr', {
     'fixnums': function() {
 	// FIXME: add test case where value needs to become a bignum.
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },
@@ -1200,6 +1280,8 @@ describe('lcm', {
 describe('integerSqrt', {
     'fixnums': function() {
     },
+    'bignums': function() {
+    },
     'rationals': function() {
     },
     'floats': function() {
@@ -1210,6 +1292,8 @@ describe('integerSqrt', {
 
 describe('toString', {
     'fixnums': function() {
+    },
+    'bignums': function() {
     },
     'rationals': function() {
     },

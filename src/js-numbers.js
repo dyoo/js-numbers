@@ -13,6 +13,16 @@ if (! this['plt']['lib']['Numbers']) {
 }
 
 
+// The numeric tower has the following levels:    
+//     fixnum            
+//     BigInteger   [level=0]
+//     Rational [level=1]
+//     FloatPoint [level=2]
+//     Complex  [level=3]
+
+// A boxed-scheme-number is either BigInteger, Rational, FloatPoint, or Complex.
+// An integer-scheme-number is either fixnum or BigInteger.
+
 
 (function() {
     // Abbreviation
@@ -30,10 +40,10 @@ if (! this['plt']['lib']['Numbers']) {
 		return binaryFunction(x, y);
 	    }
 	    if (typeof(x) === 'number') {
-		x = liftFixnumInteger(x);
+		x = liftFixnumInteger(x, y);
 	    }
 	    if (typeof(y) === 'number') {
-		y = liftFixnumInteger(y);
+		y = liftFixnumInteger(y, x);
 	    }
 
 	    if (x._level < y._level) x = x._lift(y);
@@ -42,10 +52,19 @@ if (! this['plt']['lib']['Numbers']) {
 	}
     }
     
-    // liftFixnumInteger: fixnum-integer -> boxed-scheme-number
+    // liftFixnumInteger: fixnum-integer boxed-scheme-number -> boxed-scheme-number
     // Lifts up fixnum integers to a boxed type.
-    var liftFixnumInteger = function(x) {
-	return Rational.makeInstance(x);
+    var liftFixnumInteger = function(x, other) {
+	switch(other._level) {
+	case 0: // BigInteger
+	    return new BigInteger(x + '');
+	case 1: // Rational
+	    return Rational.makeInstance(x);
+	case 2: // FloatPoint
+	    return FloatPoint.makeInstance(x);
+	case 3: // Complex
+	    return Complex.makeInstance(x);
+	}
     };
 
 
@@ -73,7 +92,8 @@ if (! this['plt']['lib']['Numbers']) {
 		    thing !== null &&
 		    (thing instanceof Rational ||
 		     thing instanceof FloatPoint ||
-		     thing instanceof Complex)));
+		     thing instanceof Complex ||
+		     thing instanceof BigInteger)));
     }
 
     // isFinite: scheme-number -> boolean
@@ -131,7 +151,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(x) === 'number') {
 	    var sum = x + y;
 	    if (isOverflow(sum)) {
-		return liftFixnumInteger(x).add(liftFixnumInteger(y));
+		return (new BigInteger(x+'')).add(new BigInteger(y+''));
 	    } else {
 		return sum;
 	    }
@@ -144,7 +164,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(x) === 'number') {
 	    var diff = x - y;
 	    if (isOverflow(diff)) {
-		return liftFixnumInteger(x).subtract(liftFixnumInteger(y));
+		return (new BigInteger(x+'')).subtract(new BigInteger(y+''));
 	    } else {
 		return diff;
 	    }
@@ -157,7 +177,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(x) === 'number') {
 	    var prod = x * y;
 	    if (isOverflow(prod)) {
-		return liftFixnumInteger(x).multiply(liftFixnumInteger(y));
+		return (new BigInteger(x+'')).multiply(new BigInteger(y+''));
 	    } else {
 		return prod;
 	    }
@@ -168,11 +188,11 @@ if (! this['plt']['lib']['Numbers']) {
     // divide: scheme-number scheme-number -> scheme-number
     var divide = addLifts(function(x, y) {
 	if (typeof(x) === 'number') {
-	    if (y === 0)
+	    if (_integerIsZero(y))
 		throwRuntimeError("division by zero");
 	    var div = x / y;
 	    if (isOverflow(div)) {
-		return liftFixnumInteger(x).divide(liftFixnumInteger(y));
+		return (new BigInteger(x+'')).divide(new BigInteger(y+''));
 	    } else if (Math.floor(div) !== div) {
 		return Rational.makeInstance(x, y);
 	    } else {
@@ -255,12 +275,12 @@ if (! this['plt']['lib']['Numbers']) {
 	    if (y >= 0) {
 		var pow = Math.pow(x, y);
 		if (isOverflow(pow)) {
-		    return liftFixnumInteger(x).expt(liftFixnumInteger(y));
+		    return (new BigInteger(x+'')).expt(new BigInteger(y+''));
 		} else {
 		    return pow;
 		}
 	    } else {
-		return liftFixnumInteger(x).expt(liftFixnumInteger(y));
+		return (new BigInteger(x+'')).expt(new BigInteger(y+''));
 	    }
 	}
 	return x.expt(y);
@@ -317,17 +337,6 @@ if (! this['plt']['lib']['Numbers']) {
 	}
     };
     
-    // _integerModulo: integer-scheme-number integer-scheme-number -> scheme-number
-    var _integerModulo = function(m, n) {
-	if (typeof(m) === 'number') {
-	    return m % n;
-	} else {
-	    // FIXME: have the boxed integral types implement their own specialized
-	    // version of modulo.
-	    var quotient = divide(m, n);
-	    return subtract(m, multiply(quotient, n));
-	}
-    }
 
  
     // numerator: scheme-number -> scheme-number
@@ -356,7 +365,7 @@ if (! this['plt']['lib']['Numbers']) {
 		    return FloatPoint.makeInstance(result);
 		}
 	    } else {
-		return liftFixnumInteger(n).sqrt();		
+		return (new BigInteger(n+'')).sqrt();
 	    }
 	}
 	return n.sqrt();
@@ -499,15 +508,11 @@ if (! this['plt']['lib']['Numbers']) {
     
     // integerSqrt: scheme-number -> scheme-number
     var integerSqrt = function(x) {
-	var result = sqrt(x);
-	if (isRational(result)) {
-	    return toExact(floor(result));
-	} else if (isReal(result)) {
-	    return toExact(floor(result));
-	} else {
-	    return Complex.makeInstance(toExact(floor(realPart(result))),
-					toExact(floor(imaginaryPart(result))));
+	if (typeof (x) === 'number') {
+	    return Math.floor(Math.sqrt(x));
 	}
+
+	return x.integerSqrt();
     };
 
 
@@ -518,7 +523,7 @@ if (! this['plt']['lib']['Numbers']) {
 	// not fixnum operations.
 	var result = Math.abs(toFixnum(first));
 	for (var i = 0; i < rest.length; i++) {
-	    result = _gcd(result, toFixnum(rest[i]));
+	    result = _integerGcd(result, toFixnum(rest[i]));
 	}
 	return result;
     };
@@ -529,9 +534,9 @@ if (! this['plt']['lib']['Numbers']) {
 	// FIXME: do this operations all in terms of the integer operations,
 	// not fixnum operations.
 	var result = Math.abs(toFixnum(first));
-	if (result === 0) { return Rational.ZERO; }
+	if (_integerIsZero(result)) { return Rational.ZERO; }
 	for (var i = 0; i < rest.length; i++) {
-	    if (toFixnum(rest[i]) === 0) {
+	    if (_integerIsZero(toFixnum(rest[i]))) {
 		return Rational.ZERO;
 	    }
 	    result = _lcm(result, toFixnum(rest[i]));
@@ -554,10 +559,10 @@ if (! this['plt']['lib']['Numbers']) {
 
     // isOverflow: javascript-number -> boolean
     // Returns true if we consider the number an overflow.
-    var MIN_FIXNUM = -9e15;
-    var MAX_FIXNUM = 9e15;
+    var MIN_FIXNUM = -(9e15);
+    var MAX_FIXNUM = (9e15);
     var isOverflow = function(n) {
-	return (MIN_FIXNUM < n || n > MAX_FIXNUM);
+	return (n < MIN_FIXNUM ||  MAX_FIXNUM < n);
     };
 
     // negate: scheme-number -> scheme-number
@@ -582,8 +587,33 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    // _gcd: javascript-number javascript-number -> javascript-number
-    var _gcd = function(a, b) {
+
+
+
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+
+    // Integer operations
+    // Integers are either represented as fixnums or as BigIntegers.
+
+    // _integerModulo: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerModulo = function(m, n) {
+	if (typeof(m) === 'number') {
+	    return m % n;
+	} else {
+	    // FIXME: have the boxed integral types implement their own specialized
+	    // version of modulo.
+	    var quotient = divide(m, n);
+	    return subtract(m, multiply(quotient, n));
+	}
+    }
+
+    // _integerGcd: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerGcd = function(a, b) {
 	var t;
 	if (isNaN(a) || !isFinite(a)) {
 	    throwRuntimeError("not a number: " + a);
@@ -600,12 +630,59 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
+    // _integerIsZero: integer-scheme-number -> boolean
+    // Returns true if the number is zero.
+    var _integerIsZero = function(n) {
+	return n === 0;
+    }
 
-    //////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////
+    // _integerIsOne: integer-scheme-number -> boolean
+    var _integerIsOne = function(n) {
+	return n === 1;
+    }
+
+    var _integerAdd = function(m, n) {
+	return m + n;
+    }
+
+    var _integerSubtract = function(m, n) {
+	return m - n;
+    }
+
+    var _integerMultiply = function(m, n) {
+	return m * n;
+    }
+
+    //_integerDivide: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerDivide = function(m, n) {
+	return m / n;
+    }
+
+    // _integerDivideToFixnum: integer-scheme-number integer-scheme-number -> fixnum
+    var _integerDivideToFixnum = function(m, n) {
+	return m / n;
+    }
+    
+    // _integerEquals: integer-scheme-number integer-scheme-number -> boolean
+    var _integerEquals = function(m, n) {
+	return m === n;
+    }
+
+    var _integerGreaterThan = function(m, n) {
+	return m > n;
+    }
+
+    var _integerLessThan = function(m, n) {
+	return m < n;
+    }
+
+    var _integerGreaterThanOrEqual = function(m, n) {
+	return m >= n;
+    }
+
+    var _integerLessThanOrEqual = function(m, n) {
+	return m <= n;
+    }
 
 
     //////////////////////////////////////////////////////////////////////
@@ -667,6 +744,9 @@ if (! this['plt']['lib']['Numbers']) {
 
     // denominator: -> scheme-number
     // Return the denominator.
+    
+    // integerSqrt: -> scheme-number
+    // Produce the integer square root.
 
     // sqrt: -> scheme-number
     // Produce the square root.
@@ -737,56 +817,55 @@ if (! this['plt']['lib']['Numbers']) {
     
     var Rational = function(n, d) {
 	if (d === undefined) { d = 1; }
-	if (d === 0) {
+	if (_integerIsZero(d)) {
 	    throwRuntimeError("cannot have zero denominator.");
 	}
-	var divisor = _gcd(Math.abs(n), Math.abs(d));
-	this.n = n / divisor;
-	this.d = d / divisor;
+	var divisor = _integerGcd(abs(n), abs(d));
+	this.n = _integerDivide(n, divisor);
+	this.d = _integerDivide(d, divisor);
     };
-
+    
     
     Rational.prototype.toString = function() {
-	if (this.d === 1) {
+	if (_integerIsOne(this.d)) {
 	    return this.n + "";
 	} else {
 	    return this.n + "/" + this.d;
 	}
     };
-
     
-    Rational.prototype._level = 0;
-
+    
+    Rational.prototype._level = 1;
     
     
     Rational.prototype._lift = function(target) {
-	if (target._level === 1)
-	    return FloatPoint.makeInstance(this.n / this.d);
-	if (target._level === 2)	
-	    return Complex.makeInstance(this, 
-					Rational.ZERO);
+	if (target._level === 2)
+	    return FloatPoint.makeInstance(
+		_integerDivideToFixnum(this.n, this.d));
+	if (target._level === 3)	
+	    return Complex.makeInstance(this, 0);
 	throwRuntimeError("invalid _level of Number");
     };
     
     Rational.prototype.isFinite = function() {
 	return true;
     };
-
+    
     Rational.prototype.equals = function(other) {
 	return other instanceof Rational &&
-	    this.n === other.n &&
-	    this.d === other.d;
+	    _integerEquals(this.n, other.n) &&
+	    _integerEquals(this.d, other.d);
     };
-
+    
     Rational.prototype.eqv = function(other) {
 	return other instanceof Rational &&
-	    this.n === other.n &&
-	    this.d === other.d;
+	    _integerEquals(this.n, other.n) &&
+	    _integerEquals(this.d, other.d);
     };
 
 
     Rational.prototype.isInteger = function() { 
-	return this.d === 1;
+	return _integerIsOne(this.d);
     }
     
     Rational.prototype.isRational = function() {
@@ -799,28 +878,28 @@ if (! this['plt']['lib']['Numbers']) {
 
     
     Rational.prototype.add = function(other) {
-	return Rational.makeInstance(this.n * other.d + 
-				     this.d * other.n,
-				     this.d * other.d);
+	return Rational.makeInstance(_integerAdd(_integerMultiply(this.n, other.d),
+						 _integerMultiply(this.d, other.n)),
+				     _integerMultiply(this.d, other.d));
     };
     
     Rational.prototype.subtract = function(other) {
-	return Rational.makeInstance((this.n * other.d) - 
-				     (this.d * other.n),
-				     (this.d * other.d));
+	return Rational.makeInstance(_integerSubtract(_integerMultiply(this.n, other.d), 
+						      _integerMultiply(this.d, other.n)),
+				     _integerMultiply(this.d, other.d));
     };
     
     Rational.prototype.multiply = function(other) {
-	return Rational.makeInstance(this.n * other.n,
-				     this.d * other.d);
+	return Rational.makeInstance(_integerMultiply(this.n, other.n),
+				     _integerMultiply(this.d, other.d));
     };
     
     Rational.prototype.divide = function(other) {
-	if (this.d * other.n === 0) {
+	if (_integerIsZero(this.d) || _integerIsZero(other.n)) {
 	    throwRuntimeError("division by zero");
 	}
-	return Rational.makeInstance(this.n * other.d,
-				     this.d * other.n);
+	return Rational.makeInstance(_integerMultiply(this.n, other.d),
+				     _integerMultiply(this.d, other.n));
     };
     
 
@@ -833,7 +912,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     Rational.prototype.toFixnum = function() {
-	return this.n / this.d;
+	return _integerDivideToFixnum(this.n, this.d);
     };
 
     Rational.prototype.numerator = function() {
@@ -843,55 +922,74 @@ if (! this['plt']['lib']['Numbers']) {
     Rational.prototype.denominator = function() {
 	return Rational.makeInstance(this.d);
     };
-        
+
+    // FIXME: up to this point I've modified Rational to use the _integer functions.
+    // I need to fix up the rest of Rational.
     Rational.prototype.greaterThan = function(other) {
-	return this.n*other.d > this.d*other.n;
+	return _integerGreaterThan(_integerMultiply(this.n, other.d),
+				   _integerMultiply(this.d, other.n));
     };
 
     Rational.prototype.greaterThanOrEqual = function(other) {
-	return this.n*other.d >= this.d*other.n;
+	return _integerGreaterThanOrEqual(_integerMultiply(this.n, other.d),
+					  _integerMultiply(this.d, other.n));
     };
     
     Rational.prototype.lessThan = function(other) {
-	return this.n*other.d < this.d*other.n;
+	return _integerLessThan(_integerMultiply(this.n, other.d),
+				_integerMultiply(this.d, other.n));
     };
 
     Rational.prototype.lessThanOrEqual = function(other) {
-	return this.n*other.d <= this.d*other.n;
+	return _integerLessThanOrEqual(_integerMultiply(this.n, other.d),
+				       _integerMultiply(this.d, other.n));
     };
+
+    Rational.prototype.integerSqrt = function() {
+	var result = sqrt(x);
+	if (isRational(result)) {
+	    return toExact(floor(result));
+	} else if (isReal(result)) {
+	    return toExact(floor(result));
+	} else {
+	    return Complex.makeInstance(toExact(floor(realPart(result))),
+					toExact(floor(imaginaryPart(result))));
+	}
+    }
 
     
     Rational.prototype.sqrt = function() {
-	if (this.n >= 0) {
-	    var newN = Math.sqrt(this.n);
-	    var newD = Math.sqrt(this.d);
-	    if (Math.floor(newN) === newN &&
-		Math.floor(newD) === newD) {
+	if (_integerGreaterThanOrEqual(this.n,  0)) {
+	    var newN = sqrt(this.n);
+	    var newD = sqrt(this.d);
+	    if (equals(floor(newN), newN) &&
+		equals(floor(newD), newD)) {
 		return Rational.makeInstance(newN, newD);
 	    } else {
-		return FloatPoint.makeInstance(newN / newD);
+		return FloatPoint.makeInstance(_integerDivideToFixnum(newN, newD));
 	    }
 	} else {
-	    var newN = Math.sqrt(- this.n);
-	    var newD = Math.sqrt(this.d);
-	    if (Math.floor(newN) === newN &&
-		Math.floor(newD) === newD) {
+	    var newN = sqrt(negate(this.n));
+	    var newD = sqrt(this.d);
+	    if (equals(floor(newN), newN) &&
+		equals(floor(newD), newD)) {
 		return Complex.makeInstance(
-		    Rational.ZERO,
+		    0,
 		    Rational.makeInstance(newN, newD));
 	    } else {
 		return Complex.makeInstance(
-		    Rational.ZERO,
-		    FloatPoint.makeInstance(newN / newD));
+		    0,
+		    FloatPoint.makeInstance(_integerDivideToFixnum(newN, newD)));
 	    }
 	}
     };
     
     Rational.prototype.abs = function() {
-	return Rational.makeInstance(Math.abs(this.n),
+	return Rational.makeInstance(abs(this.n),
 				     this.d);
     };
     
+
     Rational.prototype.floor = function() {
 	return Rational.makeInstance(Math.floor(this.n / this.d), 1);
     };
@@ -967,7 +1065,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    var v = this.n / this.d;
 	    var fl = Math.floor(v);
 	    var ce = Math.ceil(v);
-	    if (fl % 2 === 0) { 
+	    if (_integerIsZero(fl % 2)) { 
 		return Rational.makeInstance(fl); 
 	    }
 	    else { 
@@ -1081,7 +1179,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    FloatPoint.prototype._level = 1;
+    FloatPoint.prototype._level = 2;
 
     
     FloatPoint.prototype._lift = function(target) {
@@ -1262,6 +1360,18 @@ if (! this['plt']['lib']['Numbers']) {
 	return this.n <= other.n;
     };
 
+
+    FloatPoint.prototype.integerSqrt = function() {
+	var result = sqrt(x);
+	if (isRational(result)) {
+	    return toExact(floor(result));
+	} else if (isReal(result)) {
+	    return toExact(floor(result));
+	} else {
+	    return Complex.makeInstance(toExact(floor(realPart(result))),
+					toExact(floor(imaginaryPart(result))));
+	}
+    }
     
     FloatPoint.prototype.sqrt = function() {
 	if (this.n < 0) {
@@ -1435,7 +1545,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 
 
-    Complex.prototype._level = 2;
+    Complex.prototype._level = 3;
 
     
     Complex.prototype._lift = function(target){
@@ -1583,6 +1693,18 @@ if (! this['plt']['lib']['Numbers']) {
     
     Complex.prototype.isReal = function(){
 	return equals(this.i, Rational.ZERO);
+    };
+
+    Complex.prototype.integerSqrt = function() {
+	var result = sqrt(x);
+	if (isRational(result)) {
+	    return toExact(floor(result));
+	} else if (isReal(result)) {
+	    return toExact(floor(result));
+	} else {
+	    return Complex.makeInstance(toExact(floor(realPart(result))),
+					toExact(floor(imaginaryPart(result))));
+	}
     };
     
     Complex.prototype.sqrt = function(){
@@ -1745,91 +1867,27 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
 
-    var fromFixnum = function(x) {
-	if (typeof(x) === 'string') {
-	    x = Number(x);
-	}
-	if (typeof(x) === 'number') {
-	    if (Math.floor(x) === x) {
-		return Rational.makeInstance(x);
-	    } else {
-		return FloatPoint.makeInstance(x);
-	    }
+    // fromString: string -> scheme-number
+    var fromString = function(x) {
+	var n = Number(x);
+	if (isOverflow(n)) {
+	    return new BigInteger(x);
 	} else {
-	    throwRuntimeError(
-		"fromFixnum: cannot interpret " + x 
-		    + " as a scheme-number");
+	    return fromFixnum(n);
+	}
+    }
+
+    // fromFixnum: fixnum -> scheme-number
+    var fromFixnum = function(x) {
+	if (Math.floor(x) === x) {
+	    return Rational.makeInstance(x);
+	} else {
+	    return FloatPoint.makeInstance(x);
 	}
     };
 
 
 
-    // External interface.
-
-    Numbers['fromFixnum'] = fromFixnum;
-    Numbers['makeRational'] = Rational.makeInstance;
-    Numbers['makeFloat'] = FloatPoint.makeInstance;
-    Numbers['makeComplex'] = Complex.makeInstance;
-    Numbers['pi'] = FloatPoint.pi;
-    Numbers['e'] = FloatPoint.e;
-    Numbers['nan'] = FloatPoint.nan;
-    Numbers['negative_inf'] = FloatPoint.neginf;
-    Numbers['inf'] = FloatPoint.inf;
-    Numbers['negative_one'] = Rational.NEGATIVE_ONE;
-    Numbers['zero'] = Rational.ZERO;
-    Numbers['one'] = Rational.ONE;
-    Numbers['i'] = plusI;
-    Numbers['negative_i'] = minusI;
-
-    Numbers['onThrowRuntimeError'] = onThrowRuntimeError;
-    Numbers['isSchemeNumber'] = isSchemeNumber;
-    Numbers['isRational'] = isRational;
-    Numbers['isReal'] = isReal;
-    Numbers['isExact'] = isExact;
-    Numbers['isInteger'] = isInteger;
-
-    Numbers['toFixnum'] = toFixnum;
-    Numbers['toExact'] = toExact;
-    Numbers['add'] = add;
-    Numbers['subtract'] = subtract;
-    Numbers['multiply'] = multiply;
-    Numbers['divide'] = divide;
-    Numbers['equals'] = equals;
-    Numbers['eqv'] = eqv;
-    Numbers['approxEqual'] = approxEqual;
-    Numbers['greaterThanOrEqual'] = greaterThanOrEqual;
-    Numbers['lessThanOrEqual'] = lessThanOrEqual;
-    Numbers['greaterThan'] = greaterThan;
-    Numbers['lessThan'] = lessThan;
-    Numbers['expt'] = expt;
-    Numbers['exp'] = exp;
-    Numbers['modulo'] = modulo;
-    Numbers['numerator'] = numerator;
-    Numbers['denominator'] = denominator;
-    Numbers['sqrt'] = sqrt;
-    Numbers['abs'] = abs;
-    Numbers['floor'] = floor;
-    Numbers['ceiling'] = ceiling;
-    Numbers['conjugate'] = conjugate;
-    Numbers['magnitude'] = magnitude;
-    Numbers['log'] = log;
-    Numbers['angle'] = angle;
-    Numbers['tan'] = tan;
-    Numbers['atan'] = atan;
-    Numbers['cos'] = cos;
-    Numbers['sin'] = sin;
-    Numbers['tan'] = tan;
-    Numbers['acos'] = acos;
-    Numbers['asin'] = asin;
-    Numbers['imaginaryPart'] = imaginaryPart;
-    Numbers['realPart'] = realPart;
-    Numbers['round'] = round;
-    Numbers['sqr'] = sqr;
-    Numbers['integerSqrt'] = integerSqrt;
-    Numbers['gcd'] = gcd;
-    Numbers['lcm'] = lcm;
-    Numbers['toString'] = toString;
-
 
     //////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////
@@ -1837,8 +1895,7 @@ if (! this['plt']['lib']['Numbers']) {
     //////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////
 
-
-    // The rest of the code below comes from Tom Wu's BigInteger implementation:
+    // The code below comes from Tom Wu's BigInteger implementation:
 
     // Copyright (c) 2005  Tom Wu
     // All Rights Reserved.
@@ -1933,7 +1990,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     // Digit conversions
     var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-    var BI_RC = new Array();
+    var BI_RC = [];
     var rr,vv;
     rr = "0".charCodeAt(0);
     for(vv = 0; vv <= 9; ++vv) BI_RC[rr++] = vv;
@@ -2499,7 +2556,7 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 	else {
 	    // new BigInteger(int,RNG)
-	    var x = new Array(), t = a&7;
+	    var x = [], t = a&7;
 	    x.length = (a>>3)+1;
 	    b.nextBytes(x);
 	    if(t > 0) x[0] &= ((1<<t)-1); else x[0] = 0;
@@ -2509,7 +2566,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     // (public) convert to bigendian byte array
     function bnToByteArray() {
-	var i = this.t, r = new Array();
+	var i = this.t, r = [];
 	r[0] = this.s;
 	var p = this.DB-(i*this.DB)%8, d, k = 0;
 	if(i-- > 0) {
@@ -2702,7 +2759,7 @@ if (! this['plt']['lib']['Numbers']) {
     function bnDivideAndRemainder(a) {
 	var q = nbi(), r = nbi();
 	this.divRemTo(a,q,r);
-	return new Array(q,r);
+	return [q,r];
     }
 
     // (protected) this *= n, this >= 0, 1 < n < DV
@@ -2822,7 +2879,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    z = new Montgomery(m);
 
 	// precomputation
-	var g = new Array(), n = 3, k1 = k-1, km = (1<<k)-1;
+	var g = [], n = 3, k1 = k-1, km = (1<<k)-1;
 	g[1] = z.convert(this);
 	if(k > 1) {
 	    var g2 = nbi();
@@ -3051,6 +3108,239 @@ if (! this['plt']['lib']['Numbers']) {
 
 
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    // END OF copy-and-paste of jsbn.
+
+
+
+
+
+
+    // Other methods we need to add for compatibilty with js-numbers numeric tower.
+
+    // makeBignum: string -> BigInteger
+    var makeBignum = function(s) {
+	return new BigInteger(s);
+    };
+
+    BigInteger.prototype._level = 0;
+    BigInteger.prototype._lift = function(target) {
+	if (target._level === 1)
+	    return Rational.makeInstance(this);
+	if (target._level === 2)
+	    return FloatPoint.makeInstance(this.intValue());
+	if (target._level === 3)	
+	    return Complex.makeInstance(this, Rational.ZERO);
+	throwRuntimeError("invalid _level for BigInteger lift");
+    };
+
+    BigInteger.prototype.isFinite = function() {
+	return true;
+    };
+
+    BigInteger.prototype.isInteger = function() {
+	return true;
+    };
+    
+    BigInteger.prototype.isRational = function() {
+	return true;
+    };
+
+    BigInteger.prototype.isReal = function() {
+	return true;
+    };
+    
+    BigInteger.prototype.isExact = function() {
+	return true;
+    };
+
+    BigInteger.prototype.toExact = function() {
+	return this;
+    };
+
+    BigInteger.prototype.toFixnum = function() {
+	return this.intValue();
+    };
+    
+    BigInteger.prototype.greaterThan = function(other) {
+	return this.compareTo(other) > 0;
+    };
+    
+    BigInteger.prototype.greaterThanOrEqual = function(other) {
+	return this.compareTo(other) >= 0;
+    };
+    
+    BigInteger.prototype.lessThan = function(other) {
+	return this.compareTo(other) < 0;
+    };
+
+    BigInteger.prototype.lessThanOrEqual = function(other) {
+	return this.compareTo(other) <= 0;
+    };
+
+    // add is implemented above.
+    // subtract is implemented above.
+    // multiply is implemented above.
+
+
+    // divide: scheme-number -> scheme-number
+    // Note: we override the old version of divide.
+    BigInteger.prototype.divide = function(other) {
+	var quotientAndRemainder = bnDivideAndRemainder(this, other);
+	if (quotientAndRemainder[1].compareTo(BigInteger.ZERO) === 0) {
+	    return quotientAndRemainder[0];
+	} else {
+	    return add(quotientAndRemainder[0],
+		       Rational.makeInstance(quotientAndRemainder[1], other));
+	}
+    }
+
+    BigInteger.prototype.numerator = function() {
+	return this;
+    };
+
+    BigInteger.prototype.denominator = function() {
+	return 1;
+    };
+
+    // integerSqrt: -> scheme-number
+    // sqrt: -> scheme-number
+    // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
+    // Produce the square root.
+
+    // abs: -> scheme-number
+    // Produce the absolute value.
+
+    // floor: -> scheme-number
+    // Produce the floor.
+
+    // ceiling: -> scheme-number
+    // Produce the ceiling.
+
+    // conjugate: -> scheme-number
+    // Produce the conjugate.
+    
+    // magnitude: -> scheme-number
+    // Produce the magnitude.
+
+    // log: -> scheme-number
+    // Produce the log.
+
+    // angle: -> scheme-number
+    // Produce the angle.
+
+    // atan: -> scheme-number
+    // Produce the arc tangent.
+
+    // cos: -> scheme-number
+    // Produce the cosine.
+
+    // sin: -> scheme-number
+    // Produce the sine.
+
+    // expt: scheme-number -> scheme-number
+    // Produce the power to the input.
+
+    // exp: -> scheme-number
+    // Produce e raised to the given power.
+    
+    // acos: -> scheme-number
+    // Produce the arc cosine.
+
+    // asin: -> scheme-number
+    // Produce the arc sine.
+
+    // imaginaryPart: -> scheme-number
+    // Produce the imaginary part
+    
+    // realPart: -> scheme-number
+    // Produce the real part.
+
+    // round: -> scheme-number
+    // Round to the nearest integer.
+
+    // equals: scheme-number -> boolean
+    // Produce true if the given number of the same type is equal.
+
+    // eqv: scheme-number -> boolean
+    // Produce true if the given number of the same type is equivalent.
+
+
+
+
+
+    // External interface of js-numbers:
+
+    Numbers['fromFixnum'] = fromFixnum;
+    Numbers['fromString'] = fromString;
+    Numbers['makeBignum'] = makeBignum;
+    Numbers['makeRational'] = Rational.makeInstance;
+    Numbers['makeFloat'] = FloatPoint.makeInstance;
+    Numbers['makeComplex'] = Complex.makeInstance;
+
+    Numbers['pi'] = FloatPoint.pi;
+    Numbers['e'] = FloatPoint.e;
+    Numbers['nan'] = FloatPoint.nan;
+    Numbers['negative_inf'] = FloatPoint.neginf;
+    Numbers['inf'] = FloatPoint.inf;
+    Numbers['negative_one'] = Rational.NEGATIVE_ONE;
+    Numbers['zero'] = Rational.ZERO;
+    Numbers['one'] = Rational.ONE;
+    Numbers['i'] = plusI;
+    Numbers['negative_i'] = minusI;
+
+    Numbers['onThrowRuntimeError'] = onThrowRuntimeError;
+    Numbers['isSchemeNumber'] = isSchemeNumber;
+    Numbers['isRational'] = isRational;
+    Numbers['isReal'] = isReal;
+    Numbers['isExact'] = isExact;
+    Numbers['isInteger'] = isInteger;
+
+    Numbers['toFixnum'] = toFixnum;
+    Numbers['toExact'] = toExact;
+    Numbers['add'] = add;
+    Numbers['subtract'] = subtract;
+    Numbers['multiply'] = multiply;
+    Numbers['divide'] = divide;
+    Numbers['equals'] = equals;
+    Numbers['eqv'] = eqv;
+    Numbers['approxEqual'] = approxEqual;
+    Numbers['greaterThanOrEqual'] = greaterThanOrEqual;
+    Numbers['lessThanOrEqual'] = lessThanOrEqual;
+    Numbers['greaterThan'] = greaterThan;
+    Numbers['lessThan'] = lessThan;
+    Numbers['expt'] = expt;
+    Numbers['exp'] = exp;
+    Numbers['modulo'] = modulo;
+    Numbers['numerator'] = numerator;
+    Numbers['denominator'] = denominator;
+    Numbers['integerSqrt'] = integerSqrt;
+    Numbers['sqrt'] = sqrt;
+    Numbers['abs'] = abs;
+    Numbers['floor'] = floor;
+    Numbers['ceiling'] = ceiling;
+    Numbers['conjugate'] = conjugate;
+    Numbers['magnitude'] = magnitude;
+    Numbers['log'] = log;
+    Numbers['angle'] = angle;
+    Numbers['tan'] = tan;
+    Numbers['atan'] = atan;
+    Numbers['cos'] = cos;
+    Numbers['sin'] = sin;
+    Numbers['tan'] = tan;
+    Numbers['acos'] = acos;
+    Numbers['asin'] = asin;
+    Numbers['imaginaryPart'] = imaginaryPart;
+    Numbers['realPart'] = realPart;
+    Numbers['round'] = round;
+    Numbers['sqr'] = sqr;
+    Numbers['gcd'] = gcd;
+    Numbers['lcm'] = lcm;
+    Numbers['toString'] = toString;
 
 
 

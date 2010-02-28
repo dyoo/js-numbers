@@ -82,10 +82,11 @@ i: scheme-number
 negative_i: scheme-number
     The negative of i.
 
+fromString: string -> scheme-number
+    Convert from a string to a scheme-number.
 
-fromFixnum: (javascript-number | string) -> scheme-number
-    Convert from a regular javascript number or string to a scheme-number.
-
+fromFixnum: javascript-number -> scheme-number
+    Convert from a javascript number to a scheme-number.
 
 makeRational: javascript-number javascript-number? -> scheme-number
     Low level constructor: Constructs a rational with the given
