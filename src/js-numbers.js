@@ -1060,7 +1060,13 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     FloatPoint.prototype.toExact = function() {
-	return Rational.makeInstance(Math.floor(this.n), 1);
+	if (! isFinite(this.n) || isNaN(this.n)) {
+	    throwRuntimeError("toExact: no exact representation for " + this);
+	}
+	var fracPart = this.n - Math.floor(this.n);
+	var intPart = this.n - fracPart;
+	return add(intPart,
+		   Rational.makeInstance(fracPart * 10e17, 10e17));
     };
 
     FloatPoint.prototype.isExact = function() {
