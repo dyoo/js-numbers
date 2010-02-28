@@ -542,48 +542,141 @@ describe('toExact', {
     },
 
     'complex': function() {
-    }
-});
-
-
-describe('toComplex', {
-    'fixnums': function() {
-    },
-    'rationals': function() {
-    },
-    'floats': function() {
-    },
-    'complex': function() {
+	assertEquals(0, toExact(makeComplex(0, 0)));
+	assertEquals(99, toExact(makeComplex(99, 0)));
+	assertEquals(makeRational(-1, 2), 
+		     toExact(makeComplex(makeRational(-1, 2), 0)));
+	assertEquals(makeRational(1, 4),
+		     toExact(makeComplex(.25, 0)));
+	assertFails(function() { toExact(makeComplex(nan, 0)); });
+	assertFails(function() { toExact(makeComplex(inf, 0)); });
+	assertFails(function() { toExact(makeComplex(negative_inf, 0)); });
+	assertFails(function() { toExact(makeComplex(0, 1)); });
+	assertFails(function() { toExact(makeComplex(0, pi)); });
+	assertFails(function() { toExact(makeComplex(0, e)); });
+	assertFails(function() { toExact(makeComplex(0, nan)); });
     }
 });
 
 
 describe('add', {
     'fixnum / fixnum' : function() {
+	assertEquals(0, add(0, 0));
+	assertEquals(1025, add(1024, 1));
+	assertEquals(-84, add(-42, -42));
+	assertEquals(982, add(1024, -42));
+	// FIXME: add test case where value needs to become a bignum.
     },
+
     'fixnum / rational' : function() {
+	assertEquals(0, add(0, makeRational(0)));
+	assertEquals(12347, add(12345, makeRational(2)));
+	assertEquals(makeRational(33, 2), add(16, makeRational(1, 2)));
+	assertEquals(makeRational(-1, 2), add(0, makeRational(-1, 2)));
+	assertEquals(makeRational(-1, 7), add(0, makeRational(-1, 7)));
+	assertEquals(makeRational(6, 7), add(1, makeRational(-1, 7)));
     },
+
     'fixnum / floating' : function() {
+	assertEquals(0, add(0, makeFloat(0)));
+	assertEquals(makeFloat(1.5), add(1, makeFloat(.5)));
+	assertEquals(makeFloat(1233.5), add(1234, makeFloat(-.5)));
+	assertEquals(makeFloat(-1233.5), add(-1234, makeFloat(.5)));
+	assertEquals(inf, add(1234, inf));
+	assertEquals(negative_inf, add(1234, negative_inf));
+	assertEquals(nan, add(1234, nan));
     },
     'fixnum / complex' : function() {
+	assertTrue(equals(0, add(0, makeComplex(0, 0))));
+	assertTrue(equals(1040, add(16, makeComplex(1024, 0))));
+	assertEquals(makeComplex(1040, 17), add(16, makeComplex(1024, 17)));
+	assertEquals(makeComplex(1040, -17), add(16, makeComplex(1024, -17)));
+	assertEquals(makeComplex(1040, pi), add(16, makeComplex(1024, pi)));
     },
+
     'rational / rational' : function() {
+	assertEquals(1, add(makeRational(1, 2),
+			    makeRational(1, 2)));
+	assertEquals(0, add(makeRational(1, 2),
+			    makeRational(-1, 2)));
+	assertEquals(makeRational(155, 21),
+		     add(makeRational(17, 3), makeRational(12, 7)));
+	assertEquals(makeRational(-1199068363, 9758),
+		     add(makeRational(-29384289, 238), makeRational(23897, 41)));
+	assertEquals(makeRational(-1, 99990000),
+		     add(makeRational(1, 10000), makeRational(-1, 9999)));
     },
+
     'rational / floating' : function() {
+	assertEquals(makeFloat(0.2), add(makeRational(0), makeFloat(0.2)));
+	assertEquals(makeFloat(0.8), add(makeRational(1), makeFloat(-0.2)));
+	assertEquals(makeFloat(0.8), add(makeRational(1), makeFloat(-0.2)));
+	assertEquals(makeFloat(1.1), add(makeRational(1, 2), makeFloat(0.6)));
+	assertEquals(inf, add(makeRational(1, 2), inf));
+	assertEquals(negative_inf, add(makeRational(1, 2), negative_inf));
+	assertEquals(nan, add(makeRational(1, 2), nan));
     },
+
     'rational / complex' : function() {
+	assertEquals(makeComplex(makeRational(-324, 23), 1),
+		     add(makeRational(-324, 23), makeComplex(0, 1)));
+	assertEquals(makeComplex(0, -234),
+		     add(makeRational(-324, 23), 
+			 makeComplex(makeRational(324, 23), 
+				     -234)));
     },
+
     'floating / floating' : function() {
+	assertEquals(makeFloat(12345.678),
+		     add(makeFloat(12345), makeFloat(.678)))
+	assertEquals(makeFloat(-12344.322),
+		     add(makeFloat(-12345), makeFloat(.678)))
+	assertEquals(makeFloat(Math.PI + Math.E),
+		     add(pi, e));
+	assertEquals(inf, add(inf, inf))
+	assertEquals(nan, add(inf, negative_inf))
+	assertEquals(nan, add(inf, nan))
+	assertEquals(nan, add(negative_inf, inf))
+	assertEquals(negative_inf, add(negative_inf, negative_inf))
+	assertEquals(nan, add(negative_inf, nan))
+	assertEquals(nan, add(nan, inf))
+	assertEquals(nan, add(nan, negative_inf))
+	assertEquals(nan, add(nan, nan))
     },
+
     'floating / complex' : function() {
+	assertEquals(makeComplex(inf, 1), add(inf, makeComplex(inf, 1)))
+	assertEquals(makeComplex(nan, 2), add(inf, makeComplex(negative_inf, 2)))
+	assertEquals(makeComplex(nan, 3), add(inf, makeComplex(nan, 3)))
+	assertEquals(makeComplex(nan, 4), add(negative_inf, makeComplex(inf, 4)))
+	assertEquals(makeComplex(negative_inf, 5),
+		     add(negative_inf, makeComplex(negative_inf, 5)))
+	assertEquals(makeComplex(nan, 6), add(negative_inf, makeComplex(nan, 6)))
+	assertEquals(makeComplex(nan, 7), add(nan, makeComplex(inf, 7)))
+	assertEquals(makeComplex(nan, 8), add(nan, makeComplex(negative_inf, 8)))
+	assertEquals(makeComplex(nan, 9), add(nan, makeComplex(nan, 9)))
     },
+
     'complex / complex' : function() {
+	assertEquals(makeComplex(4, 6), add(makeComplex(1, 2),
+					    makeComplex(3, 4)));
+	assertEquals(makeComplex(2, 6), add(makeComplex(-1, 2),
+					    makeComplex(3, 4)));
+	assertEquals(makeComplex(4, -2), add(makeComplex(1, 2),
+					     makeComplex(3, -4)));
+	assertEquals(makeComplex(pi, e), add(makeComplex(pi, 0),
+					     makeComplex(0, e)));
+	assertEquals(makeComplex(add(pi, makeRational(-1,4)),
+				 add(makeRational(1, 2), e)),
+		     add(makeComplex(pi, makeRational(1, 2)),
+			 makeComplex(makeRational(-1, 4), e)));
     }
 });
 
 
 describe('subtract', {
     'fixnum / fixnum' : function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / rational' : function() {
     },
@@ -608,6 +701,7 @@ describe('subtract', {
 
 describe('multiply', {
     'fixnum / fixnum' : function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / rational' : function() {
     },
@@ -632,6 +726,7 @@ describe('multiply', {
 
 describe('divide', {
     'fixnum / fixnum' : function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / rational' : function() {
     },
@@ -752,6 +847,7 @@ describe('lessThan', {
 
 describe('expt', {
     'fixnum / fixnum' : function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / rational' : function() {
     },
@@ -1028,6 +1124,7 @@ describe('round', {
 
 describe('exp', {
     'fixnums': function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'rationals': function() {
     },
@@ -1040,6 +1137,7 @@ describe('exp', {
 
 describe('sqr', {
     'fixnums': function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'rationals': function() {
     },
@@ -1076,6 +1174,7 @@ describe('gcd', {
 
 describe('lcm', {
     'fixnum / fixnum' : function() {
+	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / rational' : function() {
     },
