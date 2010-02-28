@@ -72,8 +72,6 @@ describe('rational constructions', {
     }
 
 });
-
-
     
 describe('built-in constants', { 
     'pi': function() {
@@ -104,26 +102,36 @@ describe('fromString', {
 	assertEquals(43, fromString("43"));
     },
     'bignums': function() {
+	assertEquals(makeBignum("123456789012345678901234567890"), 
+		     fromString("123456789012345678901234567890"));
+	assertEquals(makeBignum("-123456789012345678901234567890"), 
+		     fromString("-123456789012345678901234567890"));
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
 	assertEquals(makeFloat(42.1), fromString("42.1"));
     },
     'complex': function() {
+	// FIXME: we're missing this
     }});
 
 	
 describe('fromFixnum', {
     'fixnums': function() {
 	value_of(equals(fromFixnum(42),
-			  makeRational(42))).should_be_true();
+			makeRational(42))).should_be_true();
 	value_of(equals(fromFixnum(43),
-			  makeRational(43))).should_be_true();
+			makeRational(43))).should_be_true();
 	value_of(equals(fromFixnum(42),
-			  makeRational(43))).should_be_false();
+			makeRational(43))).should_be_false();
     },
     'bignums': function() {
+	assertEquals(makeBignum("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		     fromFixnum(10e100));
+//	assertEquals(makeBignum("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+//		     fromFixnum(10e200));
     },
 
     'rationals': function() {
