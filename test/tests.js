@@ -1861,6 +1861,10 @@ describe('toString', {
     },
     'floats': function() {
 	// FIXME: we're missing this
+	assertEquals("+nan.0", toString(nan));
+	assertEquals("+inf.0", toString(inf));
+	assertEquals("-inf.0", toString(negative_inf));
+
     },
     'complex': function() {
 	// FIXME: we're missing this

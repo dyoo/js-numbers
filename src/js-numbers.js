@@ -1191,7 +1191,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return "+inf.0";
 	} else if (this.n === Number.NEGATIVE_INFINITY) {
 	    return "-inf.0";
-	} else if (this.n === Number.NaN) {
+	} else if (isNaN(this.n)) {
 	    return "+nan.0";
 	} else {
 	    return toString(this.n);
