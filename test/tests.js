@@ -251,9 +251,18 @@ describe('equals', {
     },
 
     'bignum / complex' : function() {
-	// FIXME: we're missing this
+	assertTrue(equals(makeBignum("91326"),
+			  makeComplex(makeBignum("91326"))));
+	assertFalse(equals(makeBignum("00000"),
+			   makeComplex(makeBignum("91326"))));
+	assertTrue(equals(makeBignum("90210"),
+			  makeComplex(makeFloat(90210))));
+	assertTrue(equals(makeBignum("90210"),
+			   makeComplex(makeFloat(90210), makeFloat(0))));
+	assertFalse(equals(makeBignum("90210"),
+			   makeComplex(makeFloat(90210), makeFloat(0.1))));
     },
-
+    
     'fixnum / rational': function() {
 	value_of(equals(0, zero)).should_be_true();
 	value_of(equals(42, makeRational(84, 2))).should_be_true();
