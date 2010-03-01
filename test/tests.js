@@ -761,7 +761,7 @@ describe('add', {
     },
 
     'fixnum / floating' : function() {
-	assertEquals(0, add(0, makeFloat(0)));
+	assertTrue(equals(0, add(0, makeFloat(0))));
 	assertEquals(makeFloat(1.5), add(1, makeFloat(.5)));
 	assertEquals(makeFloat(1233.5), add(1234, makeFloat(-.5)));
 	assertEquals(makeFloat(-1233.5), add(-1234, makeFloat(.5)));
@@ -1882,9 +1882,9 @@ describe('toString', {
     },
     'floats': function() {
 	// FIXME: we're missing this
-	assertEquals("+nan.0", toString(nan));
-	assertEquals("+inf.0", toString(inf));
-	assertEquals("-inf.0", toString(negative_inf));
+	assertEquals("+nan.0", nan.toString());
+	assertEquals("+inf.0", inf.toString());
+	assertEquals("-inf.0", negative_inf.toString());
 
     },
     'complex': function() {

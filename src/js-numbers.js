@@ -545,12 +545,6 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    // toString: scheme-number -> string
-    var toString = function(x) {
-	return x.toString();
-    }
-
-
 
     //////////////////////////////////////////////////////////////////////
 
@@ -1187,15 +1181,14 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     FloatPoint.prototype.toString = function() {
-	if (this.n === Number.POSITIVE_INFINITY) {
-	    return "+inf.0";
-	} else if (this.n === Number.NEGATIVE_INFINITY) {
-	    return "-inf.0";
-	} else if (isNaN(this.n)) {
+	if (isNaN(this.n))
 	    return "+nan.0";
-	} else {
-	    return toString(this.n);
-	}
+	if (this.n === Number.POSITIVE_INFINITY)
+	    return "+inf.0";
+	if (this.n === Number.NEGATIVE_INFINITY)
+	    return "-inf.0";
+
+	return toString(this.n);
     };
     
 
@@ -3392,7 +3385,6 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['sqr'] = sqr;
     Numbers['gcd'] = gcd;
     Numbers['lcm'] = lcm;
-    Numbers['toString'] = toString;
 
 
 

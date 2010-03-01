@@ -240,8 +240,6 @@ gcd: scheme-number [scheme-number ...] -> scheme-number
 lcm: scheme-number [scheme-number ...] -> scheme-number
     Produces the least common mulitple.
 
-toString: scheme-number -> string
-    Produces a string representation of the number.
 
 
 
