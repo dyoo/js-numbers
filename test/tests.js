@@ -113,6 +113,8 @@ describe('fromString', {
     'rationals': function() {
 	assertEquals(makeRational(1, 2),
 		     fromString("1/2"));
+	assertEquals(makeRational(23,34),
+		     fromString("+23/34"));
 	assertEquals(makeRational(-1, 2),
 		     fromString("-1/2"));
 	assertEquals(makeRational(1234, 5678910),
@@ -124,6 +126,13 @@ describe('fromString', {
 
     'floats': function() {
 	assertEquals(makeFloat(42.1), fromString("42.1"));
+	assertEquals(makeFloat(0.1), fromString(".1"));
+	assertEquals(makeFloat(0.23), fromString("0.23"));
+	assertEquals(makeFloat(0.1), fromString("+.1"));
+	assertEquals(makeFloat(-0.1), fromString("-.1"));
+	assertEquals(makeFloat(-0.123423), fromString("-.123423"));
+	assertEquals(makeFloat(123.45), fromString("123.45"));
+	assertEquals(makeFloat(4123.423), fromString("4.123423e3"));
     },
 
     'complex': function() {
@@ -146,6 +155,8 @@ describe('fromString', {
 		     fromString("-inf.0-3.7i"));
 	assertEquals(makeComplex(negative_inf, negative_inf),
 		     fromString("-inf.0-inf.0i"));
+	assertEquals(makeComplex(-42, -43),
+		     fromString("-42-43i"));
     },
 
     'special constants' : function() {
@@ -156,8 +167,15 @@ describe('fromString', {
     },
 
     'malformed': function() {
-	// FIXME: add tests that check for malformed strings and raise
-	// expected error.
+	assertFalse(fromString(""));
+	assertFalse(fromString("   "));
+	assertFalse(fromString("sdkfjls"));
+	assertFalse(fromString("1+1k"));
+	assertFalse(fromString("1.2.3"));
+	assertFalse(fromString("1.2/3"));
+	assertFalse(fromString("--1/3"));
+	assertFalse(fromString("-1/-3"));
+	// FIXME: add tests that check for malformed strings and return false.
     }});
 
 	

@@ -1869,10 +1869,11 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     var rationalRegexp = new RegExp("^([+-]?\\d+)/(\\d+)$");
-    var bignumScientificPattern = new RegExp("^(-?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$");
+    var bignumScientificPattern = new RegExp("^([+-]?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$");
     var complexRegexp = new RegExp("^([+-]?[\\d\\w/\\.]*)([+-])([\\d\\w/\\.]*)i$");
+    var flonumRegexp = new RegExp("^([+-]?\\d*)\\.?(\\d*)$");
 
-    // fromString: string -> scheme-number
+    // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
 	var aMatch = x.match(rationalRegexp);
 	if (aMatch) {
@@ -1892,12 +1893,15 @@ if (! this['plt']['lib']['Numbers']) {
 	    return FloatPoint.inf;
 	if (x === '-inf.0')
 	    return FloatPoint.neginf;
-
-	var n = Number(x);
-	if (isOverflow(n)) {
-	    return makeBignum(x);
+	if (x.match(flonumRegexp) || x.match(bignumScientificPattern)) {
+	    var n = Number(x);
+	    if (isOverflow(n)) {
+		return makeBignum(x);
+	    } else {
+		return fromFixnum(n);
+	    }
 	} else {
-	    return fromFixnum(n);
+	    return false;
 	}
     };
 

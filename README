@@ -82,8 +82,9 @@ i: scheme-number
 negative_i: scheme-number
     The negative of i.
 
-fromString: string -> scheme-number
-    Convert from a string to a scheme-number.
+fromString: string -> (scheme-number | false)
+    Convert from a string to a scheme-number.  If we find the number is malformed,
+    returns false.
 
 fromFixnum: javascript-number -> scheme-number
     Convert from a javascript number to a scheme-number.
