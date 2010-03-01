@@ -103,6 +103,8 @@ describe('fromString', {
     'bignums': function() {
 	assertEquals(makeBignum("123456789012345678901234567890"), 
 		     fromString("123456789012345678901234567890"));
+	assertEquals(makeBignum("123456789012345678901234567890"), 
+		     fromString("+123456789012345678901234567890"));
 	assertEquals(makeBignum("-123456789012345678901234567890"), 
 		     fromString("-123456789012345678901234567890"));
     },
@@ -150,16 +152,9 @@ describe('fromFixnum', {
 		     fromFixnum(10e200));
     },
 
-    'rationals': function() {
-	// FIXME: we're missing this
-    },
-
     'floats': function() {
 	value_of(equals(fromFixnum(42.1),
 			makeFloat(42.1))).should_be_true();
-    },
-    'complex': function() {
-	// FIXME: we're missing this
     }
 });
 
@@ -176,11 +171,17 @@ describe('equals', {
     },
 
     'fixnum / bignum': function() {
-	// FIXME: we're missing this
+	assertTrue(equals(42, makeBignum("42")));
+	assertTrue(equals(-42, makeBignum("-42")));
+	assertTrue(equals(0, makeBignum("0")));
+	assertFalse(equals(1, makeBignum("0")));
     },
 
     'bignum / bignum' : function() {
-	// FIXME: we're missing this
+	assertTrue(equals(makeBignum("31415926"),
+			  makeBignum("31415926")));
+	assertFalse(equals(makeBignum("31415926"),
+			   makeBignum("271818296")));
     },
 
     'bignum / rational': function() {
