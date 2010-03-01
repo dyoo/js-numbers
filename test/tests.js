@@ -229,7 +229,14 @@ describe('equals', {
     },
 
     'bignum / rational': function() {
-	// FIXME: we're missing this
+	assertTrue(equals(makeBignum("0"),
+			  makeRational(0)));
+	assertTrue(equals(makeBignum("12345"),
+			  makeRational(12345)));
+	assertTrue(equals(makeBignum("-12345"),
+			  makeRational(-12345)));
+	assertFalse(equals(makeBignum("1"),
+			  makeRational(0)));
     },
 
     'bignum / float' : function() {
