@@ -1867,15 +1867,32 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
 
+
+    var rationalRegexp = new RegExp("^([+-]?\\d+)/(\\d+)$");
+    var bignumScientificPattern = new RegExp("^(-?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$");
+    var complexRegexp = new RegExp("^([\\d/\\.]*)([+-])([\\d/\\.]*)i$");
+
     // fromString: string -> scheme-number
     var fromString = function(x) {
+	var aMatch = x.match(rationalRegexp);
+	if (aMatch) {
+	    return makeRational(fromString(aMatch[1]),
+				fromString(aMatch[2]));
+	}
+	
+	var cMatch = x.match(complexRegexp);
+	if (cMatch) {
+	    return makeComplex(fromString(cMatch[1] || "0"),
+			       fromString(cMatch[2] + (cMatch[3] || "1")));
+	}
+	
 	var n = Number(x);
 	if (isOverflow(n)) {
 	    return makeBignum(x);
 	} else {
 	    return fromFixnum(n);
 	}
-    }
+    };
 
     // fromFixnum: fixnum -> scheme-number
     var fromFixnum = function(x) {
@@ -3130,7 +3147,6 @@ if (! this['plt']['lib']['Numbers']) {
 
     // Other methods we need to add for compatibilty with js-numbers numeric tower.
 
-    var bignumScientificPattern = new RegExp("^(-?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$")
 
     // makeBignum: string -> BigInteger
     var makeBignum = function(s) {

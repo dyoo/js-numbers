@@ -1,6 +1,3 @@
-// See http://jania.pe.kr/aw/moin.cgi/JSSpec/Manual for definition
-// of test case API.
-
 
 // Let's open up plt.lib.Numbers to make it easy to test.
 var N = plt.lib.Numbers;
@@ -100,6 +97,8 @@ describe('built-in constants', {
 describe('fromString', {	
     'fixnums': function() {
 	assertEquals(43, fromString("43"));
+	assertEquals(43, fromString("+43"));
+	assertEquals(-43, fromString("-43"));
     },
     'bignums': function() {
 	assertEquals(makeBignum("123456789012345678901234567890"), 
@@ -108,13 +107,28 @@ describe('fromString', {
 		     fromString("-123456789012345678901234567890"));
     },
     'rationals': function() {
-	// FIXME: we're missing this
+	assertEquals(makeRational(1, 2),
+		     fromString("1/2"));
+	assertEquals(makeRational(-1, 2),
+		     fromString("-1/2"));
+	assertEquals(makeRational(1234, 5678910),
+		     fromString("1234/5678910"));
+	assertEquals(makeRational(makeBignum("99999999999999999999"),
+				  5678910),
+		     fromString("99999999999999999999/5678910"));
     },
     'floats': function() {
 	assertEquals(makeFloat(42.1), fromString("42.1"));
     },
     'complex': function() {
-	// FIXME: we're missing this
+	assertEquals(makeComplex(0, 1), fromString("0+i"));
+	assertEquals(makeComplex(0, 1), fromString("0+1i"));
+	assertEquals(makeComplex(0, makeRational(23, 45)), fromString("0+23/45i"));
+	assertEquals(makeComplex(0, makeFloat(2.5)), fromString("0+2.5i"));
+	assertEquals(makeComplex(0, -1), fromString("0-i"));
+	assertEquals(makeComplex(0, -1), fromString("0-1i"));
+	assertEquals(makeComplex(0, makeRational(-29, 42)), fromString("0-29/42i"));
+	assertEquals(makeComplex(0, makeFloat(-3.7)), fromString("0-3.7i"));
     }});
 
 	
@@ -137,6 +151,7 @@ describe('fromFixnum', {
     },
 
     'rationals': function() {
+	// FIXME: we're missing this
     },
 
     'floats': function() {
@@ -144,6 +159,7 @@ describe('fromFixnum', {
 			makeFloat(42.1))).should_be_true();
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -160,18 +176,23 @@ describe('equals', {
     },
 
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational': function() {
@@ -264,18 +285,23 @@ describe('eqv', {
 
 
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational': function() {
@@ -374,6 +400,7 @@ describe('isRational', {
 	assertTrue(isRational(-2371));
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
 
     'rationals': function() {
@@ -419,6 +446,7 @@ describe('isReal', {
 	assertTrue(isReal(-12345));
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
 
     'rationals': function() {
@@ -469,6 +497,7 @@ describe('isExact', {
 	assertTrue(isExact(1));
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
 
     'rationals': function() {
@@ -514,6 +543,8 @@ describe('isInteger', {
     },
 
     'bignums': function() {
+	assertTrue(isInteger(makeBignum("2983473189472187414789132743928148151617364")));
+	assertTrue(isInteger(makeBignum("-99999999999999999999999999999999999999")));
     },
 
     'rationals': function() {
@@ -553,6 +584,7 @@ describe('toFixnum', {
     },
 
     'bignums': function() {
+	// FIXME: we're missing this
     },
 
     'rationals': function() {
@@ -598,6 +630,7 @@ describe('toExact', {
     },
 
     'bignums': function() {
+	// FIXME: we're missing this
     },
 
     'rationals': function() {
@@ -649,18 +682,23 @@ describe('add', {
 
 
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
 
@@ -776,37 +814,51 @@ describe('subtract', {
     },
 
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -817,37 +869,51 @@ describe('multiply', {
     },
 
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -857,192 +923,266 @@ describe('divide', {
 	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('greaterThanOrEqual', {
     'fixnum / fixnum' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('lessThanOrEqual', {
     'fixnum / fixnum' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
 
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('greaterThan', {
     'fixnum / fixnum' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('lessThan', {
     'fixnum / fixnum' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -1052,146 +1192,200 @@ describe('expt', {
 	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('modulo', {
     'fixnum / fixnum' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('numerator', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
 
     'bignums': function() {
+	// FIXME: we're missing this
     },
 
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('denominator', {
     'fixnums': function() {
+ 	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('sqrt', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('abs', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('floor', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 
 });
@@ -1199,195 +1393,265 @@ describe('floor', {
 
 describe('ceiling', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('conjugate', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('magnitude', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('log', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('angle', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('atan', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('cos', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('sin', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 describe('tan', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('acos', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('asin', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('imaginaryPart', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('realPart', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('round', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -1397,12 +1661,16 @@ describe('exp', {
 	// FIXME: add test case where value needs to become a bignum.
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -1412,50 +1680,69 @@ describe('sqr', {
 	// FIXME: add test case where value needs to become a bignum.
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('gcd', {
     'fixnum / fixnum' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
@@ -1465,63 +1752,90 @@ describe('lcm', {
 	// FIXME: add test case where value needs to become a bignum.
     },
     'fixnum / bignum': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / bignum' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / rational': function() {
+	// FIXME: we're missing this
     },
 
     'bignum / float' : function() {
+	// FIXME: we're missing this
     },
 
     'bignum / complex' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / rational' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / floating' : function() {
+	// FIXME: we're missing this
     },
     'fixnum / complex' : function() {
+	// FIXME: we're missing this
     },
     'rational / rational' : function() {
+	// FIXME: we're missing this
     },
     'rational / floating' : function() {
+	// FIXME: we're missing this
     },
     'rational / complex' : function() {
+	// FIXME: we're missing this
     },
     'floating / floating' : function() {
+	// FIXME: we're missing this
     },
     'floating / complex' : function() {
+	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	// FIXME: we're missing this
     }
 });
 
 
 describe('integerSqrt', {
     'fixnums': function() {
+	// FIXME: we're missing this
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
 describe('toString', {
     'fixnums': function() {
+	assertEquals("-123456789012345678901234567890",
+		     makeBignum("-123456789012345678901234567890").toString());
+	assertEquals("123456789012345678901234567890",
+		     makeBignum("123456789012345678901234567890").toString());
     },
     'bignums': function() {
+	// FIXME: we're missing this
     },
     'rationals': function() {
+	// FIXME: we're missing this
     },
     'floats': function() {
+	// FIXME: we're missing this
     },
     'complex': function() {
+	// FIXME: we're missing this
     }
 });
 
