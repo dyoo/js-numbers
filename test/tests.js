@@ -8,6 +8,10 @@ for (val in N) {
 }
 
 
+var diffPercent = function(x, y) {
+    return Math.abs((x - y) / y);
+}
+
 
 var assertTrue = function(aVal) {
     value_of(aVal).should_be_true();
@@ -343,6 +347,12 @@ describe('eqv', {
     'inf' : function() {
 	value_of(eqv(inf, inf)).should_be_true();
 	value_of(eqv(negative_inf, negative_inf)).should_be_true();
+
+	assertFalse(eqv(inf, negative_inf));
+	assertFalse(eqv(inf, 
+			makeBignum("1e3000")));
+	assertFalse(eqv(negative_inf, 
+			makeBignum("-1e3000")));
     },
 
 
@@ -353,25 +363,53 @@ describe('eqv', {
 
 
     'fixnum / bignum': function() {
+	assertTrue(eqv(0, makeBignum("0")));
+	assertTrue(eqv(-1, makeBignum("-1")));
 	assertTrue(eqv(42, makeBignum("42")));
 	assertTrue(eqv(123456789, makeBignum("123456789")));
 	assertTrue(eqv(-123456789, makeBignum("-123456789")));
+	assertFalse(eqv(-123456788, makeBignum("-123456789")));
     },
 
     'bignum / bignum' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("3"),
+		       makeBignum("3")));
+	assertFalse(eqv(makeBignum("12345"),
+			makeBignum("12344")));
     },
 
     'bignum / rational': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("3"),
+		       makeRational(makeBignum("3"))));
+	assertTrue(eqv(makeBignum("27"),
+		       makeRational(27)));
     },
 
     'bignum / float' : function() {
-	// FIXME: we're missing this
+	assertFalse(eqv(makeBignum("27"),
+			makeFloat(27.0)));
+	assertFalse(eqv(makeBignum("0"),
+			makeFloat(0)));
     },
 
     'bignum / complex' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("71"),
+		       makeComplex(71)));
+	assertTrue(eqv(makeBignum("71"),
+		       makeComplex(makeBignum("71"))));
+	assertTrue(eqv(makeBignum("71"),
+		       makeComplex(makeRational(71))));
+	assertFalse(eqv(makeBignum("71"),
+			makeComplex(makeFloat(71))));
+
+	assertFalse(eqv(makeBignum("71"),
+			makeComplex(70)));
+	assertFalse(eqv(makeBignum("66"),
+		       makeComplex(makeBignum("42"))));
+	assertFalse(eqv(makeBignum("71"),
+		       makeComplex(makeRational(71, 17))));
+	assertFalse(eqv(makeBignum("71"),
+			makeComplex(makeFloat(71), 2)));
     },
 
     'fixnum / rational': function() {
@@ -520,8 +558,11 @@ describe('isReal', {
 	assertTrue(isReal(0));
 	assertTrue(isReal(-12345));
     },
+
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(isReal(makeBignum("0")));
+	assertTrue(isReal(makeBignum("1e23784")));
+	assertTrue(isReal(makeBignum("-7.241e23784")));
     },
 
     'rationals': function() {
@@ -571,8 +612,12 @@ describe('isExact', {
 	assertTrue(isExact(-1));
 	assertTrue(isExact(1));
     },
+
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(isExact(makeBignum("0")));
+	assertTrue(isExact(makeBignum("12342357892297851728921374891327893")));
+	assertTrue(isExact(makeBignum("4.1321e200")));
+	assertTrue(isExact(makeBignum("-4.1321e200")));
     },
 
     'rationals': function() {
@@ -659,7 +704,16 @@ describe('toFixnum', {
     },
 
     'bignums': function() {
-	// FIXME: we're missing this
+	assertEquals(0, toFixnum(makeBignum("0")));
+	assertEquals(-123, toFixnum(makeBignum("-123")));
+	assertEquals(123456, toFixnum(makeBignum("123456")));
+	// We're dealing with big numbers, where the numerical error
+	// makes it difficult to compare for equality.  We just go for
+	// percentage and see that it is ok.
+	assertTrue(diffPercent(1e200, toFixnum(makeBignum("1e200")))
+		   < 1e-10);
+	assertTrue(diffPercent(-1e200, toFixnum(makeBignum("-1e200")))
+		   < 1e-10);
     },
 
     'rationals': function() {
@@ -705,7 +759,18 @@ describe('toExact', {
     },
 
     'bignums': function() {
-	// FIXME: we're missing this
+	assertEquals(makeBignum("4.2e100"),
+		     toExact(makeBignum("4.2e100")));
+	assertEquals(makeBignum("0"),
+		     toExact(makeBignum("0")));
+	assertEquals(makeBignum("1"),
+		     toExact(makeBignum("1")));
+	assertEquals(makeBignum("-1"),
+		     toExact(makeBignum("-1")));
+	assertEquals(makeBignum("-12345"),
+		     toExact(makeBignum("-12345")));
+	assertEquals(makeBignum("-1.723e500"),
+		     toExact(makeBignum("-1.723e500")));
     },
 
     'rationals': function() {
@@ -752,9 +817,15 @@ describe('add', {
 	assertEquals(1025, add(1024, 1));
 	assertEquals(-84, add(-42, -42));
 	assertEquals(982, add(1024, -42));
-	// FIXME: add test case where value needs to become a bignum.
     },
 
+    'finum overflows to bignum' : function() {
+	var aNumber = 0;
+	for (var i = 0 ; i < 1000; i++) {
+	    aNumber = add(aNumber, fromFixnum(1e20));
+	}
+	assertTrue(eqv(makeBignum("1e23"), aNumber));
+    },
 
     'fixnum / bignum': function() {
 	// FIXME: we're missing this
