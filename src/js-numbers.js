@@ -212,12 +212,12 @@ if (! this['plt']['lib']['Numbers']) {
 
     // eqv: scheme-number scheme-number -> boolean
     var eqv = function(x, y) {
-	if (typeof(x) === 'number') {
+	if (x === y) 
+	    return true;
+	if (typeof(x) === 'number' && typeof(y) === 'number')
 	    return x === y;
-	}
-	return ((x === y) ||
-		(x._level === y._level && 
-		 x.eqv(y)));
+	var ex = isExact(x), ey = isExact(y);
+	return (((ex && ey) || (!ex && !ey)) && equals(x, y));
     };
 
     // approxEqual: scheme-number scheme-number scheme-number -> boolean
@@ -851,11 +851,6 @@ if (! this['plt']['lib']['Numbers']) {
 	    _integerEquals(this.d, other.d);
     };
     
-    Rational.prototype.eqv = function(other) {
-	return other instanceof Rational &&
-	    _integerEquals(this.n, other.n) &&
-	    _integerEquals(this.d, other.d);
-    };
 
 
     Rational.prototype.isInteger = function() { 
@@ -1197,11 +1192,6 @@ if (! this['plt']['lib']['Numbers']) {
 		((this.n === other.n)));
     };
 
-    FloatPoint.prototype.eqv = function(other, aUnionFind) {
-	return ((other instanceof FloatPoint) &&
-		((this.n === other.n) ||
-		 (isNaN(this.n) && isNaN(other.n))));
-    };
 
 
     FloatPoint.prototype.isRational = function() {
@@ -1549,13 +1539,6 @@ if (! this['plt']['lib']['Numbers']) {
 	var result = ((other instanceof Complex) && 
 		      (equals(this.r, other.r)) &&
 		      (equals(this.i, other.i)));
-	return result;
-    };
-
-    Complex.prototype.eqv = function(other) {
-	var result = ((other instanceof Complex) && 
-		      (eqv(this.r, other.r)) &&
-		      (eqv(this.i, other.i)));
 	return result;
     };
 
@@ -3311,8 +3294,8 @@ if (! this['plt']['lib']['Numbers']) {
     // equals: scheme-number -> boolean
     // Produce true if the given number of the same type is equal.
 
-    // eqv: scheme-number -> boolean
-    // Produce true if the given number of the same type is equivalent.
+    BigInteger.prototype.eqv = BigInteger.prototype.equals;
+
 
 
 

@@ -331,7 +331,9 @@ describe('eqv', {
 
 
     'fixnum / bignum': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(42, makeBignum("42")));
+	assertTrue(eqv(123456789, makeBignum("123456789")));
+	assertTrue(eqv(-123456789, makeBignum("-123456789")));
     },
 
     'bignum / bignum' : function() {
@@ -351,17 +353,17 @@ describe('eqv', {
     },
 
     'fixnum / rational': function() {
-	value_of(eqv(42, makeRational(84, 2))).should_be_false();
+	value_of(eqv(42, makeRational(84, 2))).should_be_true();
 	value_of(eqv(42, makeRational(84, 3))).should_be_false();
     },
     
     'fixnum / float ' : function() {
-	value_of(eqv(1024, makeFloat(1024))).should_be_false();
-	value_of(eqv(1024, makeFloat(1024.0001))).should_be_false();
+	value_of(eqv(fromFixnum(1024), makeFloat(1024))).should_be_false();
+	value_of(eqv(fromFixnum(1024), makeFloat(1024.0001))).should_be_false();
     },
 
     'fixnum / complex' : function() {
-	value_of(eqv(10, makeComplex(10))).should_be_false();
+	value_of(eqv(10, makeComplex(10))).should_be_true();
 	value_of(eqv(10, makeComplex(0))).should_be_false();
     },
 
@@ -381,7 +383,7 @@ describe('eqv', {
 
     'rational / complex': function() {
 	value_of(eqv(makeRational(2),
-		       makeComplex(2, 0))).should_be_false();
+		       makeComplex(2, 0))).should_be_true();
 	value_of(eqv(makeRational(2),
 		       makeComplex(2, 1))).should_be_false();
 	value_of(eqv(makeRational(2),
@@ -395,7 +397,9 @@ describe('eqv', {
     },
 
     'float / complex': function() {
-	value_of(eqv(pi, makeComplex(pi))).should_be_false();
+	value_of(eqv(pi, makeComplex(pi))).should_be_true();
+	value_of(eqv(3, makeComplex(makeFloat(3)))).should_be_false();
+	value_of(eqv(pi, makeComplex(pi, 1))).should_be_false();
     },
 
     'complex / complex': function() {
