@@ -427,8 +427,11 @@ describe('isRational', {
 	assertTrue(isRational(238977428));
 	assertTrue(isRational(-2371));
     },
+
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(isRational(makeBignum("324987329848724791")));
+	assertTrue(isRational(makeBignum("0")));
+	assertTrue(isRational(makeBignum("-1239847210")));
     },
 
     'rationals': function() {
