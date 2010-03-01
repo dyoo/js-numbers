@@ -221,9 +221,9 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     // approxEqual: scheme-number scheme-number scheme-number -> boolean
-    var approxEqual = function(x, y, delta) {
+    var approxEquals = function(x, y, delta) {
 	return lessThan(abs(subtract(x, y)),
-                                delta);
+                        delta);
     };
     
     // greaterThanOrEqual: scheme-number scheme-number -> boolean
@@ -798,9 +798,6 @@ if (! this['plt']['lib']['Numbers']) {
 
     // equals: scheme-number -> boolean
     // Produce true if the given number of the same type is equal.
-
-    // eqv: scheme-number -> boolean
-    // Produce true if the given number of the same type is equivalent.
 
 
 
@@ -3134,6 +3131,11 @@ if (! this['plt']['lib']['Numbers']) {
 
     // Other methods we need to add for compatibilty with js-numbers numeric tower.
 
+    // add is implemented above.
+    // subtract is implemented above.
+    // multiply is implemented above.
+    // equals is implemented above.
+
 
     // makeBignum: string -> BigInteger
     var makeBignum = function(s) {
@@ -3160,7 +3162,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (target._level === 1)
 	    return Rational.makeInstance(this);
 	if (target._level === 2)
-	    return FloatPoint.makeInstance(this.intValue());
+	    return FloatPoint.makeInstance(this.toFixnum());
 	if (target._level === 3)	
 	    return Complex.makeInstance(this, Rational.ZERO);
 	throwRuntimeError("invalid _level for BigInteger lift");
@@ -3191,7 +3193,18 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     BigInteger.prototype.toFixnum = function() {
-	return this.intValue();
+	var result = 0, str = this.toString(), i;
+	if (str[0] === '-') {
+	    for (i=1; i < str.length; i++) {
+		result = result * 10 + Number(str[i]);
+	    }
+	    return -result;
+	} else {
+	    for (i=0; i < str.length; i++) {
+		result = result * 10 + Number(str[i]);
+	    }
+	    return result;
+	}
     };
     
     BigInteger.prototype.greaterThan = function(other) {
@@ -3210,20 +3223,16 @@ if (! this['plt']['lib']['Numbers']) {
 	return this.compareTo(other) <= 0;
     };
 
-    // add is implemented above.
-    // subtract is implemented above.
-    // multiply is implemented above.
-
-
     // divide: scheme-number -> scheme-number
-    // Note: we override the old version of divide.
+    // WARNING NOTE: we override the old version of divide.
     BigInteger.prototype.divide = function(other) {
 	var quotientAndRemainder = bnDivideAndRemainder(this, other);
 	if (quotientAndRemainder[1].compareTo(BigInteger.ZERO) === 0) {
 	    return quotientAndRemainder[0];
 	} else {
 	    return add(quotientAndRemainder[0],
-		       Rational.makeInstance(quotientAndRemainder[1], other));
+		       Rational.makeInstance(quotientAndRemainder[1],
+					     other));
 	}
     }
 
@@ -3291,10 +3300,8 @@ if (! this['plt']['lib']['Numbers']) {
     // round: -> scheme-number
     // Round to the nearest integer.
 
-    // equals: scheme-number -> boolean
-    // Produce true if the given number of the same type is equal.
 
-    BigInteger.prototype.eqv = BigInteger.prototype.equals;
+
 
 
 
@@ -3336,7 +3343,7 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['divide'] = divide;
     Numbers['equals'] = equals;
     Numbers['eqv'] = eqv;
-    Numbers['approxEqual'] = approxEqual;
+    Numbers['approxEquals'] = approxEquals;
     Numbers['greaterThanOrEqual'] = greaterThanOrEqual;
     Numbers['lessThanOrEqual'] = lessThanOrEqual;
     Numbers['greaterThan'] = greaterThan;

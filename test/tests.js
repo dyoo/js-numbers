@@ -233,7 +233,14 @@ describe('equals', {
     },
 
     'bignum / float' : function() {
-	// FIXME: we're missing this
+	assertTrue(equals(makeBignum("12345"),
+			  makeFloat(12345.0)));
+	assertTrue(equals(makeBignum("-12345"),
+			  makeFloat(-12345.0)));
+	assertTrue(equals(fromString("7e40"),
+			  makeFloat(7e40)));
+	assertTrue(equals(fromString("-7e40"),
+			  makeFloat(-7e40)));
     },
 
     'bignum / complex' : function() {

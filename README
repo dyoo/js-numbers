@@ -146,7 +146,7 @@ equals: scheme-number scheme-number -> boolean
 eqv: scheme-number scheme-number -> boolean
     Produces true if the two numbers are equivalent.
 
-approxEqual: scheme-number scheme-number scheme-number -> boolean
+approxEquals: scheme-number scheme-number scheme-number -> boolean
     Produces true if the two numbers are approximately equal, within the
     bounds of the third argument.
 
