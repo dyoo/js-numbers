@@ -96,11 +96,13 @@ makeRational: javascript-number javascript-number? -> scheme-number
 makeFloat: javascript-number -> scheme-number
     Low level constructor: constructs a floating-point number.
 
+makeBignum: string -> scheme-number
+    Low level constructor: constructs a bignum.
 
-makeComplex: scheme-number scheme-number -> scheme-number
-
+makeComplex: scheme-number scheme-number? -> scheme-number
     Constructs a complex number; the real and imaginary parts of the
-    input must be basic scheme numbers (i.e. not complex).
+    input must be basic scheme numbers (i.e. not complex).  If only one
+    argument is given, assumes the imaginary part is 0.
 
 
 isSchemeNumber: any -> boolean

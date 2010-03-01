@@ -1870,7 +1870,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     var rationalRegexp = new RegExp("^([+-]?\\d+)/(\\d+)$");
     var bignumScientificPattern = new RegExp("^(-?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$");
-    var complexRegexp = new RegExp("^([\\d/\\.]*)([+-])([\\d/\\.]*)i$");
+    var complexRegexp = new RegExp("^([+-]?[\\d\\w/\\.]*)([+-])([\\d\\w/\\.]*)i$");
 
     // fromString: string -> scheme-number
     var fromString = function(x) {
@@ -1886,6 +1886,13 @@ if (! this['plt']['lib']['Numbers']) {
 			       fromString(cMatch[2] + (cMatch[3] || "1")));
 	}
 	
+	if (x === '+nan.0' || x === '-nan.0')
+	    return FloatPoint.nan;
+	if (x === '+inf.0')
+	    return FloatPoint.inf;
+	if (x === '-inf.0')
+	    return FloatPoint.neginf;
+
 	var n = Number(x);
 	if (isOverflow(n)) {
 	    return makeBignum(x);

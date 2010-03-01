@@ -100,6 +100,7 @@ describe('fromString', {
 	assertEquals(43, fromString("+43"));
 	assertEquals(-43, fromString("-43"));
     },
+
     'bignums': function() {
 	assertEquals(makeBignum("123456789012345678901234567890"), 
 		     fromString("123456789012345678901234567890"));
@@ -108,6 +109,7 @@ describe('fromString', {
 	assertEquals(makeBignum("-123456789012345678901234567890"), 
 		     fromString("-123456789012345678901234567890"));
     },
+
     'rationals': function() {
 	assertEquals(makeRational(1, 2),
 		     fromString("1/2"));
@@ -119,9 +121,11 @@ describe('fromString', {
 				  5678910),
 		     fromString("99999999999999999999/5678910"));
     },
+
     'floats': function() {
 	assertEquals(makeFloat(42.1), fromString("42.1"));
     },
+
     'complex': function() {
 	assertEquals(makeComplex(0, 1), fromString("0+i"));
 	assertEquals(makeComplex(0, 1), fromString("0+1i"));
@@ -131,6 +135,29 @@ describe('fromString', {
 	assertEquals(makeComplex(0, -1), fromString("0-1i"));
 	assertEquals(makeComplex(0, makeRational(-29, 42)), fromString("0-29/42i"));
 	assertEquals(makeComplex(0, makeFloat(-3.7)), fromString("0-3.7i"));
+
+	assertEquals(makeComplex(1, makeRational(-29, 42)), fromString("1-29/42i"));
+	assertEquals(makeComplex(makeFloat(100.5), 
+				 makeRational(-29, 42)), fromString("100.5-29/42i"));
+	assertEquals(makeComplex(0, makeFloat(-3.7)), fromString("0-3.7i"));
+	assertEquals(makeComplex(inf, makeFloat(-3.7)), fromString("+inf.0-3.7i"));
+	assertEquals(makeComplex(nan, makeFloat(-3.7)), fromString("+nan.0-3.7i"));
+	assertEquals(makeComplex(negative_inf, makeFloat(-3.7)),
+		     fromString("-inf.0-3.7i"));
+	assertEquals(makeComplex(negative_inf, negative_inf),
+		     fromString("-inf.0-inf.0i"));
+    },
+
+    'special constants' : function() {
+	assertEquals(nan, fromString("+nan.0"));
+	assertEquals(nan, fromString("-nan.0"));
+	assertEquals(inf, fromString("+inf.0"));
+	assertEquals(negative_inf, fromString("-inf.0"));
+    },
+
+    'malformed': function() {
+	// FIXME: add tests that check for malformed strings and raise
+	// expected error.
     }});
 
 	
