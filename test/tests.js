@@ -175,7 +175,6 @@ describe('fromString', {
 	assertFalse(fromString("1.2/3"));
 	assertFalse(fromString("--1/3"));
 	assertFalse(fromString("-1/-3"));
-	// FIXME: add tests that check for malformed strings and return false.
     }});
 
 	
