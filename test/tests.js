@@ -127,18 +127,21 @@ describe('fromFixnum', {
 	value_of(equals(fromFixnum(42),
 			makeRational(43))).should_be_false();
     },
+
     'bignums': function() {
-	assertEquals(makeBignum("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	assertEquals(makeBignum("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
 		     fromFixnum(10e100));
-//	assertEquals(makeBignum("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
-//		     fromFixnum(10e200));
+
+	assertEquals(makeBignum("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		     fromFixnum(10e200));
     },
 
     'rationals': function() {
     },
+
     'floats': function() {
 	value_of(equals(fromFixnum(42.1),
-			  makeFloat(42.1))).should_be_true();
+			makeFloat(42.1))).should_be_true();
     },
     'complex': function() {
     }
@@ -154,6 +157,21 @@ describe('equals', {
     'fixnum / fixnum': function() {
 	value_of(equals(42, 42)).should_be_true();
 	value_of(equals(42, 43)).should_be_false();
+    },
+
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
     },
 
     'fixnum / rational': function() {
@@ -244,6 +262,22 @@ describe('eqv', {
 	value_of(eqv(42, 43)).should_be_false();
     },
 
+
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
     'fixnum / rational': function() {
 	value_of(eqv(42, makeRational(84, 2))).should_be_false();
 	value_of(eqv(42, makeRational(84, 3))).should_be_false();
@@ -318,6 +352,7 @@ describe('isSchemeNumber', {
     'strings': function() {
 	value_of(isSchemeNumber("42")).should_be_false();
 	value_of(isSchemeNumber(42)).should_be_true();
+	assertTrue(isSchemeNumber(makeBignum("298747328418794387941798324789421978")));
 	value_of(isSchemeNumber(makeRational(42, 42))).should_be_true();
 	value_of(isSchemeNumber(makeFloat(42.2))).should_be_true();
 	value_of(isSchemeNumber(makeComplex(17))).should_be_true();
@@ -612,6 +647,23 @@ describe('add', {
 	// FIXME: add test case where value needs to become a bignum.
     },
 
+
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
+
     'fixnum / rational' : function() {
 	assertEquals(0, add(0, makeRational(0)));
 	assertEquals(12347, add(12345, makeRational(2)));
@@ -722,6 +774,22 @@ describe('subtract', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -747,6 +815,22 @@ describe('multiply', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -772,6 +856,21 @@ describe('divide', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -796,6 +895,21 @@ describe('divide', {
 describe('greaterThanOrEqual', {
     'fixnum / fixnum' : function() {
     },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -820,6 +934,22 @@ describe('greaterThanOrEqual', {
 describe('lessThanOrEqual', {
     'fixnum / fixnum' : function() {
     },
+
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
+
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -844,6 +974,20 @@ describe('lessThanOrEqual', {
 describe('greaterThan', {
     'fixnum / fixnum' : function() {
     },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -867,6 +1011,20 @@ describe('greaterThan', {
 
 describe('lessThan', {
     'fixnum / fixnum' : function() {
+    },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
     },
     'fixnum / rational' : function() {
     },
@@ -893,6 +1051,20 @@ describe('expt', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -916,6 +1088,20 @@ describe('expt', {
 
 describe('modulo', {
     'fixnum / fixnum' : function() {
+    },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
     },
     'fixnum / rational' : function() {
     },
@@ -1239,6 +1425,20 @@ describe('sqr', {
 describe('gcd', {
     'fixnum / fixnum' : function() {
     },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
+    },
     'fixnum / rational' : function() {
     },
     'fixnum / floating' : function() {
@@ -1263,6 +1463,20 @@ describe('gcd', {
 describe('lcm', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
+    },
+    'fixnum / bignum': function() {
+    },
+
+    'bignum / bignum' : function() {
+    },
+
+    'bignum / rational': function() {
+    },
+
+    'bignum / float' : function() {
+    },
+
+    'bignum / complex' : function() {
     },
     'fixnum / rational' : function() {
     },
