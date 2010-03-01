@@ -828,7 +828,17 @@ describe('add', {
     },
 
     'fixnum / bignum': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(2, add(1, makeBignum("1"))));
+	assertTrue(eqv(makeBignum("1234298352389543294732947983"),
+		       add(1, makeBignum("1234298352389543294732947982"))));
+	assertFalse(eqv(makeBignum("1234298352389543294732947982"),
+			add(1, makeBignum("1234298352389543294732947982"))));
+	assertTrue(eqv(makeBignum("1234298352389543294732947982"),
+		       add(0, makeBignum("1234298352389543294732947982"))));
+	assertTrue(eqv(makeBignum("1234298352389543294732947981"),
+		       add(-1, makeBignum("1234298352389543294732947982"))));
+	assertTrue(eqv(makeBignum("999999999999999999999999999999"),
+		       add(-1, makeBignum("1000000000000000000000000000000"))));
     },
 
     'bignum / bignum' : function() {
