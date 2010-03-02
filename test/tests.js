@@ -168,6 +168,7 @@ describe('fromString', {
 	assertEquals(nan, fromString("-nan.0"));
 	assertEquals(inf, fromString("+inf.0"));
 	assertEquals(negative_inf, fromString("-inf.0"));
+	assertTrue(fromString("-0.0") === negative_zero);
     },
 
     'malformed': function() {
@@ -211,6 +212,15 @@ describe('fromFixnum', {
 describe('equals', {
     'nan': function() {
 	value_of(equals(nan, nan)).should_be_false();
+    },
+
+    '-0.0': function() {
+	assertTrue(equals(negative_zero, makeFloat(0)));
+	assertTrue(equals(negative_zero, 0));
+	assertTrue(equals(negative_zero, negative_zero));
+	assertTrue(equals(negative_zero, makeRational(0)));
+	assertTrue(equals(negative_zero, makeRational(makeBignum("0"))));
+	assertFalse(equals(negative_zero, 1));
     },
 
     'fixnum / fixnum': function() {
@@ -342,6 +352,15 @@ describe('eqv', {
     'nan' : function() {
 	value_of(eqv(nan,
 		       makeFloat(Number.NaN))).should_be_true();
+    },
+
+    '-0.0' : function() {
+	assertFalse(eqv(negative_zero, makeFloat(0)));
+	assertFalse(eqv(negative_zero, 0));
+	assertTrue(eqv(negative_zero, negative_zero));
+	assertFalse(eqv(negative_zero, makeRational(0)));
+	assertFalse(eqv(negative_zero, makeRational(makeBignum("0"))));
+	assertFalse(eqv(negative_zero, 1));
     },
 
     'inf' : function() {
@@ -2020,6 +2039,7 @@ describe('toString', {
 	assertEquals("+nan.0", nan.toString());
 	assertEquals("+inf.0", inf.toString());
 	assertEquals("-inf.0", negative_inf.toString());
+	assertEquals("-0.0", negative_zero.toString());
 
     },
     'complex': function() {

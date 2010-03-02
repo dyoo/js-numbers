@@ -125,14 +125,6 @@ if (! this['plt']['lib']['Numbers']) {
 		     thing instanceof BigInteger)));
     }
 
-    // isFinite: scheme-number -> boolean
-    var isSchemeNumberFinite = function(n) {	
-	if (typeof(n) === 'number') {
-	    return isFinite(n);
-	} else {
-	    return n.isFinite();
-	}
-    };
 
     // isRational: scheme-number -> boolean
     var isRational = function(n) {
@@ -244,6 +236,8 @@ if (! this['plt']['lib']['Numbers']) {
 	if (x === y) 
 	    return true;
 	if (typeof(x) === 'number' && typeof(y) === 'number')
+	    return x === y;
+	if (x === NEGATIVE_ZERO || y === NEGATIVE_ZERO)
 	    return x === y;
 	var ex = isExact(x), ey = isExact(y);
 	return (((ex && ey) || (!ex && !ey)) && equals(x, y));
@@ -579,6 +573,16 @@ if (! this['plt']['lib']['Numbers']) {
 
     // Helpers
 
+
+    // IsFinite: scheme-number -> boolean
+    // Returns true if the scheme number is finite or not.
+    var isSchemeNumberFinite = function(n) {	
+	if (typeof(n) === 'number') {
+	    return isFinite(n);
+	} else {
+	    return n.isFinite();
+	}
+    };
 
     // isOverflow: javascript-number -> boolean
     // Returns true if we consider the number an overflow.
@@ -1218,6 +1222,8 @@ if (! this['plt']['lib']['Numbers']) {
     var TOO_POSITIVE_TO_REPRESENT = new FloatPoint(Number.POSITIVE_INFINITY);
     var TOO_NEGATIVE_TO_REPRESENT = new FloatPoint(Number.NEGATIVE_INFINITY);
 
+    var NEGATIVE_ZERO = new FloatPoint(0);
+
     FloatPoint.pi = new FloatPoint(Math.PI);
     FloatPoint.e = new FloatPoint(Math.E);
     FloatPoint.nan = NaN;
@@ -1276,7 +1282,9 @@ if (! this['plt']['lib']['Numbers']) {
 	    return "+inf.0";
 	if (this.n === Number.NEGATIVE_INFINITY)
 	    return "-inf.0";
-
+	if (this === NEGATIVE_ZERO) {
+	    return "-0.0";
+	}
 	return toString(this.n);
     };
     
@@ -1307,6 +1315,8 @@ if (! this['plt']['lib']['Numbers']) {
 	    return -1;
 	} else if (greaterThan(n, 0)) {
 	    return 1;
+	} else if (n === NEGATIVE_ZERO) {
+	    return -1;
 	} else {
 	    return 0;
 	}
@@ -1353,7 +1363,12 @@ if (! this['plt']['lib']['Numbers']) {
 	if (this.n === 0 || other.n === 0) { return 0; }
 
 	if (this.isFinite() && other.isFinite()) {
-	    return FloatPoint.makeInstance(this.n * other.n);
+	    var product = this.n * other.n;
+	    if (product !== 0) {
+		return FloatPoint.makeInstance(product);
+	    }
+	    return sign(this) * sign(other) == 1 ? 
+		FloatPoint.makeInstance(0) : NEGATIVE_ZERO;
 	} else if (isNaN(this.n) || isNaN(other.n)) {
 	    return NaN;
 	} else {
@@ -1951,6 +1966,9 @@ if (! this['plt']['lib']['Numbers']) {
 	    return FloatPoint.inf;
 	if (x === '-inf.0')
 	    return FloatPoint.neginf;
+	if (x === "-0.0") {
+	    return NEGATIVE_ZERO;
+	}
 	if (x.match(flonumRegexp) || x.match(bignumScientificPattern)) {
 	    var n = Number(x);
 	    if (isOverflow(n)) {
@@ -3208,6 +3226,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     // makeBignum: string -> BigInteger
     var makeBignum = function(s) {
+	if (typeof(s) === 'number') { s = s + ''; }
 	var match = s.match(bignumScientificPattern);
 	if (match) {
 	    return new BigInteger(match[1]+match[2] + 
@@ -3402,6 +3421,7 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['one'] = Rational.ONE;
     Numbers['i'] = plusI;
     Numbers['negative_i'] = minusI;
+    Numbers['negative_zero'] = NEGATIVE_ZERO;
 
     Numbers['onThrowRuntimeError'] = onThrowRuntimeError;
     Numbers['isSchemeNumber'] = isSchemeNumber;
