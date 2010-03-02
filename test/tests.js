@@ -842,7 +842,21 @@ describe('add', {
     },
 
     'bignum / bignum' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("1999999999999999999999999999999"),
+		       add(makeBignum("999999999999999999999999999999"),
+			   makeBignum("1000000000000000000000000000000"))));
+	assertTrue(eqv(1,
+		       add(makeBignum("-999999999999999999999999999999"),
+			   makeBignum("1000000000000000000000000000000"))));
+	assertTrue(eqv(makeBignum("-1999999999999999999999999999999"),
+		       add(makeBignum("-999999999999999999999999999999"),
+			   makeBignum("-1000000000000000000000000000000"))));
+	assertTrue(eqv(makeBignum("-1"),
+		       add(makeBignum("999999999999999999999999999999"),
+			   makeBignum("-1000000000000000000000000000000"))));
+	assertFalse(eqv(makeBignum("-20000000000000000000000000000"),
+		       add(makeBignum("-999999999999999999999999999999"),
+			   makeBignum("-1000000000000000000000000000000"))));
     },
 
     'bignum / rational': function() {
@@ -850,7 +864,21 @@ describe('add', {
     },
 
     'bignum / float' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(nan,
+		       add(makeBignum("0"), nan)));
+	assertTrue(eqv(inf,
+		       add(makeBignum("0"), inf)));
+	assertTrue(eqv(negative_inf,
+		       add(makeBignum("0"), negative_inf)));
+    },
+
+    'huge bignum and infinity': function() {
+	// NOTE: this case is tricky, because 1e1000 can be naively coersed
+	// to inf by toFixnum.
+	assertTrue(eqv(negative_inf,
+		       add(makeBignum("1e1000"), negative_inf)));
+	assertTrue(eqv(inf,
+		       add(makeBignum("-1e1000"), inf)));
     },
 
     'bignum / complex' : function() {
