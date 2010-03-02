@@ -1213,6 +1213,11 @@ if (! this['plt']['lib']['Numbers']) {
     var inf = new FloatPoint(Number.POSITIVE_INFINITY);
     var neginf = new FloatPoint(Number.NEGATIVE_INFINITY);
 
+    // We use these two constants to represent the floating-point coersion
+    // of bignums that can't be represented with fidelity.
+    var TOO_POSITIVE_TO_REPRESENT = new FloatPoint(Number.POSITIVE_INFINITY);
+    var TOO_NEGATIVE_TO_REPRESENT = new FloatPoint(Number.NEGATIVE_INFINITY);
+
     FloatPoint.pi = new FloatPoint(Math.PI);
     FloatPoint.e = new FloatPoint(Math.E);
     FloatPoint.nan = NaN;
@@ -1233,7 +1238,9 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     FloatPoint.prototype.isFinite = function() {
-	return isFinite(this.n);
+	return (isFinite(this.n) ||
+		this === TOO_POSITIVE_TO_REPRESENT ||
+		this === TOO_NEGATIVE_TO_REPRESENT);
     };
 
 
@@ -3221,12 +3228,20 @@ if (! this['plt']['lib']['Numbers']) {
 
     BigInteger.prototype._level = 0;
     BigInteger.prototype._lift = function(target) {
-	if (target._level === 1)
+	if (target._level === 1) {
 	    return Rational.makeInstance(this, 1);
-	if (target._level === 2)
-	    return FloatPoint.makeInstance(this.toFixnum());
-	if (target._level === 3)	
+	}
+	if (target._level === 2) {
+	    var fixrep = this.toFixnum();
+	    if (fixrep === Number.POSITIVE_INFINITY)
+		return TOO_POSITIVE_TO_REPRESENT;
+	    if (fixrep === Number.NEGATIVE_INFINITY)
+		return TOO_NEGATIVE_TO_REPRESENT;
+	    return FloatPoint.makeInstance(fixrep);
+	}
+	if (target._level === 3) {
 	    return Complex.makeInstance(this, 0);
+	}
 	throwRuntimeError("invalid _level for BigInteger lift");
     };
 
