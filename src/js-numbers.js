@@ -594,89 +594,160 @@ if (! this['plt']['lib']['Numbers']) {
     // Integer operations
     // Integers are either represented as fixnums or as BigIntegers.
 
-    // _integerModulo: integer-scheme-number integer-scheme-number -> integer-scheme-number
-    var _integerModulo = function(m, n) {
-	if (typeof(m) === 'number') {
-	    return m % n;
-	} else {
-	    // FIXME: have the boxed integral types implement their own specialized
-	    // version of modulo.
-	    var quotient = divide(m, n);
-	    return subtract(m, multiply(quotient, n));
-	}
+    // makeIntegerBinop: (fixnum fixnum -> X) (BigInteger BigInteger -> X) -> X
+    // Helper to collect the common logic for coersing integer fixnums or bignums to a
+    // common type before doing an operation.
+    var makeIntegerBinop = function(onFixnums, onBignums) {
+	return (function(m, n) {
+	    if (typeof(m) === 'number' && typeof(n) === 'number') {
+		return onFixnums(m, n);
+	    } 
+	    if (typeof(m) === 'number') {
+		m = makeBignum(''+m);
+	    }
+	    if (typeof(n) === 'number') {
+		n = makeBignum(''+n);
+	    }
+	    return onBignums(m, n);
+	});
     }
 
+
+    // _integerModulo: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerModulo = makeIntegerBinop(
+	function(m, n) {
+	    return m % n;
+	},
+	function(m, n) {
+	    return m.mod(n);
+	});
+    
+
     // _integerGcd: integer-scheme-number integer-scheme-number -> integer-scheme-number
-    var _integerGcd = function(a, b) {
-	var t;
-	if (isNaN(a) || !isFinite(a)) {
-	    throwRuntimeError("not a number: " + a);
-	}
-	if (isNaN(b) || !isFinite(b)) {
-	    throwRuntimeError("not a number: " + b);
-	}
-	while (b !== 0) {
-	    t = a;
-	    a = b;
-	    b = t % b;
-	}
-	return a;
-    };
+    var _integerGcd = makeIntegerBinop(
+	function(a, b) {
+	    var t;
+	    while (b !== 0) {
+		t = a;
+		a = b;
+		b = t % b;
+	    }
+	    return a;
+	},
+	function(m, n) {
+	    return m.gcd(n);
+	});
 
-
+ 
     // _integerIsZero: integer-scheme-number -> boolean
     // Returns true if the number is zero.
     var _integerIsZero = function(n) {
-	return n === 0;
-    }
+	if (typeof(n) === 'number') {
+	    return n === 0;
+	}
+	return makeBignum(n + '').equals(BigInteger.ZERO);
+    };
 
     // _integerIsOne: integer-scheme-number -> boolean
     var _integerIsOne = function(n) {
-	return n === 1;
-    }
+	if (typeof(n) === 'number') {
+	    return n === 1;
+	}
+	return makeBignum(n + '').equals(BigInteger.ONE);
+    };
+ 
+    // _integerAdd: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerAdd = makeIntegerBinop(
+	function(m, n) {
+	    return m + n;
+	},
+	function(m, n) {
+	    return m.add(n);
+	});
 
-    var _integerAdd = function(m, n) {
-	return m + n;
-    }
-
-    var _integerSubtract = function(m, n) {
-	return m - n;
-    }
-
-    var _integerMultiply = function(m, n) {
-	return m * n;
-    }
-
+    // _integerSubtract: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerSubtract = makeIntegerBinop(
+	function(m, n) {
+	    return m - n;
+	},
+	function(m, n) {
+	    return m.subtract(n);
+	});
+ 
+    // _integerMultiply: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerMultiply = makeIntegerBinop(
+	function(m, n) {
+	    return m * n;
+	},
+	function(m, n) {
+	    return m.multiply(n);
+	});
+    
     //_integerDivide: integer-scheme-number integer-scheme-number -> integer-scheme-number
-    var _integerDivide = function(m, n) {
-	return m / n;
-    }
+    var _integerDivide = makeIntegerBinop(
+	function(m, n) {
+	    return m / n;
+	},
+	function(m, n) {
+	    return m.divide(n);
+	});
+    
 
     // _integerDivideToFixnum: integer-scheme-number integer-scheme-number -> fixnum
-    var _integerDivideToFixnum = function(m, n) {
-	return m / n;
-    }
+    var _integerDivideToFixnum = makeIntegerBinop(
+	function(m, n) {
+	    return m / n;
+	},
+	function(m, n) {
+	    return toFixnum(m.divide(n))
+	});
+
     
     // _integerEquals: integer-scheme-number integer-scheme-number -> boolean
-    var _integerEquals = function(m, n) {
-	return m === n;
-    }
+    var _integerEquals = makeIntegerBinop(
+	function(m, n) {
+	    return m === n;
+	},
+	function(m, n) {
+	    return m.equals(n);
+	});
 
-    var _integerGreaterThan = function(m, n) {
-	return m > n;
-    }
+    // _integerGreaterThan: integer-scheme-number integer-scheme-number -> boolean
+    var _integerGreaterThan = makeIntegerBinop(
+	function(m, n) {
+	    return m > n;
+	},
+	function(m, n) {
+	    return m.compareTo(n) > 0;
+	});
 
-    var _integerLessThan = function(m, n) {
-	return m < n;
-    }
+    // _integerLessThan: integer-scheme-number integer-scheme-number -> boolean
+    var _integerLessThan = makeIntegerBinop(
+	function(m, n) {
+	    return m < n;
+	},
+	function(m, n) {
+	    return m.compareTo(n) < 0;
+	});
 
-    var _integerGreaterThanOrEqual = function(m, n) {
-	return m >= n;
-    }
+    // _integerGreaterThanOrEqual: integer-scheme-number integer-scheme-number -> boolean
+    var _integerGreaterThanOrEqual = makeIntegerBinop(
+	function(m, n) {
+	    return m >= n;
+	},
+	function(m, n) {
+	    return m.compareTo(n) >= 0;
+	});
 
-    var _integerLessThanOrEqual = function(m, n) {
-	return m <= n;
-    }
+    // _integerLessThanOrEqual: integer-scheme-number integer-scheme-number -> boolean
+    var _integerLessThanOrEqual = makeIntegerBinop(
+	function(m, n) {
+	    return m <= n;
+	},
+	function(m, n) {
+	    return m.compareTo(n) <= 0;
+	});
+
 
 
     //////////////////////////////////////////////////////////////////////
@@ -843,9 +914,9 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     Rational.prototype.equals = function(other) {
-	return other instanceof Rational &&
-	    _integerEquals(this.n, other.n) &&
-	    _integerEquals(this.d, other.d);
+	return (other instanceof Rational &&
+		_integerEquals(this.n, other.n) &&
+		_integerEquals(this.d, other.d));
     };
     
 
@@ -996,44 +1067,45 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     Rational.prototype.angle = function(){
-	if (0 === this.n)
+	if (_integerIsZero(this.n))
 	    return Rational.ZERO;
-	if (this.n > 0)
+	if (_integerGreaterThan(this.n, 0))
 	    return Rational.ZERO;
 	else
 	    return FloatPoint.pi;
     };
     
     Rational.prototype.tan = function(){
-	return FloatPoint.makeInstance(Math.tan(this.n / this.d));
+	return FloatPoint.makeInstance(Math.tan(_integerDivideToFixnum(this.n, this.d)));
     };
 
     Rational.prototype.atan = function(){
-	return FloatPoint.makeInstance(Math.atan(this.n / this.d));
+	return FloatPoint.makeInstance(Math.atan(_integerDivideToFixnum(this.n, this.d)));
     };
     
     Rational.prototype.cos = function(){
-	return FloatPoint.makeInstance(Math.cos(this.n / this.d));
+	return FloatPoint.makeInstance(Math.cos(_integerDivideToFixnum(this.n, this.d)));
     };
     
     Rational.prototype.sin = function(){
-	return FloatPoint.makeInstance(Math.sin(this.n / this.d));
+	return FloatPoint.makeInstance(Math.sin(_integerDivideToFixnum(this.n, this.d)));
     };
     
     Rational.prototype.expt = function(a){
-	return FloatPoint.makeInstance(Math.pow(this.n / this.d, a.n / a.d));
+	return FloatPoint.makeInstance(Math.pow(_integerDivideToFixnum(this.n, this.d),
+						_integerDivideToFixnum(a.n, a.d)));
     };
     
     Rational.prototype.exp = function(){
-	return FloatPoint.makeInstance(Math.exp(this.n / this.d));
+	return FloatPoint.makeInstance(Math.exp(_integerDivideToFixnum(this.n, this.d)));
     };
     
     Rational.prototype.acos = function(){
-	return FloatPoint.makeInstance(Math.acos(this.n / this.d));
+	return FloatPoint.makeInstance(Math.acos(_integerDivideToFixnum(this.n, this.d)));
     };
     
     Rational.prototype.asin = function(){
-	return FloatPoint.makeInstance(Math.asin(this.n / this.d));
+	return FloatPoint.makeInstance(Math.asin(_integerDivideToFixnum(this.n, this.d)));
     };
     
     Rational.prototype.imaginaryPart = function(){
@@ -1046,9 +1118,10 @@ if (! this['plt']['lib']['Numbers']) {
 
     
     Rational.prototype.round = function() {
-	if (this.d === 2) {
+	// FIXME: not correct when values are bignums
+	if (equals(this.d, 2)) {
 	    // Round to even if it's a n/2
-	    var v = this.n / this.d;
+	    var v = _integerDivideToFixnum(this.n, this.d);
 	    var fl = Math.floor(v);
 	    var ce = Math.ceil(v);
 	    if (_integerIsZero(fl % 2)) { 
@@ -1071,33 +1144,21 @@ if (! this['plt']['lib']['Numbers']) {
 
 	if (d === undefined) { d = 1; }
 	
-	if (d < 0) {
-	    n = -n;
-	    d = -d;
+	if (_integerLessThan(d, 0)) {
+	    n = negate(n);
+	    d = negate(d);
 	}
 
-	// Defensive edge cases.  We should never hit these
-	// cases, but since we don't yet have bignum arithmetic,
-	// it's possible that we may pass bad arguments to
-	// Integer.makeInstance.
-	if (isNaN (n) || isNaN(d)) {
-	    return FloatPoint.nan;
-	}
-
-	if (! isSchemeNumberFinite(d)) {
-	    return Rational.ZERO;
-	}
-
-	if (! isSchemeNumberFinite(n)) {
-	    return FloatPoint.makeInstance(n);
-	}
-
-	if (d === 1 && n in _rationalCache) {
-	    return _rationalCache[n];
-	}
-	else {
+	if (typeof(n) === 'number' && typeof(d) === 'number') {
+	    if (d === 1 && n in _rationalCache) {
+		return _rationalCache[n];
+	    }
+	    else {
+		return new Rational(n, d);
+	    }
+	} else {
 	    return new Rational(n, d);
-	}
+	}	
     };
     
     _rationalCache = {};
@@ -3135,7 +3196,7 @@ if (! this['plt']['lib']['Numbers']) {
     // subtract is implemented above.
     // multiply is implemented above.
     // equals is implemented above.
-
+    // abs is implemented above.
 
     // makeBignum: string -> BigInteger
     var makeBignum = function(s) {
@@ -3226,13 +3287,14 @@ if (! this['plt']['lib']['Numbers']) {
     // divide: scheme-number -> scheme-number
     // WARNING NOTE: we override the old version of divide.
     BigInteger.prototype.divide = function(other) {
-	var quotientAndRemainder = bnDivideAndRemainder(this, other);
+	var quotientAndRemainder = bnDivideAndRemainder.call(this, other);
 	if (quotientAndRemainder[1].compareTo(BigInteger.ZERO) === 0) {
 	    return quotientAndRemainder[0];
 	} else {
-	    return add(quotientAndRemainder[0],
-		       Rational.makeInstance(quotientAndRemainder[1],
-					     other));
+	    var result = add(quotientAndRemainder[0],
+		Rational.makeInstance(quotientAndRemainder[1],
+		other));
+	    return result;
 	}
     }
 
@@ -3249,8 +3311,6 @@ if (! this['plt']['lib']['Numbers']) {
     // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
     // Produce the square root.
 
-    // abs: -> scheme-number
-    // Produce the absolute value.
 
     // floor: -> scheme-number
     // Produce the floor.
