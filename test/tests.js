@@ -9,7 +9,13 @@ for (val in N) {
 
 
 var diffPercent = function(x, y) {
-    return Math.abs((x - y) / y);
+    if (typeof(x) === 'number') { 
+	x = fromFixnum(x);
+    }
+    if (typeof(y) === 'number') { 
+	y = fromFixnum(y);
+    }
+    return Math.abs(toFixnum(divide(subtract(x, y), y)));
 }
 
 
@@ -863,7 +869,9 @@ describe('toExact', {
 	assertEquals(makeRational(1, 2), toExact(makeFloat(0.5)));
 	assertEquals(makeRational(1, 10), toExact(makeFloat(0.1)));
 	assertEquals(makeRational(9, 10), toExact(makeFloat(0.9)));
-	assertEquals(makeRational(102347, 10), toExact(makeFloat(10234.7)));
+	assertTrue(isExact(toExact(makeFloat(10234.7))));
+	assertTrue(diffPercent(makeRational(102347, 10), 
+			       toExact(makeFloat(10234.7))) < 1);
 	assertEquals(-1, toExact(makeFloat(-1)));
 	assertEquals(0, toExact(makeFloat(0)));	
 	assertEquals(1024, toExact(makeFloat(1024)));

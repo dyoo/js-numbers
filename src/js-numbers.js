@@ -628,11 +628,12 @@ if (! this['plt']['lib']['Numbers']) {
     // makeIntegerBinop: (fixnum fixnum -> X) (BigInteger BigInteger -> X) -> X
     // Helper to collect the common logic for coersing integer fixnums or bignums to a
     // common type before doing an operation.
-    var makeIntegerBinop = function(onFixnums, onBignums) {
+    var makeIntegerBinop = function(onFixnums, onBignums, options) {
 	return (function(m, n) {
 	    if (typeof(m) === 'number' && typeof(n) === 'number') {
 		var result = onFixnums(m, n);
-		if (! isOverflow(result)) {
+		if (! isOverflow(result) ||
+		    (options && options.ignoreOverflow)) {
 		    return result;
 		}
 	    } 
@@ -733,8 +734,10 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m / n;
 	},
 	function(m, n) {
-	    return toFixnum(m.divide(n))
-	});
+	    return toFixnum(m) / toFixnum(n);
+	    //return toFixnum(m.divide(n))
+	},
+	{ignoreOverflow: true});
 
     
     // _integerEquals: integer-scheme-number integer-scheme-number -> boolean
