@@ -1291,7 +1291,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (this === NEGATIVE_ZERO) {
 	    return "-0.0";
 	}
-	return toString(this.n);
+	return this.n.toString();
     };
     
 
@@ -1406,7 +1406,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
     
     FloatPoint.prototype.numerator = function() {
-	var stringRep = toString(this.n);
+	var stringRep = this.n.toString();
 	var match = stringRep.match(/^(.*)\.(.*)$/);
 	if (match) {
 	    return FloatPoint.makeInstance(parseFloat(match[1] + match[2]));
@@ -1416,7 +1416,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     FloatPoint.prototype.denominator = function() {
-	var stringRep = toString(this.n);
+	var stringRep = this.n.toString();
 	var match = stringRep.match(/^(.*)\.(.*)$/);
 	if (match) {
 	    return FloatPoint.makeInstance(Math.pow(10, match[2].length));
@@ -1600,9 +1600,9 @@ if (! this['plt']['lib']['Numbers']) {
 	if (greaterThanOrEqual(
 	    this.i,
 	    0)) {
-            return toString(this.r) + "+" + toString(this.i)+"i";
+            return this.r.toString() + "+" + this.i.toString()+"i";
 	} else {
-            return toString(this.r) + toString(this.i)+"i";
+            return this.r.toString() + this.i.toString()+"i";
 	}
     };
 

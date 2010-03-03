@@ -2118,13 +2118,31 @@ describe('toString', {
 		     makeBignum("123456789012345678901234567890").toString());
     },
     'bignums': function() {
-	// FIXME: we're missing this
+	assertEquals("0",
+		     makeBignum("0").toString());
+	assertEquals("-236579329853268932967423894623849289323568268954",
+		     makeBignum("-236579329853268932967423894623849289323568268954").toString());
+	assertEquals("312981532653268913529653216935216851268932416843269129356216894159681236850432163527231684321782317892513672317605612",
+		     makeBignum("312981532653268913529653216935216851268932416843269129356216894159681236850432163527231684321782317892513672317605612").toString());
     },
     'rationals': function() {
-	// FIXME: we're missing this
+	assertEquals("1/2",
+		     makeRational(1, 2));
+
+	assertEquals("2398742368955236823956823968/239856325892398441",
+		     makeRational(makeBignum("2398742368955236823956823968"), 
+				  makeBignum("239856325892398441")));
+
+	assertEquals("-2398742368955236823956823968/239856325892398441",
+		     makeRational(makeBignum("-2398742368955236823956823968"), 
+				  makeBignum("239856325892398441")));
     },
     'floats': function() {
-	// FIXME: we're missing this
+	assertEquals('0.25', makeFloat(0.25).toString());
+	assertEquals('1.2354e+200', makeFloat(1.2354e200).toString());
+	assertEquals('1.2354e-200', makeFloat(1.2354e-200).toString());
+	assertEquals('-1.2354e-200', makeFloat(-1.2354e-200).toString());
+	assertEquals('-1', makeFloat(-1).toString());
 	assertEquals("+nan.0", nan.toString());
 	assertEquals("+inf.0", inf.toString());
 	assertEquals("-inf.0", negative_inf.toString());
