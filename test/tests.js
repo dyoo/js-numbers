@@ -251,7 +251,14 @@ describe('equals', {
     },
 
     'bignum / complex' : function() {
-	// FIXME: we're missing this
+	assertTrue(equals(makeBignum("1e2000"),
+			  makeComplex(makeBignum("1e2000"),
+				      0)));
+	assertFalse(equals(makeBignum("1.1e2000"),
+			  makeComplex(makeBignum("1e2000"),
+				      0)));
+	assertTrue(equals(makeBignum("0"),
+			  makeComplex(0, 0)));
     },
 
     'fixnum / rational': function() {
@@ -350,19 +357,52 @@ describe('eqv', {
     },
 
     'bignum / bignum' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("0"),
+		       makeBignum("0")));
+	assertTrue(eqv(makeBignum("-1"),
+		       makeBignum("-1")));
+	assertTrue(eqv(makeBignum("7.3241e324"),
+		       makeBignum("7.3241e324")));
+	assertFalse(eqv(makeBignum("7.3240e324"),
+		       makeBignum("7.3241e324")));
+	assertTrue(eqv(makeBignum("-13241e324"),
+		       makeBignum("-13241e324")));
     },
 
     'bignum / rational': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("0"),
+			makeRational(0, 1)));
+	assertTrue(eqv(makeBignum("0"),
+			makeRational(makeBignum("0"), 1)));
+	assertTrue(eqv(makeBignum("24"),
+			makeRational(makeBignum("24"), 1)));
+	assertTrue(eqv(makeBignum("-1"),
+			makeRational(-1, 1)));
+	assertFalse(eqv(makeBignum("0"),
+			makeRational(-1, 1)));
     },
 
     'bignum / float' : function() {
-	// FIXME: we're missing this
+	assertFalse(eqv(makeBignum("0"),
+		       makeFloat(0)));
+	assertFalse(eqv(makeBignum("1e100"),
+			makeFloat(1e100)));
+	assertFalse(eqv(makeBignum("-1e100"),
+			makeFloat(-1e100)));
     },
 
     'bignum / complex' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("5e23"),
+		       makeComplex(makeBignum("5e23"),
+				   0)));
+	assertTrue(eqv(makeBignum("5e23"),
+		       makeComplex(makeRational(makeBignum("5e23")),
+				   0)));
+	assertFalse(eqv(makeBignum("5e23"),
+			makeComplex(makeFloat(5e23), 0)));
+	assertFalse(eqv(makeBignum("5e23"),
+		       makeComplex(makeBignum("5e23"),
+				   1)));
     },
 
     'fixnum / rational': function() {
@@ -511,8 +551,14 @@ describe('isReal', {
 	assertTrue(isReal(0));
 	assertTrue(isReal(-12345));
     },
+
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(isReal(makeBignum("0")));
+	assertTrue(isReal(makeBignum("1")));
+	assertTrue(isReal(makeBignum("-1")));
+	assertTrue(isReal(makeBignum("23497842398287924789232439723")));
+	assertTrue(isReal(makeBignum("1e1000")));
+	assertTrue(isReal(makeBignum("-1e1000")));
     },
 
     'rationals': function() {
@@ -563,7 +609,12 @@ describe('isExact', {
 	assertTrue(isExact(1));
     },
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(isExact(makeBignum("0")));
+	assertTrue(isExact(makeBignum("1")));
+	assertTrue(isExact(makeBignum("-1")));
+	assertTrue(isExact(makeBignum("23497842398287924789232439723")));
+	assertTrue(isExact(makeBignum("1e1000")));
+	assertTrue(isExact(makeBignum("-1e1000")));
     },
 
     'rationals': function() {
@@ -650,7 +701,9 @@ describe('toFixnum', {
     },
 
     'bignums': function() {
-	// FIXME: we're missing this
+	assertEquals(123456789, toFixnum(makeBignum("123456789")))
+	assertEquals(1e200, toFixnum(makeBignum("1e200")))
+	assertEquals(-1e200, toFixnum(makeBignum("-1e200")))
     },
 
     'rationals': function() {
