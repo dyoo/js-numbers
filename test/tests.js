@@ -126,6 +126,9 @@ describe('fromString', {
 	assertEquals(makeRational(makeBignum("99999999999999999999"),
 				  5678910),
 		     fromString("99999999999999999999/5678910"));
+	assertEquals(makeRational(makeBignum("-13284973298"),
+				  makeBignum("239875239")),
+		     fromString("-13284973298/239875239"));
     },
 
     'floats': function() {
@@ -936,10 +939,31 @@ describe('add', {
     },
 
     'bignum / rational': function() {
-	// FIXME: we're missing this
+ 	assertFalse(eqv(makeBignum("1234"),
+ 		       add(makeBignum("1234"),
+ 			   makeRational(2))));
+ 	assertTrue(eqv(makeBignum("1236"),
+ 		       add(makeBignum("1234"),
+ 			   makeRational(2))));
+ 	assertTrue(eqv(makeBignum("1e500"),
+ 		       add(makeBignum("1e500"),
+ 			   makeRational(0))))
+ 	assertTrue(eqv(makeRational(add(makeBignum("1e500"), 1),
+ 				    makeBignum("1e500")),
+ 		       add(1, makeRational(1, makeBignum("1e500")))));
+
+	assertTrue(eqv(fromString("461489806479620935470974478730/23987523567"),
+		       add(makeBignum("19238743223768948327"),
+			   fromString("1732914256756321/23987523567"))));
+
+	assertTrue(eqv(fromString("-77100525133482588244247/239875239"),
+		       add(fromString("-321419273847891"),
+			   fromString("-13284973298/239875239"))));
     },
 
+
     'bignum / float' : function() {
+	// FIXME: not done yet
 	assertTrue(eqv(nan,
 		       add(makeBignum("0"), nan)));
 	assertTrue(eqv(inf,

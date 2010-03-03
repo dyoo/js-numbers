@@ -631,7 +631,10 @@ if (! this['plt']['lib']['Numbers']) {
     var makeIntegerBinop = function(onFixnums, onBignums) {
 	return (function(m, n) {
 	    if (typeof(m) === 'number' && typeof(n) === 'number') {
-		return onFixnums(m, n);
+		var result = onFixnums(m, n);
+		if (! isOverflow(result)) {
+		    return result;
+		}
 	    } 
 	    if (typeof(m) === 'number') {
 		m = makeBignum(''+m);
@@ -921,9 +924,9 @@ if (! this['plt']['lib']['Numbers']) {
     
     Rational.prototype.toString = function() {
 	if (_integerIsOne(this.d)) {
-	    return this.n + "";
+	    return this.n.toString() + "";
 	} else {
-	    return this.n + "/" + this.d;
+	    return this.n.toString() + "/" + this.d.toString();
 	}
     };
     
