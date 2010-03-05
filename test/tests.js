@@ -1133,8 +1133,26 @@ describe('add', {
 
 describe('subtract', {
     'fixnum / fixnum' : function() {
-	// FIXME: add test case where value needs to become a bignum.
+	assertTrue(eqv(subtract(fromFixnum(32768),
+				fromFixnum(32768)),
+		       fromFixnum(0)));
+	assertTrue(eqv(subtract(10, 1), 9));
+	assertTrue(eqv(subtract(1, 10), -9));
+
+	assertTrue(eqv(subtract(13274, 1659),
+		       11615));
+	assertTrue(eqv(subtract(-13274, 1659),
+		       -14933));
     },
+
+    'finum overflows to bignum' : function() {
+	var aNumber = 0;
+	for (var i = 0 ; i < 1000; i++) {
+	    aNumber = subtract(aNumber, fromFixnum(1e20));
+	}
+	assertTrue(eqv(makeBignum("-1e23"), aNumber));
+    },
+
 
     'fixnum / bignum': function() {
 	// FIXME: we're missing this
