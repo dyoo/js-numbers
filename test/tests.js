@@ -971,26 +971,57 @@ describe('add', {
 
 
     'bignum / float' : function() {
-	// FIXME: not done yet
+	assertTrue(diffPercent(add(makeBignum("42"),
+				   makeFloat(17.5)),
+			       makeFloat(59.5))
+		   < 2e-10);
+	assertTrue(diffPercent(add(makeBignum("-42"),
+				   makeFloat(17.5)),
+			       makeFloat(-24.5))
+		   < 2e-10);
+
 	assertTrue(eqv(nan,
 		       add(makeBignum("0"), nan)));
+	assertTrue(eqv(nan,
+		       add(makeBignum("10e500"), nan)));
+	assertTrue(eqv(nan,
+		       add(makeBignum("-10e500"), nan)));
+
 	assertTrue(eqv(inf,
 		       add(makeBignum("0"), inf)));
 	assertTrue(eqv(negative_inf,
 		       add(makeBignum("0"), negative_inf)));
     },
 
+
     'huge bignum and infinity': function() {
-	// NOTE: this case is tricky, because 1e1000 can be naively coersed
-	// to inf by toFixnum.
+	// NOTE: this case is tricky, because 1e1000 will be naively coersed
+	// to inf by toFixnum.  We need to somehow distinguished coersed
+	// values that are too large to represent with fixnums, but are yet
+	// finite, so that addition with infinite quantities does the right
+	// thing, at least with respect to adding bignums to inexact floats.
 	assertTrue(eqv(negative_inf,
 		       add(makeBignum("1e1000"), negative_inf)));
 	assertTrue(eqv(inf,
 		       add(makeBignum("-1e1000"), inf)));
+
+	assertTrue(eqv(inf, add(makeBignum("2e1000"), inf)));
+	assertTrue(eqv(inf, add(makeBignum("-2e1000"), inf)));
+	assertTrue(eqv(negative_inf, add(makeBignum("2e1000"), negative_inf)));
+	assertTrue(eqv(negative_inf, add(makeBignum("-2e1000"), negative_inf)));
     },
 
     'bignum / complex' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(add(makeBignum("12345"),
+			   makeComplex(1, 1)),
+		       makeComplex(makeBignum("12346"),
+				   1)));
+
+	assertTrue(eqv(add(makeBignum("10e500"),
+			   makeComplex(makeBignum("10e500"),
+				       makeBignum("124529478"))),
+		       makeComplex(makeBignum("20e500"),
+				   makeBignum("124529478"))));
     },
 
 
