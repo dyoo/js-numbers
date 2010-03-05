@@ -1155,19 +1155,80 @@ describe('subtract', {
 
 
     'fixnum / bignum': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(subtract(1, makeBignum("3219789841236123678239865237892936825367953267523689352968869532869")),
+		       makeBignum("-3219789841236123678239865237892936825367953267523689352968869532868")));
+	
+	assertTrue(eqv(subtract(-1, 
+				makeBignum("3219789841236123678239865237892936825367953267523689352968869532869")),
+		       makeBignum("-3219789841236123678239865237892936825367953267523689352968869532870")));
     },
-
+    
     'bignum / bignum' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(subtract(makeBignum("10e500"),
+				makeBignum("10e500")),
+		       0));
+	assertFalse(eqv(subtract(makeBignum("0"),
+				 makeBignum("0")),
+			1));
+	assertTrue(eqv(subtract(makeBignum("0"),
+				 makeBignum("-1")),
+			1));
+	assertTrue(eqv(subtract(makeBignum("235869532689532689523689532689"),
+				makeBignum("532679532692536916785915689")),
+		       makeBignum("235336853156840152606903617000")));
+	assertTrue(eqv(subtract(makeBignum("235869532689532689523689532689"),
+				makeBignum("-532679532692536916785915689")),
+		       makeBignum("236402212222225226440475448378")));
+
+	assertTrue(eqv(subtract(makeBignum("1e500"),
+				makeBignum("1e400")),
+		       makeBignum("99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")));
     },
 
     'bignum / rational': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(subtract(makeBignum("12342539328423789239827369"),
+				makeRational(1, 2)),
+		       makeRational(makeBignum("24685078656847578479654737"),
+				    2)));
+
+
+	assertTrue(eqv(subtract(makeBignum("12342539328423789239827369"),
+				makeRational(makeBignum("32658963528962385326953269"), 
+					     makeBignum("653289953253269"))),
+		       makeRational(makeBignum("8063256940892578770775763336720167965992"),
+				    makeBignum("653289953253269"))));
     },
 
     'bignum / float' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(subtract(makeBignum("1e50"),
+				makeFloat(1)),
+		       makeFloat(1e50-1)));
+	assertFalse(eqv(subtract(makeBignum("1e50"),
+				 makeFloat(1e-50)),
+			makeBignum("1e50")));
+	assertTrue(equals(subtract(makeBignum("1e50"),
+				   makeFloat(1e-50)),
+			  makeBignum("1e50")));
+
+
+	assertTrue(eqv(subtract(makeBignum("0"),
+				inf),
+		       negative_inf));
+	assertTrue(eqv(subtract(inf, 
+				makeBignum("0")),
+		       inf));
+	assertTrue(eqv(subtract(makeBignum("1e500"),
+				inf),
+		       negative_inf));
+	assertTrue(eqv(subtract(inf, 
+				makeBignum("1e500")),
+		       inf));
+	assertTrue(eqv(subtract(makeBignum("-1e500"),
+				inf),
+		       negative_inf));
+	assertTrue(eqv(subtract(inf, 
+				makeBignum("-1e500")),
+		       inf));
     },
 
     'bignum / complex' : function() {
@@ -1207,6 +1268,10 @@ describe('subtract', {
 describe('multiply', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
+    },
+
+    'fixnum overflows to bignum': function() {
+	// FIXME
     },
 
     'fixnum / bignum': function() {
@@ -1263,6 +1328,11 @@ describe('divide', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+
+    'fixnum overflows to bignum': function() {
+	// FIXME
+    },
+
     'fixnum / bignum': function() {
 	// FIXME: we're missing this
     },
@@ -1532,6 +1602,11 @@ describe('expt', {
     'fixnum / fixnum' : function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+
+    'fixnum overflows to bignum': function() {
+	// FIXME
+    },
+
     'fixnum / bignum': function() {
 	// FIXME: we're missing this
     },
@@ -2001,6 +2076,7 @@ describe('exp', {
     'fixnums': function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+
     'bignums': function() {
 	// FIXME: we're missing this
     },
@@ -2020,6 +2096,11 @@ describe('sqr', {
     'fixnums': function() {
 	// FIXME: add test case where value needs to become a bignum.
     },
+
+    'fixnum overflows to bignum': function() {
+	// FIXME
+    },
+
     'bignums': function() {
 	// FIXME: we're missing this
     },
