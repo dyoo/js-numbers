@@ -1598,12 +1598,11 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     Complex.prototype.toString = function() {
-	if (greaterThanOrEqual(
-	    this.i,
-	    0)) {
-            return this.r.toString() + "+" + this.i.toString()+"i";
+	var realPart = this.r.toString(), imagPart = this.i.toString();
+	if (imagPart[0] === '-' || imagPart[0] === '+') {
+	    return realPart + imagPart + 'i';
 	} else {
-            return this.r.toString() + this.i.toString()+"i";
+	    return realPart + "+" + imagPart + 'i';
 	}
     };
 

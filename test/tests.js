@@ -9,57 +9,57 @@ for (val in N) {
 
 
 var diffPercent = function(x, y) {
-    if (typeof(x) === 'number') { 
+    if (typeof(x) === 'number') {
 	x = fromFixnum(x);
     }
-    if (typeof(y) === 'number') { 
+    if (typeof(y) === 'number') {
 	y = fromFixnum(y);
     }
     return Math.abs(toFixnum(divide(subtract(x, y), y)));
-}
+};
 
 
 var assertTrue = function(aVal) {
     value_of(aVal).should_be_true();
-}
+};
 
 var assertFalse = function(aVal) {
     value_of(aVal).should_be_false();
-}
+};
 
 var assertEquals = function(expected, aVal) {
     value_of(aVal).should_be(expected);
-}
+};
 
 var assertFails = function(thunk) {
     var isFailed = false;
     try {
-	thunk(); 
+	thunk();
     } catch (e) {
 	isFailed = true;
     }
     value_of(isFailed).should_be_true();
-}
+};
 
 
 
 describe('rational constructions', {
-    'constructions' : function() { 
+    'constructions' : function() {
 	value_of(isSchemeNumber(makeRational(42)))
-	    .should_be_true(); 
+	    .should_be_true();
 
 	value_of(isSchemeNumber(makeRational(21, 2)))
-	    .should_be_true(); 
+	    .should_be_true();
 
 	value_of(isSchemeNumber(makeRational(2, 1)))
-	    .should_be_true(); 
+	    .should_be_true();
 
 
 	value_of(isSchemeNumber(makeRational(-17, -171)))
-	    .should_be_true(); 
+	    .should_be_true();
 
 	value_of(isSchemeNumber(makeRational(17, -171)))
-	    .should_be_true(); 
+	    .should_be_true();
     },
 
 
@@ -70,7 +70,7 @@ describe('rational constructions', {
 	    .should_be_true();
 	value_of(equals(makeRational(1, 2),
 
-			  makeRational(6, 10)))
+			makeRational(6, 10)));
 
 	value_of(equals(makeRational(1, 2),
 
@@ -79,32 +79,32 @@ describe('rational constructions', {
     }
 
 });
-    
-describe('built-in constants', { 
+
+describe('built-in constants', {
     'pi': function() {
- 	value_of(isSchemeNumber(pi)).should_be_true() },
+ 	value_of(isSchemeNumber(pi)).should_be_true(); },
     'e': function() {
-	value_of(isSchemeNumber(e)).should_be_true() },
+	value_of(isSchemeNumber(e)).should_be_true(); },
     'nan' : function() {
-	value_of(isSchemeNumber(nan)).should_be_true() },
+	value_of(isSchemeNumber(nan)).should_be_true(); },
     'negative_inf' : function() {
-	value_of(isSchemeNumber(negative_inf)).should_be_true() },
+	value_of(isSchemeNumber(negative_inf)).should_be_true(); },
     'inf' : function() {
-	value_of(isSchemeNumber(inf)).should_be_true() },
+	value_of(isSchemeNumber(inf)).should_be_true(); },
     'negative_one' : function() {
-	value_of(isSchemeNumber(negative_one)).should_be_true() },
-    'zero' : function() { 
-	value_of(isSchemeNumber(zero)).should_be_true() },
+	value_of(isSchemeNumber(negative_one)).should_be_true(); },
+    'zero' : function() {
+	value_of(isSchemeNumber(zero)).should_be_true(); },
     'one' : function() {
-	value_of(isSchemeNumber(one)).should_be_true() },
+	value_of(isSchemeNumber(one)).should_be_true(); },
     'i' : function() {
-	value_of(isSchemeNumber(i)).should_be_true() },
+	value_of(isSchemeNumber(i)).should_be_true(); },
     'negative_i' : function() {
-	value_of(isSchemeNumber(negative_i)).should_be_true() }
+	value_of(isSchemeNumber(negative_i)).should_be_true(); }
 });
 
 
-describe('fromString', {	
+describe('fromString', {
     'fixnums': function() {
 	assertEquals(43, fromString("43"));
 	assertEquals(43, fromString("+43"));
@@ -112,11 +112,11 @@ describe('fromString', {
     },
 
     'bignums': function() {
-	assertEquals(makeBignum("123456789012345678901234567890"), 
+	assertEquals(makeBignum("123456789012345678901234567890"),
 		     fromString("123456789012345678901234567890"));
-	assertEquals(makeBignum("123456789012345678901234567890"), 
+	assertEquals(makeBignum("123456789012345678901234567890"),
 		     fromString("+123456789012345678901234567890"));
-	assertEquals(makeBignum("-123456789012345678901234567890"), 
+	assertEquals(makeBignum("-123456789012345678901234567890"),
 		     fromString("-123456789012345678901234567890"));
     },
 
@@ -159,7 +159,7 @@ describe('fromString', {
 	assertEquals(makeComplex(0, makeFloat(-3.7)), fromString("0-3.7i"));
 
 	assertEquals(makeComplex(1, makeRational(-29, 42)), fromString("1-29/42i"));
-	assertEquals(makeComplex(makeFloat(100.5), 
+	assertEquals(makeComplex(makeFloat(100.5),
 				 makeRational(-29, 42)), fromString("100.5-29/42i"));
 	assertEquals(makeComplex(0, makeFloat(-3.7)), fromString("0-3.7i"));
 	assertEquals(makeComplex(inf, makeFloat(-3.7)), fromString("+inf.0-3.7i"));
@@ -168,6 +168,8 @@ describe('fromString', {
 		     fromString("-inf.0-3.7i"));
 	assertEquals(makeComplex(negative_inf, negative_inf),
 		     fromString("-inf.0-inf.0i"));
+	assertEquals(makeComplex(nan, nan),
+		     fromString("+nan.0+nan.0i"));
 	assertEquals(makeComplex(-42, -43),
 		     fromString("-42-43i"));
     },
@@ -191,7 +193,7 @@ describe('fromString', {
 	assertFalse(fromString("-1/-3"));
     }});
 
-	
+
 describe('fromFixnum', {
     'fixnums': function() {
 	value_of(equals(fromFixnum(42),
@@ -293,13 +295,13 @@ describe('equals', {
 	assertFalse(equals(makeBignum("90210"),
 			   makeComplex(makeFloat(90210), makeFloat(0.1))));
     },
-    
+
     'fixnum / rational': function() {
 	value_of(equals(0, zero)).should_be_true();
 	value_of(equals(42, makeRational(84, 2))).should_be_true();
 	value_of(equals(42, makeRational(84, 3))).should_be_false();
     },
-    
+
     'fixnum / float ' : function() {
 	value_of(equals(1024, makeFloat(1024))).should_be_true();
 	value_of(equals(1024, makeFloat(1024.0001))).should_be_false();
@@ -385,9 +387,9 @@ describe('eqv', {
 	value_of(eqv(negative_inf, negative_inf)).should_be_true();
 
 	assertFalse(eqv(inf, negative_inf));
-	assertFalse(eqv(inf, 
+	assertFalse(eqv(inf,
 			makeBignum("1e3000")));
-	assertFalse(eqv(negative_inf, 
+	assertFalse(eqv(negative_inf,
 			makeBignum("-1e3000")));
     },
 
@@ -490,7 +492,7 @@ describe('eqv', {
 	value_of(eqv(42, makeRational(84, 2))).should_be_true();
 	value_of(eqv(42, makeRational(84, 3))).should_be_false();
     },
-    
+
     'fixnum / float ' : function() {
 	value_of(eqv(fromFixnum(1024), makeFloat(1024))).should_be_false();
 	value_of(eqv(fromFixnum(1024), makeFloat(1024.0001))).should_be_false();
@@ -686,7 +688,7 @@ describe('isReal', {
 
 describe('isExact', {
     'fixnums': function() {
-	assertTrue(isExact(19));	
+	assertTrue(isExact(19));
 	assertTrue(isExact(0));
 	assertTrue(isExact(-1));
 	assertTrue(isExact(1));
@@ -705,7 +707,7 @@ describe('isExact', {
     },
 
     'rationals': function() {
-	assertTrue(isExact(makeRational(19)));	
+	assertTrue(isExact(makeRational(19)));
 	assertTrue(isExact(makeRational(0)));
 	assertTrue(isExact(makeRational(-1)));
 	assertTrue(isExact(makeRational(1)));
@@ -788,7 +790,7 @@ describe('toFixnum', {
     },
 
     'bignums': function() {
-	assertEquals(123456789, toFixnum(makeBignum("123456789")))
+	assertEquals(123456789, toFixnum(makeBignum("123456789")));
 	assertEquals(0, toFixnum(makeBignum("0")));
 	assertEquals(-123, toFixnum(makeBignum("-123")));
 	assertEquals(123456, toFixnum(makeBignum("123456")));
@@ -818,9 +820,9 @@ describe('toFixnum', {
     },
 
     'complex': function() {
-	assertFails(function() { toFixnum(makeComplex(2, 1)) });
-	assertFails(function() { toFixnum(i) });
-	assertFails(function() { toFixnum(negative_i) });
+	assertFails(function() { toFixnum(makeComplex(2, 1)); });
+	assertFails(function() { toFixnum(i); });
+	assertFails(function() { toFixnum(negative_i); });
 	assertEquals(2, toFixnum(makeComplex(2, 0)));
 	assertEquals(1/2, toFixnum(makeComplex(makeRational(1, 2),
 						   0)));
@@ -870,10 +872,10 @@ describe('toExact', {
 	assertEquals(makeRational(1, 10), toExact(makeFloat(0.1)));
 	assertEquals(makeRational(9, 10), toExact(makeFloat(0.9)));
 	assertTrue(isExact(toExact(makeFloat(10234.7))));
-	assertTrue(diffPercent(makeRational(102347, 10), 
+	assertTrue(diffPercent(makeRational(102347, 10),
 			       toExact(makeFloat(10234.7))) < 1);
 	assertEquals(-1, toExact(makeFloat(-1)));
-	assertEquals(0, toExact(makeFloat(0)));	
+	assertEquals(0, toExact(makeFloat(0)));
 	assertEquals(1024, toExact(makeFloat(1024)));
 	assertFails(function() { toExact(nan); });
 	assertFails(function() { toExact(inf); });
@@ -883,7 +885,7 @@ describe('toExact', {
     'complex': function() {
 	assertEquals(0, toExact(makeComplex(0, 0)));
 	assertEquals(99, toExact(makeComplex(99, 0)));
-	assertEquals(makeRational(-1, 2), 
+	assertEquals(makeRational(-1, 2),
 		     toExact(makeComplex(makeRational(-1, 2), 0)));
 	assertEquals(makeRational(1, 4),
 		     toExact(makeComplex(.25, 0)));
@@ -955,7 +957,7 @@ describe('add', {
  			   makeRational(2))));
  	assertTrue(eqv(makeBignum("1e500"),
  		       add(makeBignum("1e500"),
- 			   makeRational(0))))
+ 			   makeRational(0))));
  	assertTrue(eqv(makeRational(add(makeBignum("1e500"), 1),
  				    makeBignum("1e500")),
  		       add(1, makeRational(1, makeBignum("1e500")))));
@@ -1078,40 +1080,40 @@ describe('add', {
 	assertEquals(makeComplex(makeRational(-324, 23), 1),
 		     add(makeRational(-324, 23), makeComplex(0, 1)));
 	assertEquals(makeComplex(0, -234),
-		     add(makeRational(-324, 23), 
-			 makeComplex(makeRational(324, 23), 
+		     add(makeRational(-324, 23),
+			 makeComplex(makeRational(324, 23),
 				     -234)));
     },
 
     'floating / floating' : function() {
 	assertEquals(makeFloat(12345.678),
-		     add(makeFloat(12345), makeFloat(.678)))
+		     add(makeFloat(12345), makeFloat(.678)));
 	assertEquals(makeFloat(-12344.322),
-		     add(makeFloat(-12345), makeFloat(.678)))
+		     add(makeFloat(-12345), makeFloat(.678)));
 	assertEquals(makeFloat(Math.PI + Math.E),
 		     add(pi, e));
-	assertEquals(inf, add(inf, inf))
-	assertEquals(nan, add(inf, negative_inf))
-	assertEquals(nan, add(inf, nan))
-	assertEquals(nan, add(negative_inf, inf))
-	assertEquals(negative_inf, add(negative_inf, negative_inf))
-	assertEquals(nan, add(negative_inf, nan))
-	assertEquals(nan, add(nan, inf))
-	assertEquals(nan, add(nan, negative_inf))
-	assertEquals(nan, add(nan, nan))
+	assertEquals(inf, add(inf, inf));
+	assertEquals(nan, add(inf, negative_inf));
+	assertEquals(nan, add(inf, nan));
+	assertEquals(nan, add(negative_inf, inf));
+	assertEquals(negative_inf, add(negative_inf, negative_inf));
+	assertEquals(nan, add(negative_inf, nan));
+	assertEquals(nan, add(nan, inf));
+	assertEquals(nan, add(nan, negative_inf));
+	assertEquals(nan, add(nan, nan));
     },
 
     'floating / complex' : function() {
-	assertEquals(makeComplex(inf, 1), add(inf, makeComplex(inf, 1)))
-	assertEquals(makeComplex(nan, 2), add(inf, makeComplex(negative_inf, 2)))
-	assertEquals(makeComplex(nan, 3), add(inf, makeComplex(nan, 3)))
-	assertEquals(makeComplex(nan, 4), add(negative_inf, makeComplex(inf, 4)))
+	assertEquals(makeComplex(inf, 1), add(inf, makeComplex(inf, 1)));
+	assertEquals(makeComplex(nan, 2), add(inf, makeComplex(negative_inf, 2)));
+	assertEquals(makeComplex(nan, 3), add(inf, makeComplex(nan, 3)));
+	assertEquals(makeComplex(nan, 4), add(negative_inf, makeComplex(inf, 4)));
 	assertEquals(makeComplex(negative_inf, 5),
-		     add(negative_inf, makeComplex(negative_inf, 5)))
-	assertEquals(makeComplex(nan, 6), add(negative_inf, makeComplex(nan, 6)))
-	assertEquals(makeComplex(nan, 7), add(nan, makeComplex(inf, 7)))
-	assertEquals(makeComplex(nan, 8), add(nan, makeComplex(negative_inf, 8)))
-	assertEquals(makeComplex(nan, 9), add(nan, makeComplex(nan, 9)))
+		     add(negative_inf, makeComplex(negative_inf, 5)));
+	assertEquals(makeComplex(nan, 6), add(negative_inf, makeComplex(nan, 6)));
+	assertEquals(makeComplex(nan, 7), add(nan, makeComplex(inf, 7)));
+	assertEquals(makeComplex(nan, 8), add(nan, makeComplex(negative_inf, 8)));
+	assertEquals(makeComplex(nan, 9), add(nan, makeComplex(nan, 9)));
     },
 
     'complex / complex' : function() {
@@ -1157,12 +1159,12 @@ describe('subtract', {
     'fixnum / bignum': function() {
 	assertTrue(eqv(subtract(1, makeBignum("3219789841236123678239865237892936825367953267523689352968869532869")),
 		       makeBignum("-3219789841236123678239865237892936825367953267523689352968869532868")));
-	
-	assertTrue(eqv(subtract(-1, 
+
+	assertTrue(eqv(subtract(-1,
 				makeBignum("3219789841236123678239865237892936825367953267523689352968869532869")),
 		       makeBignum("-3219789841236123678239865237892936825367953267523689352968869532870")));
     },
-    
+
     'bignum / bignum' : function() {
 	assertTrue(eqv(subtract(makeBignum("10e500"),
 				makeBignum("10e500")),
@@ -1193,7 +1195,7 @@ describe('subtract', {
 
 
 	assertTrue(eqv(subtract(makeBignum("12342539328423789239827369"),
-				makeRational(makeBignum("32658963528962385326953269"), 
+				makeRational(makeBignum("32658963528962385326953269"),
 					     makeBignum("653289953253269"))),
 		       makeRational(makeBignum("8063256940892578770775763336720167965992"),
 				    makeBignum("653289953253269"))));
@@ -1214,19 +1216,19 @@ describe('subtract', {
 	assertTrue(eqv(subtract(makeBignum("0"),
 				inf),
 		       negative_inf));
-	assertTrue(eqv(subtract(inf, 
+	assertTrue(eqv(subtract(inf,
 				makeBignum("0")),
 		       inf));
 	assertTrue(eqv(subtract(makeBignum("1e500"),
 				inf),
 		       negative_inf));
-	assertTrue(eqv(subtract(inf, 
+	assertTrue(eqv(subtract(inf,
 				makeBignum("1e500")),
 		       inf));
 	assertTrue(eqv(subtract(makeBignum("-1e500"),
 				inf),
 		       negative_inf));
-	assertTrue(eqv(subtract(inf, 
+	assertTrue(eqv(subtract(inf,
 				makeBignum("-1e500")),
 		       inf));
     },
@@ -2260,11 +2262,11 @@ describe('toString', {
 		     makeRational(1, 2));
 
 	assertEquals("2398742368955236823956823968/239856325892398441",
-		     makeRational(makeBignum("2398742368955236823956823968"), 
+		     makeRational(makeBignum("2398742368955236823956823968"),
 				  makeBignum("239856325892398441")));
 
 	assertEquals("-2398742368955236823956823968/239856325892398441",
-		     makeRational(makeBignum("-2398742368955236823956823968"), 
+		     makeRational(makeBignum("-2398742368955236823956823968"),
 				  makeBignum("239856325892398441")));
     },
     'floats': function() {
@@ -2280,7 +2282,19 @@ describe('toString', {
 
     },
     'complex': function() {
-	// FIXME: we're missing this
+	assertEquals("1+0i", makeComplex(1, 0).toString());
+	assertEquals("-1+0i", makeComplex(-1, 0).toString());
+	assertEquals("0+1i", makeComplex(0, 1).toString());
+	assertEquals("0-1i", makeComplex(0, -1).toString());
+	assertEquals("0-0.0i", makeComplex(0, negative_zero).toString());
+	assertEquals("3/4+5/6i", makeComplex(makeRational(3, 4),
+					     makeRational(5, 6)).toString());
+	assertEquals("3/4-5/6i", makeComplex(makeRational(3, 4),
+					     makeRational(-5, 6)).toString());
+	assertEquals("0.1-inf.0i", makeComplex(makeFloat(0.1),
+					       negative_inf).toString());
+	assertEquals("+nan.0+inf.0i", makeComplex(nan, inf).toString());
+	assertEquals("+nan.0+nan.0i", makeComplex(nan, nan).toString());
+	assertEquals("-inf.0-inf.0i", makeComplex(negative_inf, negative_inf).toString());
     }
 });
-
