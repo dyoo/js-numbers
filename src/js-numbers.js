@@ -935,10 +935,10 @@ if (! this['plt']['lib']['Numbers']) {
 
     Rational.prototype._lift = function(target) {
 	if (target._level === 2)
-	    return FloatPoint.makeInstance(
+	    return new FloatPoint(
 		_integerDivideToFixnum(this.n, this.d));
 	if (target._level === 3)
-	    return Complex.makeInstance(this, 0);
+	    return new Complex(this, 0);
 	return throwRuntimeError("invalid _level of Number");
     };
 
@@ -1281,7 +1281,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     FloatPoint.prototype._lift = function(target) {
 	if (target._level === 3)
-	    return Complex.makeInstance(this, 0);
+	    return new Complex(this, 0);
 	return throwRuntimeError("invalid _level of Number");
     };
 
@@ -3267,7 +3267,7 @@ if (! this['plt']['lib']['Numbers']) {
     BigInteger.prototype._level = 0;
     BigInteger.prototype._lift = function(target) {
 	if (target._level === 1) {
-	    return Rational.makeInstance(this, 1);
+	    return new Rational(this, 1);
 	}
 	if (target._level === 2) {
 	    var fixrep = this.toFixnum();
@@ -3275,10 +3275,10 @@ if (! this['plt']['lib']['Numbers']) {
 		return TOO_POSITIVE_TO_REPRESENT;
 	    if (fixrep === Number.NEGATIVE_INFINITY)
 		return TOO_NEGATIVE_TO_REPRESENT;
-	    return FloatPoint.makeInstance(fixrep);
+	    return new FloatPoint(fixrep);
 	}
 	if (target._level === 3) {
-	    return Complex.makeInstance(this, 0);
+	    return new Complex(this, 0);
 	}
 	return throwRuntimeError("invalid _level for BigInteger lift");
     };
