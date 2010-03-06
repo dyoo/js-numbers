@@ -1348,7 +1348,16 @@ if (! this['plt']['lib']['Numbers']) {
 
     FloatPoint.prototype.subtract = function(other) {
 	if (this.isFinite() && other.isFinite()) {
-	    return FloatPoint.makeInstance(this.n - other.n);
+	    var result = this.n - other.n;
+	    if (result === 0.0) {
+		if (other.n === NEGATIVE_ZERO) {
+		    return FloatPoint.makeInstance(result);
+		}
+		else if (this.n === NEGATIVE_ZERO) {
+		    return NEGATIVE_ZERO;
+		}
+	    }
+	    return FloatPoint.makeInstance(result);
 	} else if (isNaN(this.n) || isNaN(other.n)) {
 	    return NaN;
 	} else if (! this.isFinite() && ! other.isFinite()) {
