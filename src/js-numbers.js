@@ -93,6 +93,8 @@ if (! this['plt']['lib']['Numbers']) {
 	    return FloatPoint.makeInstance(x);
 	case 3: // Complex
 	    return Complex.makeInstance(x, 0);
+	default:
+	    return throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString());
 	}
     };
 
@@ -718,13 +720,13 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m.multiply(n);
 	});
 
-    //_integerDivide: integer-scheme-number integer-scheme-number -> integer-scheme-number
-    var _integerDivide = makeIntegerBinop(
+    //_integerQuotient: integer-scheme-number integer-scheme-number -> integer-scheme-number
+    var _integerQuotient = makeIntegerBinop(
 	function(m, n) {
 	    return m / n;
 	},
 	function(m, n) {
-	    return m.divide(n);
+            return bnDivide.call(m, n);
 	});
 
 
@@ -735,7 +737,6 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(m, n) {
 	    return toFixnum(m) / toFixnum(n);
-	    //return toFixnum(m.divide(n))
 	},
 	{ignoreOverflow: true});
 
@@ -915,13 +916,8 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     var Rational = function(n, d) {
-	if (d === undefined) { d = 1; }
-	if (_integerIsZero(d)) {
-	    throwRuntimeError("cannot have zero denominator.");
-	}
-	var divisor = _integerGcd(abs(n), abs(d));
-	this.n = _integerDivide(n, divisor);
-	this.d = _integerDivide(d, divisor);
+	this.n = n;
+	this.d = d;
     };
 
 
@@ -1162,13 +1158,13 @@ if (! this['plt']['lib']['Numbers']) {
 	    var fl = Math.floor(v);
 	    var ce = Math.ceil(v);
 	    if (_integerIsZero(fl % 2)) {
-		return Rational.makeInstance(fl);
+		return fromFixnum(fl);
 	    }
 	    else {
-		return Rational.makeInstance(ce);
+		return fromFixnum(ce);
 	    }
 	} else {
-	    return Rational.makeInstance(Math.round(this.n / this.d));
+	    return fromFixnum(Math.round(this.n / this.d));
 	}
     };
 
@@ -1185,6 +1181,11 @@ if (! this['plt']['lib']['Numbers']) {
 	    n = negate(n);
 	    d = negate(d);
 	}
+
+	var divisor = _integerGcd(abs(n), abs(d));
+	n = _integerQuotient(n, divisor);
+	d = _integerQuotient(d, divisor);
+
 	if (_integerIsOne(d)) {
 	    return n;
 	}
