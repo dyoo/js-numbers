@@ -223,6 +223,9 @@ describe('fromFixnum', {
 describe('equals', {
     'nan': function() {
 	value_of(equals(nan, nan)).should_be_false();
+	value_of(equals(nan, 3)).should_be_false();
+	value_of(equals(nan, makeFloat(239843))).should_be_false();
+	value_of(equals(nan, makeComplex(239843, 2))).should_be_false();
     },
 
     '-0.0': function() {
@@ -300,6 +303,7 @@ describe('equals', {
 	value_of(equals(0, zero)).should_be_true();
 	value_of(equals(42, makeRational(84, 2))).should_be_true();
 	value_of(equals(42, makeRational(84, 3))).should_be_false();
+	value_of(equals(28, makeRational(84, 3))).should_be_true();
     },
 
     'fixnum / float ' : function() {
@@ -491,6 +495,7 @@ describe('eqv', {
     'fixnum / rational': function() {
 	value_of(eqv(42, makeRational(84, 2))).should_be_true();
 	value_of(eqv(42, makeRational(84, 3))).should_be_false();
+	value_of(eqv(28, makeRational(84, 3))).should_be_true();
     },
 
     'fixnum / float ' : function() {
@@ -1257,16 +1262,35 @@ describe('subtract', {
     },
 
     'fixnum / rational' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeRational(1, 2),
+	               subtract(1, makeRational(1, 2))));
+	assertTrue(eqv(makeRational(-1, 2),
+	               subtract(1, makeRational(3, 2))));
+	assertTrue(eqv(makeRational(341, 20),
+	               subtract(17, makeRational(-1, 20))));
     },
+
     'fixnum / floating' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeFloat(0),
+		       subtract(1, makeFloat(1.0))));
+
+	assertTrue(eqv(makeFloat(-22998.1),
+		       subtract(2398, makeFloat(25396.1))));
     },
+
     'fixnum / complex' : function() {
 	// FIXME: we're missing this
     },
+
     'rational / rational' : function() {
-	// FIXME: we're missing this
+	value_of(subtract(makeRational(1, 3), makeRational(1, 2))
+		).should_be(makeRational(-1, 6));
+	value_of(subtract(makeRational(6, 3), makeRational(0, 1))
+		).should_be(makeRational(2, 1));
+	value_of(subtract(makeRational(6, -3), makeRational(0, 1))
+		).should_be(makeRational(-2, 1));
+	value_of(subtract(makeRational(-1, 3), makeRational(1, -2))
+		).should_be(makeRational(1, 6));
     },
     'rational / floating' : function() {
 	// FIXME: we're missing this
@@ -1428,6 +1452,23 @@ describe('divide', {
     },
     'complex / complex' : function() {
 	// FIXME: we're missing this
+    },
+
+    'division by zeros' : function() {
+	assertFails(function() {divide(1, 0);});
+	assertFails(function() {divide(makeRational(1, 2), 0);});
+	assertFails(function() {divide(makeComplex(1, 2), 0);});
+
+	assertTrue(eqv(inf, divide(1, makeFloat(0.0))));
+	assertTrue(eqv(negative_inf, divide(1, negative_zero)));
+
+	assertTrue(eqv(inf, divide(makeFloat(42), makeFloat(0.0))));
+	assertTrue(eqv(negative_inf, divide(makeFloat(-42), makeFloat(0.0))));
+	assertTrue(eqv(negative_inf, divide(makeFloat(42), negative_zero)));
+	assertTrue(eqv(inf, divide(makeFloat(-42), negative_zero)));
+
+	assertTrue(eqv(inf, divide(makeRational(1, 2), makeFloat(0.0))));
+	assertTrue(eqv(makeComplex(inf, inf), divide(makeComplex(1, 2), makeFloat(0.0))));
     }
 });
 
@@ -1819,19 +1860,52 @@ describe('sqrt', {
 
 describe('abs', {
     'fixnums': function() {
-	// FIXME: we're missing this
+	assertEquals(0, abs(0));
+	assertEquals(42, abs(42));
+	assertEquals(42, abs(-42));
+	assertEquals(1, abs(-1));
     },
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeBignum("23569236859962835638935268952936825689536829253968"),
+		       abs(makeBignum("23569236859962835638935268952936825689536829253968"))));
+	assertTrue(eqv(makeBignum("23569236859962835638935268952936825689536829253968"),
+		       abs(makeBignum("-23569236859962835638935268952936825689536829253968"))));
+	assertEquals(makeBignum("1"),
+		     abs(makeBignum("-1")));
+	assertEquals(makeBignum("1"),
+		     abs(makeBignum("1")));
+	assertEquals(makeBignum("0"),
+		     abs(makeBignum("0")));
     },
     'rationals': function() {
-	// FIXME: we're missing this
+	assertEquals(makeRational(2, 1),
+	             abs(makeRational(-2, 1)));
+	assertEquals(makeRational(2, 1),
+	             abs(makeRational(2, 1)));
+	assertEquals(makeRational(0, 1),
+	             abs(makeRational(0, 1)));
+	assertEquals(makeRational(3298, 28),
+	             abs(makeRational(3298, 28)));
+	assertEquals(makeRational(3298, 28),
+	             abs(makeRational(-3298, 28)));
     },
+
     'floats': function() {
-	// FIXME: we're missing this
+	assertEquals(makeFloat(0.0),
+		     abs(makeFloat(0.0)));
+	assertTrue(eqv(makeFloat(0.0),
+		       abs(negative_zero)));
+	assertTrue(eqv(makeFloat(1342.7),
+		       abs(makeFloat(1342.7))));
+	assertTrue(eqv(makeFloat(1342.7),
+		       abs(makeFloat(-1342.7))));
     },
+
     'complex': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeComplex(2, 0),
+		       abs(makeComplex(-2, 0))));
+	assertTrue(eqv(makeComplex(2, 0),
+	           abs(makeComplex(2, 0))));
     }
 });
 

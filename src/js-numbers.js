@@ -88,7 +88,7 @@ if (! this['plt']['lib']['Numbers']) {
 	case 0: // BigInteger
 	    return makeBignum(x + '');
 	case 1: // Rational
-	    return Rational.makeInstance(x, 1);
+	    return new Rational(x, 1);
 	case 2: // FloatPoint
 	    return FloatPoint.makeInstance(x);
 	case 3: // Complex
@@ -680,7 +680,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(n) === 'number') {
 	    return n === 0;
 	}
-	return makeBignum(n + '').equals(BigInteger.ZERO);
+	return n.equals(BigInteger.ZERO);
     };
 
     // _integerIsOne: integer-scheme-number -> boolean
@@ -688,7 +688,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(n) === 'number') {
 	    return n === 1;
 	}
-	return makeBignum(n + '').equals(BigInteger.ONE);
+	return n.equals(BigInteger.ONE);
     };
 
     // _integerAdd: integer-scheme-number integer-scheme-number -> integer-scheme-number
@@ -1184,6 +1184,9 @@ if (! this['plt']['lib']['Numbers']) {
 	if (_integerLessThan(d, 0)) {
 	    n = negate(n);
 	    d = negate(d);
+	}
+	if (_integerIsOne(d)) {
+	    return n;
 	}
 
 	if (typeof(n) === 'number' && typeof(d) === 'number') {
