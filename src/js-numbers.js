@@ -656,7 +656,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m % n;
 	},
 	function(m, n) {
-	    return m.mod(n);
+	    return bnMod.call(m, n);
 	});
 
 
@@ -672,7 +672,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return a;
 	},
 	function(m, n) {
-	    return m.gcd(n);
+	    return bnGCD.call(m, n);
 	});
 
 
@@ -682,7 +682,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(n) === 'number') {
 	    return n === 0;
 	}
-	return n.equals(BigInteger.ZERO);
+	return bnEquals.call(n, BigInteger.ZERO);
     };
 
     // _integerIsOne: integer-scheme-number -> boolean
@@ -690,7 +690,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(n) === 'number') {
 	    return n === 1;
 	}
-	return n.equals(BigInteger.ONE);
+	return bnEquals.call(n, BigInteger.ONE);
     };
 
     // _integerAdd: integer-scheme-number integer-scheme-number -> integer-scheme-number
@@ -699,7 +699,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m + n;
 	},
 	function(m, n) {
-	    return m.add(n);
+	    return bnAdd.call(m, n);
 	});
 
     // _integerSubtract: integer-scheme-number integer-scheme-number -> integer-scheme-number
@@ -708,7 +708,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m - n;
 	},
 	function(m, n) {
-	    return m.subtract(n);
+	    return bnSubtract.call(m, n);
 	});
 
     // _integerMultiply: integer-scheme-number integer-scheme-number -> integer-scheme-number
@@ -717,7 +717,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m * n;
 	},
 	function(m, n) {
-	    return m.multiply(n);
+	    return bnMultiply.call(m, n);
 	});
 
     //_integerQuotient: integer-scheme-number integer-scheme-number -> integer-scheme-number
@@ -747,7 +747,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m === n;
 	},
 	function(m, n) {
-	    return m.equals(n);
+	    return bnEquals.call(m, n);
 	});
 
     // _integerGreaterThan: integer-scheme-number integer-scheme-number -> boolean
@@ -756,7 +756,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m > n;
 	},
 	function(m, n) {
-	    return m.compareTo(n) > 0;
+	    return bnCompareTo.call(m, n) > 0;
 	});
 
     // _integerLessThan: integer-scheme-number integer-scheme-number -> boolean
@@ -765,7 +765,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m < n;
 	},
 	function(m, n) {
-	    return m.compareTo(n) < 0;
+	    return bnCompareTo.call(m, n) < 0;
 	});
 
     // _integerGreaterThanOrEqual: integer-scheme-number integer-scheme-number -> boolean
@@ -774,7 +774,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m >= n;
 	},
 	function(m, n) {
-	    return m.compareTo(n) >= 0;
+	    return bnCompareTo.call(m, n) >= 0;
 	});
 
     // _integerLessThanOrEqual: integer-scheme-number integer-scheme-number -> boolean
@@ -783,7 +783,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return m <= n;
 	},
 	function(m, n) {
-	    return m.compareTo(n) <= 0;
+	    return bnCompareTo.call(m, n) <= 0;
 	});
 
 
