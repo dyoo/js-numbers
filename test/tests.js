@@ -2218,15 +2218,32 @@ describe('exp', {
 describe('sqr', {
     'fixnums': function() {
 	// FIXME: add test case where value needs to become a bignum.
+	assertTrue(eqv(sqr(42), 1764));
+	assertTrue(eqv(sqr(0), 0));
+	assertTrue(eqv(sqr(1), 1));
+	assertTrue(eqv(sqr(2), 4));
+	assertTrue(eqv(sqr(-1), 1));
+	assertTrue(eqv(sqr(-2), 4));
+	assertTrue(eqv(sqr(-12349), 152497801));
     },
 
     'fixnum overflows to bignum': function() {
-	// FIXME
+	var x = fromFixnum(2);
+	for(var i = 0; i < 10; i++) {
+	    x = sqr(x);
+	}
+	// Basically, computing (expt 2 (expt 2 10))
+	assertTrue(eqv(x, makeBignum("179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216")));
     },
 
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqr(makeBignum("1297684398542133568912839")),
+		       makeBignum("1683984798219658952314406790914015952992379039921")));
+
+	assertTrue(eqv(sqr(makeBignum("-1297684398542133568912839")),
+		       makeBignum("1683984798219658952314406790914015952992379039921")));
     },
+
     'rationals': function() {
 	// FIXME: we're missing this
     },
