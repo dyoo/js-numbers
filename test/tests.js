@@ -2257,6 +2257,8 @@ describe('sqr', {
 
     },
     'floats': function() {
+	assertTrue(eqv(sqr(makeFloat(0.0)),
+		       makeFloat(0.0)));
 	assertTrue(eqv(sqr(makeFloat(.25)),
 		       makeFloat(0.0625)));
 	assertTrue(eqv(sqr(makeFloat(-.25)),

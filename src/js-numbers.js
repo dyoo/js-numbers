@@ -94,23 +94,23 @@ if (! this['plt']['lib']['Numbers']) {
 	case 3: // Complex
 	    return new Complex(x, 0);
 	default:
-	    return throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString());
+	    return throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString(), x, other);
 	}
     };
 
 
-    // throwRuntimeError: string -> void
+    // throwRuntimeError: string (scheme-number | undefined) (scheme-number | undefined) -> void
     // Throws a runtime error with the given message string.
-    var throwRuntimeError = function(msg) {
-	Numbers['onThrowRuntimeError'](msg);
+    var throwRuntimeError = function(msg, x, y) {
+	Numbers['onThrowRuntimeError'](msg, x, y);
     };
 
 
 
-    // onThrowRuntimeError: string -> void
+    // onThrowRuntimeError: string (scheme-number | undefined) (scheme-number | undefined) -> void
     // By default, will throw a new Error with the given message.
     // Override Numbers['onThrowRuntimeError'] if you need to do something special.
-    var onThrowRuntimeError = function(msg) {
+    var onThrowRuntimeError = function(msg, x, y) {
 	throw new Error(msg);
     };
 
@@ -212,7 +212,7 @@ if (! this['plt']['lib']['Numbers']) {
     var divide = addLifts(function(x, y) {
 	if (typeof(x) === 'number') {
 	    if (_integerIsZero(y))
-		throwRuntimeError("division by zero");
+		throwRuntimeError("division by zero", x, y);
 	    var div = x / y;
 	    if (isOverflow(div)) {
 		return (makeBignum(x+'')).divide(makeBignum(y+''));
@@ -258,7 +258,7 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 	if (!(isReal(x) && isReal(y)))
 	    throwRuntimeError(
-		"greaterThanOrEqual: couldn't be applied to complex number");
+		"greaterThanOrEqual: couldn't be applied to complex number", x, y);
 	return x.greaterThanOrEqual(y);
     });
 
@@ -268,7 +268,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return x <= y;
 	}
 	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number");
+	    throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number", x, y);
 	return x.lessThanOrEqual(y);
     });
 
@@ -278,7 +278,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return x > y;
 	}
 	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError("greaterThan: couldn't be applied to complex number");
+	    throwRuntimeError("greaterThan: couldn't be applied to complex number", x, y);
 	return x.greaterThan(y);
     });
 
@@ -288,7 +288,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return x < y;
 	}
 	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError("lessThan: couldn't be applied to complex number");
+	    throwRuntimeError("lessThan: couldn't be applied to complex number", x, y);
 	return x.lessThan(y);
     });
 
@@ -325,11 +325,11 @@ if (! this['plt']['lib']['Numbers']) {
     var modulo = function(m, n) {
 	if (! isInteger(m)) {
 	    throwRuntimeError('modulo: the first argument '
-			      + m + " is not an integer.");
+			      + m + " is not an integer.", m, n);
 	}
 	if (! isInteger(n)) {
 	    throwRuntimeError('modulo: the second argument '
-			      + n + " is not an integer.");
+			      + n + " is not an integer.", m, n);
 	}
 	var result;
 	if (typeof(m) === 'number') {
@@ -543,14 +543,24 @@ if (! this['plt']['lib']['Numbers']) {
 
     // gcd: scheme-number [scheme-number ...] -> scheme-number
     var gcd = function(first, rest) {
-	// FIXME: check that all values are integral
-	// FIXME: do this operations all in terms of the integer operations,
-	// not fixnum operations.
-	var result = Math.abs(toFixnum(first));
-	for (var i = 0; i < rest.length; i++) {
-	    result = _integerGcd(result, toFixnum(rest[i]));
+	if (! isInteger(first)) {
+	    throwRuntimeError('gcd: the argument ' + first.toString() +
+			      " is not an integer.", first);
 	}
-	return result;
+	var a = first, t, b;
+	for(var i = 0; i < rest.length; i++) {
+	    b = rest[i];	
+	    if (! isInteger(b)) {
+		throwRuntimeError('gcd: the argument ' + b.toString() +
+				  " is not an integer.", b);
+	    }
+	    while (! _integerIsZero(b)) {
+		t = a;
+		a = b;
+		b = integerModulo(t, b);
+	    }
+	}
+	return a;
     };
 
     // lcm: scheme-number [scheme-number ...] -> scheme-number
@@ -639,6 +649,15 @@ if (! this['plt']['lib']['Numbers']) {
 		    return result;
 		}
 	    }
+	    if (m instanceof FloatPoint || n instanceof FloatPoint) {
+		if (options && options.doNotCoerseToFloating) {
+		    return onFixnums(toFixnum(m), toFixnum(n));
+		}
+		else {
+		    return FloatPoint.makeInstance(
+			onFixnums(toFixnum(m), toFixnum(n)));
+		}
+	    }
 	    if (typeof(m) === 'number') {
 		m = makeBignum(''+m);
 	    }
@@ -648,6 +667,27 @@ if (! this['plt']['lib']['Numbers']) {
 	    return onBignums(m, n);
 	});
     };
+
+
+    var makeIntegerUnOp = function(onFixnums, onBignums, options) {
+	return (function(m) {
+	    if (typeof(m) === 'number') {
+		var result = onFixnums(m);
+		if (! isOverflow(result) ||
+		    (options && options.ignoreOverflow)) {
+		    return result;
+		}
+	    }
+	    if (m instanceof FloatPoint) {
+		return onFixnums(toFixnum(m));
+	    }
+	    if (typeof(m) === 'number') {
+		m = makeBignum(''+m);
+	    }
+	    return onBignums(m);
+	});
+    };
+
 
 
     // _integerModulo: integer-scheme-number integer-scheme-number -> integer-scheme-number
@@ -678,20 +718,25 @@ if (! this['plt']['lib']['Numbers']) {
 
     // _integerIsZero: integer-scheme-number -> boolean
     // Returns true if the number is zero.
-    var _integerIsZero = function(n) {
-	if (typeof(n) === 'number') {
+    var _integerIsZero = makeIntegerUnOp(
+	function(n){
 	    return n === 0;
+	},
+	function(n) {
+	    return bnEquals.call(n, BigInteger.ZERO);
 	}
-	return bnEquals.call(n, BigInteger.ZERO);
-    };
+    );
+
 
     // _integerIsOne: integer-scheme-number -> boolean
-    var _integerIsOne = function(n) {
-	if (typeof(n) === 'number') {
+    var _integerIsOne = makeIntegerUnOp(
+	function(n) {
 	    return n === 1;
-	}
-	return bnEquals.call(n, BigInteger.ONE);
-    };
+	},
+	function(n) {
+	    return bnEquals.call(n, BigInteger.ONE);
+	});
+    
 
     // _integerAdd: integer-scheme-number integer-scheme-number -> integer-scheme-number
     var _integerAdd = makeIntegerBinop(
@@ -738,7 +783,8 @@ if (! this['plt']['lib']['Numbers']) {
 	function(m, n) {
 	    return toFixnum(m) / toFixnum(n);
 	},
-	{ignoreOverflow: true});
+	{ignoreOverflow: true,
+	 doNotCoerseToFloating: true});
 
 
     // _integerEquals: integer-scheme-number integer-scheme-number -> boolean
@@ -748,7 +794,8 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(m, n) {
 	    return bnEquals.call(m, n);
-	});
+	},
+	{doNotCoerseToFloating: true});
 
     // _integerGreaterThan: integer-scheme-number integer-scheme-number -> boolean
     var _integerGreaterThan = makeIntegerBinop(
@@ -757,7 +804,8 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(m, n) {
 	    return bnCompareTo.call(m, n) > 0;
-	});
+	},
+	{doNotCoerseToFloating: true});
 
     // _integerLessThan: integer-scheme-number integer-scheme-number -> boolean
     var _integerLessThan = makeIntegerBinop(
@@ -766,7 +814,8 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(m, n) {
 	    return bnCompareTo.call(m, n) < 0;
-	});
+	},
+	{doNotCoerseToFloating: true});
 
     // _integerGreaterThanOrEqual: integer-scheme-number integer-scheme-number -> boolean
     var _integerGreaterThanOrEqual = makeIntegerBinop(
@@ -775,7 +824,8 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(m, n) {
 	    return bnCompareTo.call(m, n) >= 0;
-	});
+	},
+	{doNotCoerseToFloating: true});
 
     // _integerLessThanOrEqual: integer-scheme-number integer-scheme-number -> boolean
     var _integerLessThanOrEqual = makeIntegerBinop(
@@ -784,7 +834,8 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(m, n) {
 	    return bnCompareTo.call(m, n) <= 0;
-	});
+	},
+	{doNotCoerseToFloating: true});
 
 
 
@@ -939,7 +990,7 @@ if (! this['plt']['lib']['Numbers']) {
 		_integerDivideToFixnum(this.n, this.d));
 	if (target._level === 3)
 	    return new Complex(this, 0);
-	return throwRuntimeError("invalid _level of Number");
+	return throwRuntimeError("invalid _level of Number", this, target);
     };
 
     Rational.prototype.isFinite = function() {
@@ -986,7 +1037,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     Rational.prototype.divide = function(other) {
 	if (_integerIsZero(this.d) || _integerIsZero(other.n)) {
-	    throwRuntimeError("division by zero");
+	    throwRuntimeError("division by zero", this, other);
 	}
 	return Rational.makeInstance(_integerMultiply(this.n, other.d),
 				     _integerMultiply(this.d, other.n));
@@ -1173,7 +1224,7 @@ if (! this['plt']['lib']['Numbers']) {
     var _rationalCache = {};
     Rational.makeInstance = function(n, d) {
 	if (n === undefined)
-	    throwRuntimeError("n undefined");
+	    throwRuntimeError("n undefined", n, d);
 
 	if (d === undefined) { d = 1; }
 
@@ -1263,7 +1314,7 @@ if (! this['plt']['lib']['Numbers']) {
     FloatPoint.prototype.toExact = function() {
 	// The precision of ieee is about 16 decimal digits, which we use here.
 	if (! isFinite(this.n) || isNaN(this.n)) {
-	    throwRuntimeError("toExact: no exact representation for " + this);
+	    throwRuntimeError("toExact: no exact representation for " + this, this);
 	}
 	var fracPart = this.n - Math.floor(this.n);
 	var intPart = this.n - fracPart;
@@ -1282,7 +1333,7 @@ if (! this['plt']['lib']['Numbers']) {
     FloatPoint.prototype._lift = function(target) {
 	if (target._level === 3)
 	    return new Complex(this, 0);
-	return throwRuntimeError("invalid _level of Number");
+	return throwRuntimeError("invalid _level of Number", this, target);
     };
 
     FloatPoint.prototype.toString = function() {
@@ -1399,7 +1450,7 @@ if (! this['plt']['lib']['Numbers']) {
     FloatPoint.prototype.divide = function(other) {
 	if (this.isFinite() && other.isFinite()) {
 	    if (other.n === 0) {
-		return throwRuntimeError("division by zero");
+		return throwRuntimeError("division by zero", this, other);
 	    }
             return FloatPoint.makeInstance(this.n / other.n);
 	} else if (isNaN(this.n) || isNaN(other.n)) {
@@ -1411,7 +1462,7 @@ if (! this['plt']['lib']['Numbers']) {
 	} else if (! this.isFinite() && other.isFinite()) {
 	    return ((sign(this) * sign(other) === 1) ? inf : neginf);
 	} else {
-	    return throwRuntimeError("impossible");
+	    return throwRuntimeError("impossible", this, other);
 	}
     };
 
@@ -1640,7 +1691,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.toExact = function() {
 	if (! this.isReal()) {
-	    throwRuntimeError("inexact->exact: expects argument of type real number");
+	    throwRuntimeError("inexact->exact: expects argument of type real number", this);
 	}
 	return toExact(this.r);
     };
@@ -1655,7 +1706,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     Complex.prototype._lift = function(target){
-	throwRuntimeError("Don't know how to lift Complex number");
+	throwRuntimeError("Don't know how to lift Complex number", this, target);
     };
 
     Complex.prototype.equals = function(other) {
@@ -1669,28 +1720,28 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.greaterThan = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    throwRuntimeError(">: expects argument of type real number");
+	    throwRuntimeError(">: expects argument of type real number", this, other);
 	}
 	return greaterThan(this.r, other.r);
     };
 
     Complex.prototype.greaterThanOrEqual = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    throwRuntimeError(">=: expects argument of type real number");
+	    throwRuntimeError(">=: expects argument of type real number", this, other);
 	}
 	return greaterThanOrEqual(this.r, other.r);
     };
 
     Complex.prototype.lessThan = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    throwRuntimeError("<: expects argument of type real number");
+	    throwRuntimeError("<: expects argument of type real number", this, other);
 	}
 	return lessThan(this.r, other.r);
     };
 
     Complex.prototype.lessThanOrEqual = function(other) {
 	if (! this.isReal() || ! other.isReal()) {
-	    throwRuntimeError("<=: expects argument of type real number");
+	    throwRuntimeError("<=: expects argument of type real number", this, other);
 	}
 	return lessThanOrEqual(this.r, other.r);
     };
@@ -1698,26 +1749,26 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.abs = function(){
 	if (!equals(this.i, 0).valueOf())
-	    throwRuntimeError("abs: expects argument of type real number");
+	    throwRuntimeError("abs: expects argument of type real number", this);
 	return abs(this.r);
     };
 
     Complex.prototype.toFixnum = function(){
 	if (!equals(this.i, 0).valueOf())
-	    throwRuntimeError("toFixnum: expects argument of type real number");
+	    throwRuntimeError("toFixnum: expects argument of type real number", this);
 	return toFixnum(this.r);
     };
 
     Complex.prototype.numerator = function() {
 	if (!this.isReal())
-	    throwRuntimeError("numerator: can only be applied to real number");
+	    throwRuntimeError("numerator: can only be applied to real number", this);
 	return numerator(this.n);
     };
 
 
     Complex.prototype.denominator = function() {
 	if (!this.isReal())
-	    throwRuntimeError("floor: can only be applied to real number");
+	    throwRuntimeError("floor: can only be applied to real number", this);
 	return denominator(this.n);
     };
 
@@ -1934,13 +1985,13 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.ceiling = function(){
 	if (!this.isReal())
-	    throwRuntimeError("ceiling: can only be applied to real number");
+	    throwRuntimeError("ceiling: can only be applied to real number", this);
 	return ceiling(this.r);
     };
 
     Complex.prototype.floor = function(){
 	if (!this.isReal())
-	    throwRuntimeError("floor: can only be applied to real number");
+	    throwRuntimeError("floor: can only be applied to real number", this);
 	return floor(this.r);
     };
 
@@ -1954,7 +2005,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     Complex.prototype.round = function(){
 	if (!this.isReal())
-	    throwRuntimeError("round: can only be applied to real number");
+	    throwRuntimeError("round: can only be applied to real number", this);
 	return round(this.r);
     };
 
@@ -3280,7 +3331,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (target._level === 3) {
 	    return new Complex(this, 0);
 	}
-	return throwRuntimeError("invalid _level for BigInteger lift");
+	return throwRuntimeError("invalid _level for BigInteger lift", this, target);
     };
 
     BigInteger.prototype.isFinite = function() {
