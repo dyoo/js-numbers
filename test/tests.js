@@ -285,18 +285,18 @@ describe('equals', {
 	assertFalse(equals(makeBignum("1.1e2000"),
 			  makeComplex(makeBignum("1e2000"),
 				      0)));
-	assertTrue(equals(makeBignum("0"),
-			  makeComplex(0, 0)));
-	assertTrue(equals(makeBignum("91326"),
-			  makeComplex(makeBignum("91326"))));
-	assertFalse(equals(makeBignum("00000"),
-			   makeComplex(makeBignum("91326"))));
-	assertTrue(equals(makeBignum("90210"),
-			  makeComplex(makeFloat(90210))));
-	assertTrue(equals(makeBignum("90210"),
-			   makeComplex(makeFloat(90210), makeFloat(0))));
-	assertFalse(equals(makeBignum("90210"),
-			   makeComplex(makeFloat(90210), makeFloat(0.1))));
+ 	assertTrue(equals(makeBignum("0"),
+ 			  makeComplex(0, 0)));
+ 	assertTrue(equals(makeBignum("91326"),
+ 			  makeComplex(makeBignum("91326"))));
+ 	assertFalse(equals(makeBignum("00000"),
+ 			   makeComplex(makeBignum("91326"))));
+ 	assertTrue(equals(makeBignum("90210"),
+ 			  makeComplex(makeFloat(90210))));
+ 	assertTrue(equals(makeBignum("90210"),
+ 			  makeComplex(makeFloat(90210), makeFloat(0))));
+ 	assertFalse(equals(makeBignum("90210"),
+ 			   makeComplex(makeFloat(90210), makeFloat(0.1))));
     },
 
     'fixnum / rational': function() {
@@ -2245,13 +2245,35 @@ describe('sqr', {
     },
 
     'rationals': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqr(makeRational(1, 2)),
+		       makeRational(1, 4)));
+
+	assertTrue(eqv(sqr(makeRational(-1, 7)),
+		       makeRational(1, 49)));
+	assertTrue(eqv(sqr(makeRational(makeBignum("-1297684398542133568912839"),
+					5)),
+		       makeRational(makeBignum("1683984798219658952314406790914015952992379039921"),
+				    25)));
+
     },
     'floats': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqr(makeFloat(.25)),
+		       makeFloat(0.0625)));
+	assertTrue(eqv(sqr(makeFloat(-.25)),
+		       makeFloat(0.0625)));
+
+
+	assertTrue(eqv(sqr(nan), nan));
+	assertTrue(eqv(sqr(inf), inf));
+	assertTrue(eqv(sqr(negative_inf), inf));
+	assertTrue(eqv(sqr(negative_zero), makeFloat(0.0)));
     },
+
     'complex': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqr(negative_i),
+		       -1));
+	assertTrue(eqv(sqr(i),
+		       -1));
     }
 });
 
@@ -2408,6 +2430,7 @@ describe('toString', {
 				  makeBignum("239856325892398441")));
     },
     'floats': function() {
+	assertEquals('0.0', makeFloat(0).toString());
 	assertEquals('0.25', makeFloat(0.25).toString());
 	assertEquals('1.2354e+200', makeFloat(1.2354e200).toString());
 	assertEquals('1.2354e-200', makeFloat(1.2354e-200).toString());
@@ -2420,8 +2443,8 @@ describe('toString', {
 
     },
     'complex': function() {
-	assertEquals("1+0i", makeComplex(1, 0).toString());
-	assertEquals("-1+0i", makeComplex(-1, 0).toString());
+	assertEquals("1+0.0i", makeComplex(1, makeFloat(0)).toString());
+	assertEquals("-1+0.0i", makeComplex(-1, makeFloat(0)).toString());
 	assertEquals("0+1i", makeComplex(0, 1).toString());
 	assertEquals("0-1i", makeComplex(0, -1).toString());
 	assertEquals("0-0.0i", makeComplex(0, negative_zero).toString());

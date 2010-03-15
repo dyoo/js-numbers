@@ -90,9 +90,9 @@ if (! this['plt']['lib']['Numbers']) {
 	case 1: // Rational
 	    return new Rational(x, 1);
 	case 2: // FloatPoint
-	    return FloatPoint.makeInstance(x);
+	    return new FloatPoint(x);
 	case 3: // Complex
-	    return Complex.makeInstance(x, 0);
+	    return new Complex(x, 0);
 	default:
 	    return throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString());
 	}
@@ -1292,9 +1292,10 @@ if (! this['plt']['lib']['Numbers']) {
 	    return "+inf.0";
 	if (this.n === Number.NEGATIVE_INFINITY)
 	    return "-inf.0";
-	if (this === NEGATIVE_ZERO) {
+	if (this === NEGATIVE_ZERO)
 	    return "-0.0";
-	}
+	if (this.n === 0)
+	    return "0.0";
 	return this.n.toString();
     };
 
@@ -1379,7 +1380,7 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     FloatPoint.prototype.multiply = function(other) {
-	if (this.n === 0 || other.n === 0) { return 0; }
+	if (this.n === 0 || other.n === 0) { return FloatPoint.makeInstance(0.0); }
 
 	if (this.isFinite() && other.isFinite()) {
 	    var product = this.n * other.n;
@@ -1607,6 +1608,9 @@ if (! this['plt']['lib']['Numbers']) {
 	if (i === undefined) { i = 0; }
 	if (typeof(r) === 'number') { r = fromFixnum(r); }
 	if (typeof(i) === 'number') { i = fromFixnum(i); }
+	if (isExact(i) && isInteger(i) && _integerIsZero(i)) {
+	    return r;
+	}
 	return new Complex(r, i);
     };
 
@@ -1736,16 +1740,12 @@ if (! this['plt']['lib']['Numbers']) {
 		multiply(this.r, other.r),
 		multiply(this.i, other.r));
 	}
-
 	var r = subtract(
 	    multiply(this.r, other.r),
 	    multiply(this.i, other.i));
 	var i = add(
 	    multiply(this.r, other.i),
 	    multiply(this.i, other.r));
-	if (equals(i, 0)) {
-	    return r;
-	}
 	return Complex.makeInstance(r, i);
     };
 
