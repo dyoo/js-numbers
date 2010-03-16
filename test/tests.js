@@ -561,6 +561,13 @@ describe('eqv', {
  		       makeComplex(makeRational(100), 0))).should_be_false();
  	value_of(eqv(makeComplex(makeFloat(100), 0),
  		       makeComplex(makeRational(100), 1))).should_be_false();
+    },
+
+    'tricky case with complex': function() {
+	value_of(eqv(makeComplex(0, 
+				 makeFloat(1.1)),
+		     makeComplex(makeFloat(0.0),
+				 makeFloat(1.1)))).should_be_false();
     }
 });
 
@@ -1313,7 +1320,23 @@ describe('subtract', {
     },
 
     'fixnum / complex' : function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(makeComplex(0, -1),
+		       subtract(0, makeComplex(0, 1))));
+	assertTrue(eqv(makeComplex(0, makeFloat(-1.1234)),
+		       subtract(0, makeComplex(0, makeFloat(1.1234)))));
+	assertTrue(eqv(makeComplex(0, makeFloat(1.1234)),
+		       subtract(0, makeComplex(0, makeFloat(-1.1234)))));
+	assertTrue(eqv(makeComplex(234, makeFloat(1.1234)),
+		       subtract(234, makeComplex(0, makeFloat(-1.1234)))));
+	assertTrue(eqv(makeComplex(200, makeFloat(1.1234)),
+		       subtract(234, makeComplex(34, makeFloat(-1.1234)))));
+	assertTrue(eqv(makeComplex(-24, makeFloat(1.1234)),
+		       subtract(0, makeComplex(24, makeFloat(-1.1234)))));
+
+	assertTrue(eqv(makeComplex(makeRational(16, 17), 
+				   makeFloat(1.1234)),
+		       subtract(1, makeComplex(makeRational(1, 17), 
+					       makeFloat(-1.1234)))));
     },
 
     'rational / rational' : function() {

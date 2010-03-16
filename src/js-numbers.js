@@ -241,6 +241,10 @@ if (! this['plt']['lib']['Numbers']) {
 	    return x === y;
 	if (x === NEGATIVE_ZERO || y === NEGATIVE_ZERO)
 	    return x === y;
+	if (x instanceof Complex || y instanceof Complex) {
+	    return (eqv(realPart(x), realPart(y)) &&
+		    eqv(imaginaryPart(x), imaginaryPart(y)));
+	}
 	var ex = isExact(x), ey = isExact(y);
 	return (((ex && ey) || (!ex && !ey)) && equals(x, y));
     };
@@ -3455,11 +3459,12 @@ if (! this['plt']['lib']['Numbers']) {
     // asin: -> scheme-number
     // Produce the arc sine.
 
-    // imaginaryPart: -> scheme-number
-    // Produce the imaginary part
-
-    // realPart: -> scheme-number
-    // Produce the real part.
+    BigInteger.prototype.imaginaryPart = function() {
+	return 0;
+    }
+    BigInteger.prototype.realPart = function() {
+	return this;
+    }
 
     // round: -> scheme-number
     // Round to the nearest integer.
