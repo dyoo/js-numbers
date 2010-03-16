@@ -1146,6 +1146,40 @@ describe('add', {
 		       add(negative_zero, makeFloat(0))));
 	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
 		       add(0, makeComplex(makeFloat(0), makeFloat(0)))));
+    },
+
+
+    '0 acts as the identity': function() {
+	assertTrue(eqv(add(0, 42),
+		       42));
+	assertTrue(eqv(add(0, -42),
+		       -42));
+	assertTrue(eqv(add(0, makeBignum("129834789213412345678910")),
+		       makeBignum("129834789213412345678910")));
+ 	assertTrue(eqv(add(0, makeFloat(0.12345)),
+ 		       makeFloat(0.12345)));
+ 	assertTrue(eqv(add(0, nan),
+ 		       nan));
+ 	assertTrue(eqv(add(0, inf),
+ 		       inf));
+ 	assertTrue(eqv(add(0, negative_inf),
+ 		       negative_inf));
+
+
+	assertTrue(eqv(add(42, 0),
+		       42));
+	assertTrue(eqv(add(-42, 0),
+		       -42));
+	assertTrue(eqv(add(makeBignum("129834789213412345678910"), 0),
+		       makeBignum("129834789213412345678910")));
+ 	assertTrue(eqv(add(makeFloat(0.12345), 0),
+ 		       makeFloat(0.12345)));
+ 	assertTrue(eqv(add(nan, 0),
+ 		       nan));
+ 	assertTrue(eqv(add(inf, 0),
+ 		       inf));
+ 	assertTrue(eqv(add(negative_inf, 0),
+ 		       negative_inf));
     }
 });
 
@@ -1319,6 +1353,28 @@ describe('subtract', {
     },
     'complex / complex' : function() {
 	// FIXME: we're missing this
+    },
+
+
+    'negation': function() {
+	assertTrue(eqv(subtract(0, 42),
+		       -42));
+	assertTrue(eqv(subtract(0, -42),
+		       42));
+	assertTrue(eqv(subtract(0, makeBignum("129834789213412345678910")),
+		       makeBignum("-129834789213412345678910")));
+  	assertTrue(eqv(subtract(0, makeFloat(0.12345)),
+  		       makeFloat(-0.12345)));
+  	assertTrue(eqv(subtract(0, makeFloat(0)),
+  		       negative_zero));
+  	assertTrue(eqv(subtract(0, negative_zero),
+  		       makeFloat(0)));
+  	assertTrue(eqv(add(0, nan),
+  		       nan));
+  	assertTrue(eqv(add(0, inf),
+  		       negative_inf));
+  	assertTrue(eqv(add(0, negative_inf),
+  		       inf));
     }
 });
 
@@ -1393,6 +1449,37 @@ describe('multiply', {
 		       multiply(-1, makeComplex(makeFloat(0), makeFloat(0)))));
 	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
 		       multiply(makeComplex(makeFloat(0), makeFloat(0)), -1)));
+    },
+
+    '1 acts as the identity': function() {
+	assertTrue(eqv(0,
+		       multiply(1, 0)));
+	assertTrue(eqv(1,
+		       multiply(1, 1)));
+	assertTrue(eqv(-1,
+		       multiply(1, -1)));
+	assertTrue(eqv(1234,
+		       multiply(1, 1234)));
+	assertTrue(eqv(makeBignum("1929365432165895132685321689"),
+		       multiply(1, makeBignum("1929365432165895132685321689"))));
+	assertTrue(eqv(makeBignum("-1929365432165895132685321689"),
+		       multiply(1, makeBignum("-1929365432165895132685321689"))));
+	assertTrue(eqv(makeRational(1, 24),
+		       multiply(1, makeRational(1, 24))));
+	assertTrue(eqv(makeRational(-21, 24),
+		       multiply(1, makeRational(-21, 24))));
+	assertTrue(eqv(makeFloat(123.45),
+		       multiply(1, makeFloat(123.45))));	
+	assertTrue(eqv(makeFloat(0),
+		       multiply(1, makeFloat(0))));
+	assertTrue(eqv(nan,
+		       multiply(1, nan)));
+	assertTrue(eqv(inf,
+		       multiply(1, inf)));
+	assertTrue(eqv(negative_inf,
+		       multiply(1, negative_inf)));
+	assertTrue(eqv(negative_zero,
+		       multiply(1, negative_zero)));
     }
 });
 
@@ -1469,6 +1556,15 @@ describe('divide', {
 
 	assertTrue(eqv(inf, divide(makeRational(1, 2), makeFloat(0.0))));
 	assertTrue(eqv(makeComplex(inf, inf), divide(makeComplex(1, 2), makeFloat(0.0))));
+    },
+
+    'division 0 by 0': function() {
+	assertFails(function() { divide(0, 0); });
+	assertFails(function() { divide(makeFloat(0), 0); });
+	assertTrue(eqv(negative_zero,
+		       divide(makeFloat(0), makeFloat(0))));
+	assertTrue(eqv(0,
+		       divide(0, makeFloat(0))));
     }
 });
 
