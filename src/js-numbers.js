@@ -70,7 +70,7 @@ if (! this['plt']['lib']['Numbers']) {
 	var nf = Math.floor(x);
 	if (nf === x) {
 	    if (isOverflow(nf)) {
-		return makeBignum(x+'');
+		return makeBignum(x);
 	    } else {
 		return nf;
 	    }
@@ -86,7 +86,7 @@ if (! this['plt']['lib']['Numbers']) {
     var liftFixnumInteger = function(x, other) {
 	switch(other._level) {
 	case 0: // BigInteger
-	    return makeBignum(x + '');
+	    return makeBignum(x);
 	case 1: // Rational
 	    return new Rational(x, 1);
 	case 2: // FloatPoint
@@ -174,7 +174,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(x) === 'number') {
 	    var sum = x + y;
 	    if (isOverflow(sum)) {
-		return (makeBignum(x+'')).add(makeBignum(y+''));
+		return (makeBignum(x)).add(makeBignum(y));
 	    } else {
 		return sum;
 	    }
@@ -187,7 +187,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(x) === 'number') {
 	    var diff = x - y;
 	    if (isOverflow(diff)) {
-		return (makeBignum(x+'')).subtract(makeBignum(y+''));
+		return (makeBignum(x)).subtract(makeBignum(y));
 	    } else {
 		return diff;
 	    }
@@ -200,7 +200,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (typeof(x) === 'number') {
 	    var prod = x * y;
 	    if (isOverflow(prod)) {
-		return (makeBignum(x+'')).multiply(makeBignum(y+''));
+		return (makeBignum(x)).multiply(makeBignum(y));
 	    } else {
 		return prod;
 	    }
@@ -215,7 +215,7 @@ if (! this['plt']['lib']['Numbers']) {
 		throwRuntimeError("division by zero", x, y);
 	    var div = x / y;
 	    if (isOverflow(div)) {
-		return (makeBignum(x+'')).divide(makeBignum(y+''));
+		return (makeBignum(x)).divide(makeBignum(y));
 	    } else if (Math.floor(div) !== div) {
 		return Rational.makeInstance(x, y);
 	    } else {
@@ -304,12 +304,12 @@ if (! this['plt']['lib']['Numbers']) {
 	    if (y >= 0) {
 		var pow = Math.pow(x, y);
 		if (isOverflow(pow)) {
-		    return (makeBignum(x+'')).expt(makeBignum(y+''));
+		    return (makeBignum(x)).expt(makeBignum(y));
 		} else {
 		    return pow;
 		}
 	    } else {
-		return (makeBignum(x+'')).expt(makeBignum(y+''));
+		return (makeBignum(x)).expt(makeBignum(y));
 	    }
 	}
 	return x.expt(y);
@@ -394,7 +394,7 @@ if (! this['plt']['lib']['Numbers']) {
 		    return FloatPoint.makeInstance(result);
 		}
 	    } else {
-		return (makeBignum(n+'')).sqrt();
+		return (makeBignum(n)).sqrt();
 	    }
 	}
 	return n.sqrt();
@@ -551,9 +551,9 @@ if (! this['plt']['lib']['Numbers']) {
 	    throwRuntimeError('gcd: the argument ' + first.toString() +
 			      " is not an integer.", first);
 	}
-	var a = first, t, b;
+	var a = abs(first), t, b;
 	for(var i = 0; i < rest.length; i++) {
-	    b = rest[i];	
+	    b = abs(rest[i]);	
 	    if (! isInteger(b)) {
 		throwRuntimeError('gcd: the argument ' + b.toString() +
 				  " is not an integer.", b);
@@ -569,16 +569,22 @@ if (! this['plt']['lib']['Numbers']) {
 
     // lcm: scheme-number [scheme-number ...] -> scheme-number
     var lcm = function(first, rest) {
-	// FIXME: check that all values are integral
-	// FIXME: do this operations all in terms of the integer operations,
-	// not fixnum operations.
-	var result = Math.abs(toFixnum(first));
+	if (! isInteger(first)) {
+	    throwRuntimeError('lcm: the argument ' + first.toString() +
+			      " is not an integer.", first);
+	}
+	var result = abs(first);
 	if (_integerIsZero(result)) { return 0; }
 	for (var i = 0; i < rest.length; i++) {
-	    if (_integerIsZero(toFixnum(rest[i]))) {
+	    if (! isInteger(rest[i])) {
+		throwRuntimeError('lcm: the argument ' + rest[i].toString() +
+				  " is not an integer.", rest[i]);
+	    }
+	    var divisor = gcd(result, rest[i]);
+	    if (_integerIsZero(divisor)) {
 		return 0;
 	    }
-	    result = _lcm(result, toFixnum(rest[i]));
+	    result = divide(multiply(result, rest[i]), divisor);
 	}
 	return result;
     };
@@ -663,10 +669,10 @@ if (! this['plt']['lib']['Numbers']) {
 		}
 	    }
 	    if (typeof(m) === 'number') {
-		m = makeBignum(''+m);
+		m = makeBignum(m);
 	    }
 	    if (typeof(n) === 'number') {
-		n = makeBignum(''+n);
+		n = makeBignum(n);
 	    }
 	    return onBignums(m, n);
 	});
@@ -686,7 +692,7 @@ if (! this['plt']['lib']['Numbers']) {
 		return onFixnums(toFixnum(m));
 	    }
 	    if (typeof(m) === 'number') {
-		m = makeBignum(''+m);
+		m = makeBignum(m);
 	    }
 	    return onBignums(m);
 	});
