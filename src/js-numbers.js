@@ -126,12 +126,10 @@ if (! this['plt']['lib']['Numbers']) {
     // Returns true if the thing is a scheme number.
     var isSchemeNumber = function(thing) {
 	return (typeof(thing) === 'number'
-		|| (thing !== undefined &&
-		    thing !== null &&
-		    (thing instanceof Rational ||
-		     thing instanceof FloatPoint ||
-		     thing instanceof Complex ||
-		     thing instanceof BigInteger)));
+		|| (thing instanceof Rational ||
+		    thing instanceof FloatPoint ||
+		    thing instanceof Complex ||
+		    thing instanceof BigInteger));
     };
 
 
@@ -149,7 +147,8 @@ if (! this['plt']['lib']['Numbers']) {
 
     // isExact: scheme-number -> boolean
     var isExact = function(n) {
-	return typeof(n) === 'number' || n.isExact();
+	return (typeof(n) === 'number' || 
+		(isSchemeNumber(n) && n.isExact()));
     };
 
     // isInteger: scheme-number -> boolean
