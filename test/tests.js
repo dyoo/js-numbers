@@ -1147,12 +1147,20 @@ describe('add', {
     'negative zero': function() {
 	assertTrue(eqv(negative_zero,
 		       add(negative_zero, negative_zero)));
-	assertTrue(eqv(negative_zero,
+	assertFalse(eqv(negative_zero,
 		       add(makeFloat(0), negative_zero)));
-	assertTrue(eqv(negative_zero,
+	assertTrue(eqv(makeFloat(0),
+		       add(makeFloat(0), negative_zero)));
+	assertFalse(eqv(negative_zero,
 		       add(negative_zero, makeFloat(0))));
-	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
-		       add(0, makeComplex(makeFloat(0), makeFloat(0)))));
+	assertTrue(eqv(makeFloat(0),
+		       add(negative_zero, makeFloat(0))));
+	assertTrue(eqv(makeComplex(negative_zero, makeFloat(0)),
+		       add(0, makeComplex(negative_zero, makeFloat(0)))));
+	assertTrue(eqv(makeComplex(makeFloat(0), makeFloat(0)),
+		       add(makeFloat(0), makeComplex(negative_zero, makeFloat(0)))));
+	assertTrue(eqv(makeComplex(negative_zero, makeFloat(0)),
+		       add(negative_zero, makeComplex(negative_zero, makeFloat(0)))));
     },
 
 
@@ -1392,11 +1400,11 @@ describe('subtract', {
   		       negative_zero));
   	assertTrue(eqv(subtract(0, negative_zero),
   		       makeFloat(0)));
-  	assertTrue(eqv(add(0, nan),
+  	assertTrue(eqv(subtract(0, nan),
   		       nan));
-  	assertTrue(eqv(add(0, inf),
+  	assertTrue(eqv(subtract(0, inf),
   		       negative_inf));
-  	assertTrue(eqv(add(0, negative_inf),
+  	assertTrue(eqv(subtract(0, negative_inf),
   		       inf));
     }
 });

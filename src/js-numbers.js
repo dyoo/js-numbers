@@ -1,8 +1,8 @@
 // Scheme numbers.
 
-if (! this['plt']) {
-    this['plt'] = {};
-}
+    if (! this['plt']) {
+	this['plt'] = {};
+    }
 
 if (! this['plt']['lib']) {
     this['plt']['lib'] = {};
@@ -43,8 +43,14 @@ if (! this['plt']['lib']['Numbers']) {
     // Creates a binary function that works either on fixnums or boxnums.
     // Applies the appropriate binary function, ensuring that both scheme numbers are
     // lifted to the same level.
-    var makeNumericBinop = function(onFixnums, onBoxednums) {
+    var makeNumericBinop = function(onFixnums, onBoxednums, options) {
+	options = options || {};
 	return function(x, y) {
+	    if (options.isXSpecialCase && options.isXSpecialCase(x))
+		return options.onXSpecialCase(x, y);
+	    if (options.isYSpecialCase && options.isYSpecialCase(y))
+		return options.onYSpecialCase(x, y);
+
 	    if (typeof(x) === 'number' &&
 		typeof(y) === 'number') {
 		return onFixnums(x, y);
@@ -61,8 +67,8 @@ if (! this['plt']['lib']['Numbers']) {
 	    return onBoxednums(x, y);
 	};
     }
-
-
+    
+    
     // fromFixnum: fixnum -> scheme-number
     var fromFixnum = function(x) {
 	if (isNaN(x) || (! isFinite(x))) {
@@ -79,9 +85,9 @@ if (! this['plt']['lib']['Numbers']) {
 	    return FloatPoint.makeInstance(x);
 	}
     };
+    
 
-
-
+    
     // liftFixnumInteger: fixnum-integer boxed-scheme-number -> boxed-scheme-number
     // Lifts up fixnum integers to a boxed type.
     var liftFixnumInteger = function(x, other) {
@@ -98,8 +104,8 @@ if (! this['plt']['lib']['Numbers']) {
 	    return throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString(), x, other);
 	}
     };
-
-
+    
+    
     // throwRuntimeError: string (scheme-number | undefined) (scheme-number | undefined) -> void
     // Throws a runtime error with the given message string.
     var throwRuntimeError = function(msg, x, y) {
@@ -152,6 +158,16 @@ if (! this['plt']['lib']['Numbers']) {
 		(isSchemeNumber(n) && n.isInteger()));
     };
 
+    // isExactInteger: scheme-number -> boolean
+    var isExactInteger = function(n) {
+	return (typeof(n) === 'number' ||
+		(isSchemeNumber(n) && 
+		 n.isInteger() && 
+		 n.isExact()));
+    }
+
+
+
     // toFixnum: scheme-number -> javascript-number
     var toFixnum = function(n) {
 	if (typeof(n) === 'number')
@@ -182,6 +198,13 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(x, y) {
 	    return x.add(y);
+	},
+	{isXSpecialCase: function(x) { 
+	    return isExactInteger(x) && _integerIsZero(x) },
+	 onXSpecialCase: function(x, y) { return y; },
+	 isYSpecialCase: function(y) { 
+	     return isExactInteger(y) && _integerIsZero(y) },
+	 onYSpecialCase: function(x, y) { return x; }
 	});
 
 
@@ -197,6 +220,13 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(x, y) {
 	    return x.subtract(y);
+	},
+	{isXSpecialCase: function(x) { 
+	    return isExactInteger(x) && _integerIsZero(x) },
+	 onXSpecialCase: function(x, y) { return negate(y); },
+	 isYSpecialCase: function(y) { 
+	     return isExactInteger(y) && _integerIsZero(y) },
+	 onYSpecialCase: function(x, y) { return x; }
 	});
 
 
@@ -212,9 +242,32 @@ if (! this['plt']['lib']['Numbers']) {
 	},
 	function(x, y) {
 	    return x.multiply(y);
+	},
+	{isXSpecialCase: function(x) { 
+	    return (isExactInteger(x) && 
+		    (_integerIsZero(x) || _integerIsOne(x) || _integerIsNegativeOne(x))) },
+	 onXSpecialCase: function(x, y) { 
+	     if (_integerIsZero(x))
+		 return 0;
+	     if (_integerIsOne(x))
+		 return y;
+	     if (_integerIsNegativeOne(x))
+		 return negate(y);
+	 },
+	 isYSpecialCase: function(y) { 
+	     return (isExactInteger(y) && 
+		     (_integerIsZero(y) || _integerIsOne(y) || _integerIsNegativeOne(y)))},
+	 onYSpecialCase: function(x, y) { 
+	     if (_integerIsZero(y))
+		 return 0;
+	     if (_integerIsOne(y))
+		 return x;
+	     if (_integerIsNegativeOne(y)) 
+		 return negate(x);
+	 }
 	});
 
-
+    
     // divide: scheme-number scheme-number -> scheme-number
     var divide = makeNumericBinop(
 	function(x, y) {
@@ -232,8 +285,8 @@ if (! this['plt']['lib']['Numbers']) {
 	function(x, y) {
 	    return x.divide(y);
 	});
-
-
+    
+    
     // equals: scheme-number scheme-number -> boolean
     var equals = makeNumericBinop(
 	function(x, y) {
@@ -636,11 +689,16 @@ if (! this['plt']['lib']['Numbers']) {
 	return (n < MIN_FIXNUM ||  MAX_FIXNUM < n);
     };
 
+
     // negate: scheme-number -> scheme-number
     // multiplies a number times -1.
     var negate = function(n) {
-	return multiply(n, -1);
+	if (typeof(n) === 'number') {
+	    return -n;
+	}
+	return n.negate();
     };
+
 
     // halve: scheme-number -> scheme-number
     // Divide a number by 2.
@@ -673,16 +731,17 @@ if (! this['plt']['lib']['Numbers']) {
     // Helper to collect the common logic for coersing integer fixnums or bignums to a
     // common type before doing an operation.
     var makeIntegerBinop = function(onFixnums, onBignums, options) {
+	options = options || {};
 	return (function(m, n) {
 	    if (typeof(m) === 'number' && typeof(n) === 'number') {
 		var result = onFixnums(m, n);
 		if (! isOverflow(result) ||
-		    (options && options.ignoreOverflow)) {
+		    (options.ignoreOverflow)) {
 		    return result;
 		}
 	    }
 	    if (m instanceof FloatPoint || n instanceof FloatPoint) {
-		if (options && options.doNotCoerseToFloating) {
+		if (options.doNotCoerseToFloating) {
 		    return onFixnums(toFixnum(m), toFixnum(n));
 		}
 		else {
@@ -702,11 +761,12 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     var makeIntegerUnOp = function(onFixnums, onBignums, options) {
+	options = options || {};
 	return (function(m) {
 	    if (typeof(m) === 'number') {
 		var result = onFixnums(m);
 		if (! isOverflow(result) ||
-		    (options && options.ignoreOverflow)) {
+		    (options.ignoreOverflow)) {
 		    return result;
 		}
 	    }
@@ -769,6 +829,18 @@ if (! this['plt']['lib']['Numbers']) {
 	    return bnEquals.call(n, BigInteger.ONE);
 	});
     
+
+ 
+    // _integerIsNegativeOne: integer-scheme-number -> boolean
+    var _integerIsNegativeOne = makeIntegerUnOp(
+	function(n) {
+	    return n === -1;
+	},
+	function(n) {
+	    return bnEquals.call(n, BigInteger.NEGATIVE_ONE);
+	});
+    
+
 
     // _integerAdd: integer-scheme-number integer-scheme-number -> integer-scheme-number
     var _integerAdd = makeIntegerBinop(
@@ -1062,6 +1134,10 @@ if (! this['plt']['lib']['Numbers']) {
 				     _integerMultiply(this.d, other.d));
     };
 
+    Rational.prototype.negate = function() { 
+	return Rational.makeInstance(-this.n, d) 
+    };
+
     Rational.prototype.multiply = function(other) {
 	return Rational.makeInstance(_integerMultiply(this.n, other.n),
 				     _integerMultiply(this.d, other.d));
@@ -1278,17 +1354,17 @@ if (! this['plt']['lib']['Numbers']) {
 	return new Rational(n, d);
     };
 
-//     _rationalCache = {};
-//     (function() {
-// 	var i;
-// 	for(i = -500; i < 500; i++) {
-// 	    _rationalCache[i] = new Rational(i, 1);
-// 	}
-//     })();
-//     Rational.NEGATIVE_ONE = new Rational(-1, 1);
-//     Rational.ZERO = new Rational(0, 1);
-//     Rational.ONE = new Rational(1, 1);
-//     Rational.TWO = new Rational(2, 1);
+    //     _rationalCache = {};
+    //     (function() {
+    // 	var i;
+    // 	for(i = -500; i < 500; i++) {
+    // 	    _rationalCache[i] = new Rational(i, 1);
+    // 	}
+    //     })();
+    //     Rational.NEGATIVE_ONE = new Rational(-1, 1);
+    //     Rational.ZERO = new Rational(0, 1);
+    //     Rational.ONE = new Rational(1, 1);
+    //     Rational.TWO = new Rational(2, 1);
 
 
 
@@ -1414,6 +1490,9 @@ if (! this['plt']['lib']['Numbers']) {
 
     FloatPoint.prototype.add = function(other) {
 	if (this.isFinite() && other.isFinite()) {
+	    if (this === NEGATIVE_ZERO && other === NEGATIVE_ZERO) {
+		return NEGATIVE_ZERO;
+	    }
 	    return FloatPoint.makeInstance(this.n + other.n);
 	} else {
 	    if (isNaN(this.n) || isNaN(other.n)) {
@@ -1455,6 +1534,15 @@ if (! this['plt']['lib']['Numbers']) {
 	    return this;
 	}
 
+    };
+
+    FloatPoint.prototype.negate = function() {
+	if (this === NEGATIVE_ZERO) {
+	    return FloatPoint.makeInstance(0);
+	} else if (this.n === 0) {
+	    return NEGATIVE_ZERO;
+	}
+	return FloatPoint.makeInstance(-this.n);
     };
 
     FloatPoint.prototype.multiply = function(other) {
@@ -1811,6 +1899,12 @@ if (! this['plt']['lib']['Numbers']) {
 	    subtract(this.i, other.i));
     };
 
+    Complex.prototype.negate = function() {
+	return Complex.makeInstance(negate(this.r),
+				    negate(this.i));
+    };
+
+
     Complex.prototype.multiply = function(other){
 	// If the other value is real, just do primitive division
 	if (other.isReal()) {
@@ -1852,7 +1946,7 @@ if (! this['plt']['lib']['Numbers']) {
 	var result = Complex.makeInstance(
 	    this.r,
 	    subtract(0,
-				 this.i));
+		     this.i));
 
 	return result;
     };
@@ -3310,7 +3404,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 
 
-
+    BigInteger.NEGATIVE_ONE = BigInteger.ONE.negate();
 
 
     // Other methods we need to add for compatibilty with js-numbers numeric tower.
@@ -3320,6 +3414,7 @@ if (! this['plt']['lib']['Numbers']) {
     // multiply is implemented above.
     // equals is implemented above.
     // abs is implemented above.
+    // negate is defined above.
 
     // makeBignum: string -> BigInteger
     var makeBignum = function(s) {
@@ -3328,7 +3423,7 @@ if (! this['plt']['lib']['Numbers']) {
 	if (match) {
 	    return new BigInteger(match[1]+match[2] +
 				  zerostring(Number(match[3]) - match[2].length),
-				 10);
+				  10);
 	} else {
 	    return new BigInteger(s, 10);
 	}
@@ -3400,6 +3495,7 @@ if (! this['plt']['lib']['Numbers']) {
 	}
     };
 
+
     BigInteger.prototype.greaterThan = function(other) {
 	return this.compareTo(other) > 0;
     };
@@ -3424,7 +3520,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return quotientAndRemainder[0];
 	} else {
 	    var result = add(quotientAndRemainder[0],
-		Rational.makeInstance(quotientAndRemainder[1], other));
+			     Rational.makeInstance(quotientAndRemainder[1], other));
 	    return result;
 	}
     };
