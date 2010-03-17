@@ -39,14 +39,15 @@ if (! this['plt']['lib']['Numbers']) {
     var Numbers = plt.lib.Numbers;
 
 
-    // addLifts: (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
-    // Applies a binary function, ensuring that both scheme numbers are
+    // makeNumericBinop: (fixnum fixnum -> any) (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
+    // Creates a binary function that works either on fixnums or boxnums.
+    // Applies the appropriate binary function, ensuring that both scheme numbers are
     // lifted to the same level.
-    var addLifts = function(binaryFunction) {
+    var makeNumericBinop = function(onFixnums, onBoxednums) {
 	return function(x, y) {
 	    if (typeof(x) === 'number' &&
 		typeof(y) === 'number') {
-		return binaryFunction(x, y);
+		return onFixnums(x, y);
 	    }
 	    if (typeof(x) === 'number') {
 		x = liftFixnumInteger(x, y);
@@ -55,11 +56,11 @@ if (! this['plt']['lib']['Numbers']) {
 		y = liftFixnumInteger(y, x);
 	    }
 
-	    if (x._level < y._level) x = x._lift(y);
-	    if (y._level < x._level) y = y._lift(x);
-	    return binaryFunction(x, y);
+	    if (x.level < y.level) x = x.liftTo(y);
+	    if (y.level < x.level) y = y.liftTo(x);
+	    return onBoxednums(x, y);
 	};
-    };
+    }
 
 
     // fromFixnum: fixnum -> scheme-number
@@ -84,7 +85,7 @@ if (! this['plt']['lib']['Numbers']) {
     // liftFixnumInteger: fixnum-integer boxed-scheme-number -> boxed-scheme-number
     // Lifts up fixnum integers to a boxed type.
     var liftFixnumInteger = function(x, other) {
-	switch(other._level) {
+	switch(other.level) {
 	case 0: // BigInteger
 	    return makeBignum(x);
 	case 1: // Rational
@@ -170,47 +171,53 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     // add: scheme-number scheme-number -> scheme-number
-    var add = addLifts(function(x, y) {
-	if (typeof(x) === 'number') {
+    var add = makeNumericBinop(
+	function(x, y) {
 	    var sum = x + y;
 	    if (isOverflow(sum)) {
 		return (makeBignum(x)).add(makeBignum(y));
 	    } else {
 		return sum;
 	    }
-	}
-	return x.add(y);
-    });
+	},
+	function(x, y) {
+	    return x.add(y);
+	});
+
 
     // subtract: scheme-number scheme-number -> scheme-number
-    var subtract = addLifts(function(x, y) {
-	if (typeof(x) === 'number') {
+    var subtract = makeNumericBinop(
+	function(x, y) {
 	    var diff = x - y;
 	    if (isOverflow(diff)) {
 		return (makeBignum(x)).subtract(makeBignum(y));
 	    } else {
 		return diff;
 	    }
-	}
-	return x.subtract(y);
-    });
+	},
+	function(x, y) {
+	    return x.subtract(y);
+	});
+
 
     // mulitply: scheme-number scheme-number -> scheme-number
-    var multiply = addLifts(function(x, y) {
-	if (typeof(x) === 'number') {
+    var multiply = makeNumericBinop(
+	function(x, y) {
 	    var prod = x * y;
 	    if (isOverflow(prod)) {
 		return (makeBignum(x)).multiply(makeBignum(y));
 	    } else {
 		return prod;
 	    }
-	}
-	return x.multiply(y);
-    });
+	},
+	function(x, y) {
+	    return x.multiply(y);
+	});
+
 
     // divide: scheme-number scheme-number -> scheme-number
-    var divide = addLifts(function(x, y) {
-	if (typeof(x) === 'number') {
+    var divide = makeNumericBinop(
+	function(x, y) {
 	    if (_integerIsZero(y))
 		throwRuntimeError("division by zero", x, y);
 	    var div = x / y;
@@ -221,17 +228,21 @@ if (! this['plt']['lib']['Numbers']) {
 	    } else {
 		return div;
 	    }
-	}
-	return x.divide(y);
-    });
+	},
+	function(x, y) {
+	    return x.divide(y);
+	});
+
 
     // equals: scheme-number scheme-number -> boolean
-    var equals = addLifts(function(x, y) {
-	if (typeof(x) === 'number') {
+    var equals = makeNumericBinop(
+	function(x, y) {
 	    return x === y;
-	}
-	return x.equals(y);
-    });
+	},
+	function(x, y) {
+	    return x.equals(y);
+	});
+
 
     // eqv: scheme-number scheme-number -> boolean
     var eqv = function(x, y) {
@@ -256,51 +267,60 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     // greaterThanOrEqual: scheme-number scheme-number -> boolean
-    var greaterThanOrEqual = addLifts(function(x, y){
-	if (typeof(x) === 'number') {
+    var greaterThanOrEqual = makeNumericBinop(
+	function(x, y) {
 	    return x >= y;
-	}
-	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError(
-		"greaterThanOrEqual: couldn't be applied to complex number", x, y);
-	return x.greaterThanOrEqual(y);
-    });
+	},
+	function(x, y) {
+	    if (!(isReal(x) && isReal(y)))
+		throwRuntimeError(
+		    "greaterThanOrEqual: couldn't be applied to complex number", x, y);
+	    return x.greaterThanOrEqual(y);
+	});
+
 
     // lessThanOrEqual: scheme-number scheme-number -> boolean
-    var lessThanOrEqual = addLifts(function(x, y){
-	if (typeof(x) === 'number') {
+    var lessThanOrEqual = makeNumericBinop(
+	function(x, y){
+
 	    return x <= y;
-	}
-	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number", x, y);
-	return x.lessThanOrEqual(y);
-    });
+	},
+	function(x, y) {
+	    if (!(isReal(x) && isReal(y)))
+		throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number", x, y);
+	    return x.lessThanOrEqual(y);
+	});
+
 
     // greaterThan: scheme-number scheme-number -> boolean
-    var greaterThan = addLifts(function(x, y){
-	if (typeof(x) === 'number') {
+    var greaterThan = makeNumericBinop(
+	function(x, y){
 	    return x > y;
-	}
-	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError("greaterThan: couldn't be applied to complex number", x, y);
-	return x.greaterThan(y);
-    });
+	},
+	function(x, y) {
+	    if (!(isReal(x) && isReal(y)))
+		throwRuntimeError("greaterThan: couldn't be applied to complex number", x, y);
+	    return x.greaterThan(y);
+	});
+
 
     // lessThan: scheme-number scheme-number -> boolean
-    var lessThan = addLifts(function(x, y){
-	if (typeof(x) === 'number') {
+    var lessThan = makeNumericBinop(
+	function(x, y){
+
 	    return x < y;
-	}
-	if (!(isReal(x) && isReal(y)))
-	    throwRuntimeError("lessThan: couldn't be applied to complex number", x, y);
-	return x.lessThan(y);
-    });
+	},
+	function(x, y) {
+	    if (!(isReal(x) && isReal(y)))
+		throwRuntimeError("lessThan: couldn't be applied to complex number", x, y);
+	    return x.lessThan(y);
+	});
 
 
 
     // expt: scheme-number scheme-number -> scheme-number
-    var expt = addLifts(function(x, y){
-	if (typeof(x) === 'number') {
+    var expt = makeNumericBinop(
+	function(x, y){
 	    if (y >= 0) {
 		var pow = Math.pow(x, y);
 		if (isOverflow(pow)) {
@@ -311,9 +331,11 @@ if (! this['plt']['lib']['Numbers']) {
 	    } else {
 		return (makeBignum(x)).expt(makeBignum(y));
 	    }
-	}
-	return x.expt(y);
-    });
+	},
+	function(x, y) {
+	    return x.expt(y);
+	});
+
 
 
     // exp: scheme-number -> scheme-number
@@ -855,9 +877,9 @@ if (! this['plt']['lib']['Numbers']) {
     //
     // toString: -> string
 
-    // _level: number
+    // level: number
 
-    // _lift: scheme-number -> scheme-number
+    // liftTo: scheme-number -> scheme-number
 
     // isFinite: -> boolean
 
@@ -991,16 +1013,16 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    Rational.prototype._level = 1;
+    Rational.prototype.level = 1;
 
 
-    Rational.prototype._lift = function(target) {
-	if (target._level === 2)
+    Rational.prototype.liftTo = function(target) {
+	if (target.level === 2)
 	    return new FloatPoint(
 		_integerDivideToFixnum(this.n, this.d));
-	if (target._level === 3)
+	if (target.level === 3)
 	    return new Complex(this, 0);
-	return throwRuntimeError("invalid _level of Number", this, target);
+	return throwRuntimeError("invalid level of Number", this, target);
     };
 
     Rational.prototype.isFinite = function() {
@@ -1247,33 +1269,26 @@ if (! this['plt']['lib']['Numbers']) {
 	n = _integerQuotient(n, divisor);
 	d = _integerQuotient(d, divisor);
 
-	if (_integerIsOne(d)) {
+	// Optimization: if we can get around construction the rational
+	// in favor of just returning n, do it:
+	if (_integerIsOne(d) || _integerIsZero(n)) {
 	    return n;
 	}
 
-	if (typeof(n) === 'number' && typeof(d) === 'number') {
-	    if (d === 1 && n in _rationalCache) {
-		return _rationalCache[n];
-	    }
-	    else {
-		return new Rational(n, d);
-	    }
-	} else {
-	    return new Rational(n, d);
-	}
+	return new Rational(n, d);
     };
 
-    _rationalCache = {};
-    (function() {
-	var i;
-	for(i = -500; i < 500; i++) {
-	    _rationalCache[i] = new Rational(i, 1);
-	}
-    })();
-    Rational.NEGATIVE_ONE = _rationalCache[-1];
-    Rational.ZERO = _rationalCache[0];
-    Rational.ONE = _rationalCache[1];
-    Rational.TWO = _rationalCache[2];
+//     _rationalCache = {};
+//     (function() {
+// 	var i;
+// 	for(i = -500; i < 500; i++) {
+// 	    _rationalCache[i] = new Rational(i, 1);
+// 	}
+//     })();
+//     Rational.NEGATIVE_ONE = new Rational(-1, 1);
+//     Rational.ZERO = new Rational(0, 1);
+//     Rational.ONE = new Rational(1, 1);
+//     Rational.TWO = new Rational(2, 1);
 
 
 
@@ -1293,6 +1308,8 @@ if (! this['plt']['lib']['Numbers']) {
     var TOO_POSITIVE_TO_REPRESENT = new FloatPoint(Number.POSITIVE_INFINITY);
     var TOO_NEGATIVE_TO_REPRESENT = new FloatPoint(Number.NEGATIVE_INFINITY);
 
+    // Negative zero is a distinguished value representing -0.0.
+    // There should only be one instance for -0.0.
     var NEGATIVE_ZERO = new FloatPoint(0);
 
     FloatPoint.pi = new FloatPoint(Math.PI);
@@ -1337,13 +1354,13 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    FloatPoint.prototype._level = 2;
+    FloatPoint.prototype.level = 2;
 
 
-    FloatPoint.prototype._lift = function(target) {
-	if (target._level === 3)
+    FloatPoint.prototype.liftTo = function(target) {
+	if (target.level === 3)
 	    return new Complex(this, 0);
-	return throwRuntimeError("invalid _level of Number", this, target);
+	return throwRuntimeError("invalid level of Number", this, target);
     };
 
     FloatPoint.prototype.toString = function() {
@@ -1712,10 +1729,10 @@ if (! this['plt']['lib']['Numbers']) {
 
 
 
-    Complex.prototype._level = 3;
+    Complex.prototype.level = 3;
 
 
-    Complex.prototype._lift = function(target){
+    Complex.prototype.liftTo = function(target){
 	throwRuntimeError("Don't know how to lift Complex number", this, target);
     };
 
@@ -3325,12 +3342,12 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
-    BigInteger.prototype._level = 0;
-    BigInteger.prototype._lift = function(target) {
-	if (target._level === 1) {
+    BigInteger.prototype.level = 0;
+    BigInteger.prototype.liftTo = function(target) {
+	if (target.level === 1) {
 	    return new Rational(this, 1);
 	}
-	if (target._level === 2) {
+	if (target.level === 2) {
 	    var fixrep = this.toFixnum();
 	    if (fixrep === Number.POSITIVE_INFINITY)
 		return TOO_POSITIVE_TO_REPRESENT;
@@ -3338,10 +3355,10 @@ if (! this['plt']['lib']['Numbers']) {
 		return TOO_NEGATIVE_TO_REPRESENT;
 	    return new FloatPoint(fixrep);
 	}
-	if (target._level === 3) {
+	if (target.level === 3) {
 	    return new Complex(this, 0);
 	}
-	return throwRuntimeError("invalid _level for BigInteger lift", this, target);
+	return throwRuntimeError("invalid level for BigInteger lift", this, target);
     };
 
     BigInteger.prototype.isFinite = function() {
@@ -3497,9 +3514,9 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['nan'] = FloatPoint.nan;
     Numbers['negative_inf'] = FloatPoint.neginf;
     Numbers['inf'] = FloatPoint.inf;
-    Numbers['negative_one'] = Rational.NEGATIVE_ONE;
-    Numbers['zero'] = Rational.ZERO;
-    Numbers['one'] = Rational.ONE;
+    Numbers['negative_one'] = -1;   // Rational.NEGATIVE_ONE;
+    Numbers['zero'] = 0;            // Rational.ZERO;
+    Numbers['one'] = 1;             // Rational.ONE;
     Numbers['i'] = plusI;
     Numbers['negative_i'] = minusI;
     Numbers['negative_zero'] = NEGATIVE_ZERO;
