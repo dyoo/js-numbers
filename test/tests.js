@@ -2716,70 +2716,56 @@ describe('old tests from Moby Scheme', {
     testConjugate : function(){
 	var n1 = makeRational(2,1);
 	var n2 = makeFloat(2.1);
-	assertTrue(equals(n1, Kernel.conjugate(n1)));
-	assertTrue(equals(n2, Kernel.conjugate(n2)));
-	assertTrue(equals(makeComplex(makeRational(1),makeRational( 2)), Kernel.conjugate(makeComplex(makeRational(1),makeRational( -2)))));
+	assertTrue(equals(n1, conjugate(n1)));
+	assertTrue(equals(n2, conjugate(n2)));
+	assertTrue(equals(makeComplex(makeRational(1),makeRational( 2)), conjugate(makeComplex(makeRational(1),makeRational( -2)))));
     },
     
     testMagnitude : function(){
 	var n1 = makeRational(2,1);
 	var n2 = makeFloat(2.1);
-	assertTrue(equals(n1, Kernel.magnitude(n1)));
-	assertTrue(equals(n2, Kernel.magnitude(n2)));
-	assertTrue(equals(makeComplex(makeRational(5),makeRational( 0)), Kernel.magnitude(makeComplex(makeRational(3),makeRational( -4)))));
+	assertTrue(equals(n1, magnitude(n1)));
+	assertTrue(equals(n2, magnitude(n2)));
+	assertTrue(equals(makeComplex(makeRational(5),makeRational( 0)), magnitude(makeComplex(makeRational(3),makeRational( -4)))));
     },
     
     testComparison : function(){	
-	assertTrue(Kernel._greaterthan_(makeRational(2,1),
-					 makeRational(1,1), 
-					 []));
-	assertTrue(Kernel._greaterthan_(makeFloat(2.1),
-					 makeRational(2,1), []));
-	assertTrue(Kernel._greaterthan__equal_(makeFloat(2.0),
-						makeRational(2,1),
-						[]));
-	assertTrue(Kernel._greaterthan__equal_(makeComplex(makeFloat(2.0),makeRational( 0)),
-						makeRational(2,1),
-						[]));
+	assertTrue(greaterThan(makeRational(2,1),
+			       makeRational(1,1)));
+	assertTrue(greaterThan(makeFloat(2.1),
+			       makeRational(2,1)));
+	assertTrue(greaterThanOrEqual(makeFloat(2.0),
+				      makeRational(2,1)));
+	assertTrue(greaterThanOrEqual(makeComplex(makeFloat(2.0),makeRational( 0)),
+				      makeRational(2,1)));
 
 
-	assertTrue(Kernel._lessthan_(makeRational(2),
-				      makeRational(3), []));
+	assertTrue(lessThan(makeRational(2),
+				      makeRational(3)));
 
-	assertTrue(! Kernel._lessthan_(makeRational(3),
-					makeRational(2), []));
+	assertTrue(! lessThan(makeRational(3),
+					makeRational(2)));
     },
 
-    testComparisonTypes : function() {
-	assertFails(isTypeMismatch,
-			     function() {
-				 Kernel._lessthan_(2, 3, [])});
-	assertFails(isTypeMismatch,
-			     function() {
-				 Kernel._greaterthan_("2", "3", [])});
-    },
 
     testComparisonMore: function() {
-	assertTrue(! Kernel._greaterthan_(makeRational(2),
-					   makeRational(3), []));
+	assertTrue(! greaterThan(makeRational(2),
+					   makeRational(3)));
 
-	assertTrue(Kernel._greaterthan_(makeRational(3),
-					 makeRational(2), []));
+	assertTrue(greaterThan(makeRational(3),
+					 makeRational(2)));
 
-	assertTrue(! Kernel._greaterthan_(makeRational(3),
-					   makeRational(3), []));
+	assertTrue(! greaterThan(makeRational(3),
+					   makeRational(3)));
 
-	assertTrue(Kernel._lessthan__equal_(makeRational(17),
-					     makeRational(17), []));
+	assertTrue(lessThanOrEqual(makeRational(17),
+				   makeRational(17)));
 
-	assertTrue(Kernel._lessthan__equal_(makeRational(16),
-					     makeRational(17), []));
+	assertTrue(lessThanOrEqual(makeRational(16),
+				   makeRational(17)));
 
-	assertTrue(!Kernel._lessthan__equal_(makeRational(16),
-					      makeRational(15), []));
-	assertFails(isTypeMismatch,
-			     function() {
-				 Kernel._lessthan__equal_("2", "3", [])});
+	assertTrue(!lessThanOrEqual(makeRational(16),
+					      makeRational(15)));
     },
 
     
@@ -2787,42 +2773,45 @@ describe('old tests from Moby Scheme', {
 	var num = makeRational(0, 1);
 	var upper = makeRational(480, 1);
 
-	assertTrue(Kernel._lessthan_(makeRational(5, 1),
-				      upper, []));
-	assertTrue(Kernel._lessthan_(makeRational(6, 1),
-				      upper, []));
-	assertTrue(Kernel._lessthan_(makeRational(7, 1),
-				      upper, []));
-	assertTrue(Kernel._lessthan_(makeRational(8, 1),
-				      upper, []));
-	assertTrue(Kernel._lessthan_(makeRational(9, 1),
-				      upper, []));
+	assertTrue(lessThan(makeRational(5, 1),
+				      upper));
+	assertTrue(lessThan(makeRational(6, 1),
+				      upper));
+	assertTrue(lessThan(makeRational(7, 1),
+				      upper));
+	assertTrue(lessThan(makeRational(8, 1),
+				      upper));
+	assertTrue(lessThan(makeRational(9, 1),
+				      upper));
 
 	for (var i = 0; i < 60; i++) {
-	    assertTrue(Kernel._lessthan_
-			(num, upper, []));
-	    num = add([num, 1]);
+	    assertTrue(lessThan
+			(num, upper));
+	    num = add(num, 1);
 	}
     },
 
     
     testAtan : function(){
-	assertTrue(equals(Kernel.atan(1, []), plt.Kernel.pi.half().half()));
+	assertTrue(equals(atan(1), divide(pi, 4)));
     },
     
     testLog : function(){
-	assertTrue(equals(Kernel.log(1), 0));		
-	assertTrue(equals(Kernel.log(makeComplex(makeRational(0),makeRational(1))), plt.Kernel.pi.toComplex().timesI().half()));
-	assertTrue(equals(Kernel.log(makeFloat(-1)), plt.Kernel.pi.toComplex().timesI()));
+	assertTrue(equals(log(1), 0));		
+	assertTrue(equals(log(makeComplex(makeRational(0),makeRational(1))), divide(multiply(pi, i), 2)));
+	assertTrue(equals(log(makeFloat(-1)), multiply(pi, i)));
     },
     
     testAngle : function(){
-	assertTrue(equals(Kernel.angle(makeComplex(makeRational(0),makeRational(1))), PI.half()));
-	assertTrue(equals(Kernel.angle(makeComplex(makeRational(1),makeRational(1))), PI.half().half()));
-	assertTrue(equals(Kernel.angle(makeFloat(-1)), PI));
-	assertTrue(equals(Kernel.angle(makeComplex(makeRational(-1),makeRational( 1))), PI.multiply(makeFloat(0.75))));
-	assertTrue(equals(Kernel.angle(makeComplex(makeRational(-1),makeRational( -1))), PI.multiply(makeFloat(-0.75))));
-	assertTrue(equals(Kernel.angle(makeComplex(makeRational(1),makeRational( -1))), PI.half().half().minus()));
+	assertTrue(equals(angle(makeComplex(makeRational(0),makeRational(1))), divide(pi, 2)));
+	assertTrue(equals(angle(makeComplex(makeRational(1),makeRational(1))), divide(pi, 4)));
+	assertTrue(equals(angle(makeFloat(-1)), pi));
+	assertTrue(equals(angle(makeComplex(makeRational(-1),makeRational( 1))), 
+			  multiply(pi, makeFloat(0.75))));
+	assertTrue(equals(angle(makeComplex(makeRational(-1),makeRational( -1))),
+			  multiply(pi, makeFloat(-0.75))));
+	assertTrue(equals(angle(makeComplex(makeRational(1),makeRational( -1))), 
+			  multiply(pi, makeRational(-1, 4))));
     },
     
     testExp : function(){

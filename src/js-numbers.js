@@ -510,6 +510,7 @@ if (! this['plt']['lib']['Numbers']) {
 	return n.magnitude();
     };
 
+
     // log: scheme-number -> scheme-number
     var log = function(n) {
 	if (typeof(n) === 'number') {
@@ -1670,7 +1671,7 @@ if (! this['plt']['lib']['Numbers']) {
 
     FloatPoint.prototype.log = function(){
 	if (this.n < 0)
-	    return log(Complex.makeInstance(this, 0));
+	    return (new Complex(this, 0)).log();
 	else
 	    return FloatPoint.makeInstance(Math.log(this.n));
     };
