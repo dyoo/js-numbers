@@ -2815,35 +2815,33 @@ describe('old tests from Moby Scheme', {
     },
     
     testExp : function(){
-	assertTrue(equals(Kernel.exp(0), 1, []));
-	assertTrue(equals(Kernel.exp(1),
-				   Kernel.e, []));
-	assertTrue(equals_tilde_(Kernel.exp(makeRational(2)), 
-					  Kernel.sqr(Kernel.e),
+	assertTrue(equals(exp(0), 1));
+	assertTrue(equals(exp(1),
+				   e));
+	assertTrue(approxEquals(exp(makeRational(2)), 
+					  sqr(e),
 					  makeFloat(0.0001)));
     },
     
     
     testExpt : function(){
-	var i = plt.types.makeComplex(
+	var i = makeComplex(
 	    makeRational(0),makeRational( 1));
 
 	assertTrue(equals(
-	    Kernel.expt(i, i), 
-	    Kernel.exp(PI.half().minus())));
+	    expt(i, i), 
+	    exp(multiply(pi, makeRational(-1, 2)))));
 
-	assertTrue(equals(
-	    Kernel.expt(makeFloat(2), 
-			makeFloat(3)), 
-	    makeFloat(8)));
+ 	assertTrue(equals(
+ 	    expt(makeFloat(2), 
+ 			makeFloat(3)), 
+ 	    makeFloat(8)));
 	
-	assertTrue(equals(
-	    Kernel.expt(makeComplex(
-		makeRational(3,4),
-		makeRational(7,8)),
-			makeRational(2))),
-		    makeComplex(makeRational(-13, 64),
-					 makeRational(21, 16)));
+ 	assertTrue(equals(expt(makeComplex(makeRational(3,4),
+ 					   makeRational(7,8)),
+ 			       makeRational(2)),
+ 			  makeComplex(makeRational(-13, 64),
+ 				      makeRational(21, 16))));
     },
     
     
@@ -2858,9 +2856,7 @@ describe('old tests from Moby Scheme', {
 
     testSqr: function() {
 	var n1 = makeRational(42);
-	assertEquals(1764, Kernel.sqr(n1).toFixnum());
-	assertFails(isTypeMismatch,
-			     function() { Kernel.sqr("42"); });
+	assertEquals(1764, sqr(n1).toFixnum());
     },
 
     testIntegerSqrt: function() {
@@ -2873,8 +2869,8 @@ describe('old tests from Moby Scheme', {
 
 
     testSqrt : function(){
-	assertTrue(equals(Kernel.sqrt(makeFloat(4)), makeFloat(2)));
-	assertTrue(equals(Kernel.sqrt(makeFloat(-1)), makeComplex(makeRational(0),makeRational(1))));
+	assertTrue(equals(sqrt(makeFloat(4)), makeFloat(2)));
+	assertTrue(equals(sqrt(makeFloat(-1)), makeComplex(makeRational(0),makeRational(1))));
     },
     
     testAcos : function(){
@@ -2922,10 +2918,10 @@ describe('old tests from Moby Scheme', {
 	var n = Kernel.make_dash_polar(makeRational(5),
 				       PI);
 	var delta = makeFloat(0.0000001);
-	assertTrue(equals_tilde_(Kernel.imag_dash_part(n),
+	assertTrue(approxEquals(Kernel.imag_dash_part(n),
 					  makeRational(0),
 					  delta));
-	assertTrue(equals_tilde_(Kernel.real_dash_part(n),
+	assertTrue(approxEquals(Kernel.real_dash_part(n),
 					  makeRational(-5),
 					  delta));
     },
@@ -2980,16 +2976,16 @@ describe('old tests from Moby Scheme', {
 
     testExactToInexact : function() {
 	assertTrue(equals(Kernel.exact_dash__greaterthan_inexact(makeRational(3)),
-				   makeFloat(3.0),
-				   []));
+				   makeFloat(3.0)
+				   ));
 	assertTrue(Kernel.inexact_question_(Kernel.exact_dash__greaterthan_inexact(makeRational(3))));
     },
 
 
     testInexactToExact : function() {
 	assertTrue(equals(Kernel.inexact_dash__greaterthan_exact(makeFloat(3)),
-				   makeRational(3),
-				   []));
+				   makeRational(3)
+				   ));
 	assertTrue(Kernel.exact_question_(Kernel.inexact_dash__greaterthan_exact(makeFloat(3))));
     },
 
@@ -3007,10 +3003,7 @@ describe('old tests from Moby Scheme', {
     },
     
     testInfinityComputations : function() {
-	assertTrue(equals(0,
-				   multiply([0, 
-						  inf]),
-				   []));
+	assertTrue(equals(0, multiply(0, inf)));
     },
 
     testEven_question_ : function(){

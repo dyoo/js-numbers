@@ -714,6 +714,24 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
+    // fastExpt: computes n^k by squaring.
+    // n^k = (n^2)^(k/2)
+    // Assumes k is non-negative integer.
+    var fastExpt = function(n, k) {
+	var acc = 1;
+	while (true) {
+	    if (_integerIsZero(k)) {
+		return acc;
+	    }
+	    if (equals(modulo(k, 2), 0)) {
+		n = multiply(n, n);
+		k = divide(k, 2);
+	    } else {
+		acc = multiply(acc, n);
+		k = subtract(k, 1);
+	    }
+	}
+    };
 
 
 
@@ -733,6 +751,13 @@ if (! this['plt']['lib']['Numbers']) {
     var makeIntegerBinop = function(onFixnums, onBignums, options) {
 	options = options || {};
 	return (function(m, n) {
+	    if (m instanceof Complex) {
+		m = realPart(m);
+	    }
+	    if (n instanceof Complex) {
+		n = realPart(n);
+	    }
+
 	    if (typeof(m) === 'number' && typeof(n) === 'number') {
 		var result = onFixnums(m, n);
 		if (! isOverflow(result) ||
@@ -763,6 +788,10 @@ if (! this['plt']['lib']['Numbers']) {
     var makeIntegerUnOp = function(onFixnums, onBignums, options) {
 	options = options || {};
 	return (function(m) {
+	    if (m instanceof Complex) {
+		m = realPart(m);
+	    }
+
 	    if (typeof(m) === 'number') {
 		var result = onFixnums(m);
 		if (! isOverflow(result) ||
@@ -1284,6 +1313,9 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     Rational.prototype.expt = function(a){
+	if (isExactInteger(a) && greaterThanOrEqual(a, 0)) {
+	    return fastExpt(this, a);
+	}
 	return FloatPoint.makeInstance(Math.pow(_integerDivideToFixnum(this.n, this.d),
 						_integerDivideToFixnum(a.n, a.d)));
     };
@@ -2061,7 +2093,11 @@ if (! this['plt']['lib']['Numbers']) {
 	return result;
     };
 
-    Complex.prototype.expt= function(y){
+
+    Complex.prototype.expt = function(y){
+	if (isExactInteger(y) && greaterThanOrEqual(y, 0)) {
+	    return fastExpt(this, y);
+	}
 	var expo = multiply(y, this.log());
 	return exp(expo);
     };
