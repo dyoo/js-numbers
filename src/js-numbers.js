@@ -751,10 +751,15 @@ if (! this['plt']['lib']['Numbers']) {
     var makeIntegerBinop = function(onFixnums, onBignums, options) {
 	options = options || {};
 	return (function(m, n) {
-	    if (m instanceof Complex) {
+	    if (m instanceof Rational) {
+		m = numerator(m);
+	    } else if (m instanceof Complex) {
 		m = realPart(m);
 	    }
-	    if (n instanceof Complex) {
+
+	    if (n instanceof Rational) {
+		n = numerator(n);
+	    }else if (n instanceof Complex) {
 		n = realPart(n);
 	    }
 
@@ -788,7 +793,9 @@ if (! this['plt']['lib']['Numbers']) {
     var makeIntegerUnOp = function(onFixnums, onBignums, options) {
 	options = options || {};
 	return (function(m) {
-	    if (m instanceof Complex) {
+	    if (m instanceof Rational) {
+		m = numerator(m);
+	    } else if (m instanceof Complex) {
 		m = realPart(m);
 	    }
 
@@ -2087,7 +2094,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    return sin(this.r);
 	var iz = timesI(this);
 	var iz_negate = negate(iz);
-	var z2 = Complex.makeInstance(0, Rational.TWO);
+	var z2 = Complex.makeInstance(0, 2);
 	var exp_negate = subtract(exp(iz), exp(iz_negate));
 	var result = divide(exp_negate, z2);
 	return result;
@@ -2127,17 +2134,10 @@ if (! this['plt']['lib']['Numbers']) {
 	    return asin(this.r);
 
 	var oneNegateThisSq =
-	    subtract(
-		1,
-		sqr(this));
+	    subtract(1, sqr(this));
 	var sqrtOneNegateThisSq = sqrt(oneNegateThisSq);
-	return multiply(
-	    Rational.TWO,
-	    atan(divide(
-		this,
-		add(
-		    1,
-		    sqrtOneNegateThisSq))));
+	return multiply(2, atan(divide(this,
+				       add(1, sqrtOneNegateThisSq))));
     };
 
     Complex.prototype.ceiling = function(){

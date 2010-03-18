@@ -1869,6 +1869,13 @@ describe('expt', {
     },
     'complex / complex' : function() {
 	// FIXME: we're missing this
+    },
+    'expt of anything to zero is 1' : function() {
+	assertTrue(eqv(1, expt(nan, 0)));
+	assertTrue(eqv(1, expt(inf, 0)));
+	assertTrue(eqv(1, expt(negative_inf, 0)));
+	assertTrue(eqv(1, expt(negative_zero, 0)));
+	assertTrue(eqv(1, expt(0, 0)));
     }
 });
 
@@ -2846,25 +2853,25 @@ describe('old tests from Moby Scheme', {
     
     
     testSin : function(){
-	assertTrue(equals(Kernel.sin(divide(PI, makeFloat(2))), 1));
+	assertTrue(equals(sin(divide(pi, makeFloat(2))), 1));
     },
     
     testCos : function(){
-	assertTrue(equals(Kernel.cos(0), 1));
+	assertTrue(equals(cos(0), 1));
     },
     
 
     testSqr: function() {
 	var n1 = makeRational(42);
-	assertEquals(1764, sqr(n1).toFixnum());
+	assertEquals(1764, toFixnum(sqr(n1)));
     },
 
     testIntegerSqrt: function() {
 	var n1 = makeRational(36);
 	var n2 = makeRational(6);
 	
-	assertEquals(n2, Kernel.integer_dash_sqrt(n1));
-	assertFails(function() { Kernel.integer_dash_sqrt(makeFloat(3.5)); }); 
+	assertEquals(n2, integerSqrt(n1));
+	assertFails(function() { integerSqrt(makeFloat(3.5)); }); 
     },
 
 
@@ -2874,39 +2881,33 @@ describe('old tests from Moby Scheme', {
     },
     
     testAcos : function(){
-	assertTrue(equals(Kernel.acos(1), 0));
-	assertTrue(equals(Kernel.acos(makeFloat(-1)), PI));
+	assertTrue(equals(acos(1), 0));
+	assertTrue(equals(acos(makeFloat(-1)), pi));
     },
     
     testAsin : function(){
-	assertTrue(equals(
-	    Kernel.asin(0), 0));
-	assertTrue(equals(Kernel.asin(-1), PI.half().minus()));
-	assertTrue(equals(
-	    Kernel.asin(1), PI.half()));
-
-	assertTrue(equals(
-	    Kernel.asin(makeRational(1, 4)),
-	    makeFloat(0.25268025514207865)));
-
-	assertTrue(equals(
-	    Kernel.asin(makeComplex(1, 5)),
-	    makeComplex(0.1937931365549321,
-				 2.3309746530493123)));
+	assertTrue(equals(asin(0),
+			  0));
+ 	assertTrue(equals(asin(-1),
+ 			  multiply(pi, makeRational(-1, 2))));
+ 	assertTrue(equals(asin(1),
+ 			  divide(pi, 2)));
+ 	assertTrue(equals(asin(makeRational(1, 4)),
+ 			  makeFloat(0.25268025514207865)));	
+ 	assertTrue(equals(asin(makeComplex(1, 5)),
+ 			  makeComplex(makeFloat(0.1937931365549321),
+ 				      makeFloat(2.3309746530493123))));
     },
     
     testTan : function(){
-	assertTrue(equals(Kernel.tan(0), 0));
+	assertTrue(equals(tan(0), 0));
     },
     
     testComplex_question_ : function(){
-	assertTrue(Kernel.complex_question_(PI));
-	assertTrue(Kernel.complex_question_(1));
-	assertTrue(Kernel.complex_question_(makeFloat(2.718)));
-	assertTrue(Kernel.complex_question_(makeComplex(0,1)));
-	assertTrue(!Kernel.complex_question_(plt.types.Empty.EMPTY));
-	assertTrue(!Kernel.complex_question_(String.makeInstance("hi")));
-	assertTrue(!Kernel.complex_question_(Symbol.makeInstance('h')));
+	assertTrue(isSchemeNumber(pi));
+	assertTrue(isSchemeNumber(1));
+	assertTrue(isSchemeNumber(makeFloat(2.718)));
+	assertTrue(isSchemeNumber(makeComplex(0,1)));
     },
 
 
@@ -2916,7 +2917,7 @@ describe('old tests from Moby Scheme', {
 								  makeRational(0)),
 					   makeComplex(makeRational(5),makeRational( 0))));
 	var n = Kernel.make_dash_polar(makeRational(5),
-				       PI);
+				       pi);
 	var delta = makeFloat(0.0000001);
 	assertTrue(approxEquals(Kernel.imag_dash_part(n),
 					  makeRational(0),
@@ -2944,7 +2945,7 @@ describe('old tests from Moby Scheme', {
     },
     
     testSinh : function(){
-	assertTrue(equals(Kernel.sinh(0), 0));
+	assertTrue(equals(sinh(0), 0));
     },
     
     testDenominator : function(){
@@ -3030,25 +3031,25 @@ describe('old tests from Moby Scheme', {
     
     testCeiling : function(){
 	assertTrue(equals(Kernel.ceiling(1), 1));
-	assertTrue(equals(Kernel.ceiling(PI), makeFloat(4)));
+	assertTrue(equals(Kernel.ceiling(pi), makeFloat(4)));
 	assertTrue(equals(Kernel.ceiling(makeComplex(makeFloat(3.1),makeRational(0))), makeFloat(4)));
     },
     
     testFloor : function(){
 	assertTrue(equals(Kernel.floor(1), 1));
-	assertTrue(equals(Kernel.floor(PI), makeFloat(3)));
+	assertTrue(equals(Kernel.floor(pi), makeFloat(3)));
 	assertTrue(equals(Kernel.floor(makeComplex(makeFloat(3.1),makeRational(0))), makeFloat(3)));
     },
     
     testImag_dash_part : function(){
 	assertTrue(equals(Kernel.imag_dash_part(1), 0));
-	assertTrue(equals(Kernel.imag_dash_part(PI), 0));
+	assertTrue(equals(Kernel.imag_dash_part(pi), 0));
 	assertTrue(equals(Kernel.imag_dash_part(makeComplex(makeRational(0),makeRational(1))), 1));
     },
     
     testReal_dash_part : function(){
 	assertTrue(equals(Kernel.real_dash_part(1), 1));
-	assertTrue(equals(Kernel.real_dash_part(PI), PI));
+	assertTrue(equals(Kernel.real_dash_part(pi), pi));
 	assertTrue(equals(Kernel.real_dash_part(makeComplex(makeRational(0),makeRational(1))), 0));
     },
     
@@ -3190,7 +3191,7 @@ describe('old tests from Moby Scheme', {
 
     
     testReal_question_ : function(){
-	assertTrue(Kernel.real_question_(PI));
+	assertTrue(Kernel.real_question_(pi));
 	assertTrue(Kernel.real_question_(1));
 	assertTrue(!Kernel.real_question_(makeComplex(makeRational(0),makeRational(1))));
 	assertTrue(Kernel.real_question_(makeComplex(makeRational(1),makeRational(0))));
