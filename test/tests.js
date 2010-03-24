@@ -42,7 +42,6 @@ var assertFails = function(thunk) {
 };
 
 
-
 describe('rational constructions', {
     'constructions' : function() {
 	value_of(isSchemeNumber(makeRational(42)))
@@ -79,6 +78,17 @@ describe('rational constructions', {
     }
 
 });
+
+
+describe('complex construction', {
+    'polar' : function() {
+	// FIXME: add tests for polar construction
+    },
+    'non-real inputs should raise errors' : function() { 
+	// FIXME: add tests for polar construction
+    }});
+
+
 
 describe('built-in constants', {
     'pi': function() {
@@ -2272,6 +2282,46 @@ describe('asin', {
 });
 
 
+describe('cosh', {
+    'fixnums': function() {
+	// FIXME: we're missing this
+    },
+    'bignums': function() {
+	// FIXME: we're missing this
+    },
+    'rationals': function() {
+	// FIXME: we're missing this
+    },
+    'floats': function() {
+	// FIXME: we're missing this
+    },
+    'complex': function() {
+	// FIXME: we're missing this
+    }
+});
+
+
+describe('sinh', {
+    'fixnums': function() {
+	// FIXME: we're missing this
+    },
+    'bignums': function() {
+	// FIXME: we're missing this
+    },
+    'rationals': function() {
+	// FIXME: we're missing this
+    },
+    'floats': function() {
+	// FIXME: we're missing this
+    },
+    'complex': function() {
+	// FIXME: we're missing this
+    }
+});
+
+
+
+
 describe('imaginaryPart', {
     'fixnums': function() {
 	// FIXME: we're missing this
@@ -2913,35 +2963,23 @@ describe('old tests from Moby Scheme', {
 
 
     testMakePolar : function() {
-	assertTrue(equals(Kernel.make_dash_polar(makeRational(5),
-								  makeRational(0)),
-					   makeComplex(makeRational(5),makeRational( 0))));
-	var n = Kernel.make_dash_polar(makeRational(5),
+	assertTrue(equals(makeComplexPolar(makeRational(5),
+					   makeRational(0)),
+			  makeComplex(makeRational(5),
+				      makeRational(0))));
+	var n = makeComplexPolar(makeRational(5),
 				       pi);
 	var delta = makeFloat(0.0000001);
-	assertTrue(approxEquals(Kernel.imag_dash_part(n),
-					  makeRational(0),
-					  delta));
-	assertTrue(approxEquals(Kernel.real_dash_part(n),
-					  makeRational(-5),
-					  delta));
+	assertTrue(approxEquals(imaginaryPart(n),
+				makeRational(0),
+				delta));
+	assertTrue(approxEquals(realPart(n),
+				makeRational(-5),
+				delta));
     },
-    
-    
-    testMakeRectangular: function() {
-	assertTrue(equals(Kernel.make_dash_rectangular
-					   (makeRational(4),
-					    makeRational(3)),
-					   makeComplex(makeRational(4),makeRational( 3))));		
-	assertTrue(equals(Kernel.make_dash_rectangular
-					   (makeRational(5),
-					    makeRational(4)),
-					   makeComplex(makeRational(5),makeRational( 4))));
-    },
-
     
     testCosh : function(){
-	assertTrue(equals(Kernel.cosh(0), 1));
+	assertTrue(equals(cosh(0), 1));
     },
     
     testSinh : function(){
@@ -2949,30 +2987,25 @@ describe('old tests from Moby Scheme', {
     },
     
     testDenominator : function(){
-	assertTrue(equals(Kernel.denominator(makeRational(7,2)), makeRational(2,1)));
-	assertTrue(equals(Kernel.denominator(makeFloat(3)),
-					   makeFloat(1)));
+	assertTrue(equals(denominator(makeRational(7,2)),
+			  makeRational(2,1)));
+	assertTrue(equals(denominator(makeFloat(3)),
+			  makeFloat(1)));
     },
     
     testNumerator : function(){
-	assertTrue(equals(Kernel.numerator(makeRational(7,2)), makeRational(7,1)));
-	assertTrue(equals(Kernel.numerator(makeFloat(3)),
-					   makeFloat(3)));
+	assertTrue(equals(numerator(makeRational(7,2)),
+			  makeRational(7,1)));
+	assertTrue(equals(numerator(makeFloat(3)),
+			  makeFloat(3)));
     },
 
 
     testIsExact : function() {
-	assertTrue(Kernel.exact_question_(makeRational(3)));
-	assertTrue(! Kernel.exact_question_(makeFloat(3.0)));
-	assertTrue(! Kernel.exact_question_(makeFloat(3.5)));
+	assertTrue(isExact(makeRational(3)));
+	assertTrue(! isExact(makeFloat(3.0)));
+	assertTrue(! isExact(makeFloat(3.5)));
     },
-
-    testIsInexact : function() {
-	assertTrue(! Kernel.inexact_question_(makeRational(3)));
-	assertTrue(Kernel.inexact_question_(makeFloat(3.0)));
-	assertTrue(Kernel.inexact_question_(makeFloat(3.5)));
-    },
-
 
 
     testExactToInexact : function() {

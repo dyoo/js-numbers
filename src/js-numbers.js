@@ -665,6 +665,31 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
 
+    // Implementation of the hyperbolic functions
+    // http://en.wikipedia.org/wiki/Hyperbolic_cosine
+    var cosh = function(x) {
+	return divide(add(exp(x), exp(negate(x))),
+		      2);
+    };
+	
+    var sinh = function(x) {
+	return divide(subtract(exp(x), exp(negate(x))),
+		      2);
+    };
+
+
+        
+    var makeComplexPolar = function(r, theta) {
+	// special case: if theta is zero, just return
+	// the scalar.
+	if (equals(theta, 0)) {
+	    return r;
+	}
+	return makeComplex(multiply(r, cos(theta)),
+			   multiply(r, sin(theta)));
+    };
+
+
 
     //////////////////////////////////////////////////////////////////////
 
@@ -3640,6 +3665,7 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['makeRational'] = Rational.makeInstance;
     Numbers['makeFloat'] = FloatPoint.makeInstance;
     Numbers['makeComplex'] = Complex.makeInstance;
+    Numbers['makeComplexPolar'] = makeComplexPolar;
 
     Numbers['pi'] = FloatPoint.pi;
     Numbers['e'] = FloatPoint.e;
@@ -3694,6 +3720,8 @@ if (! this['plt']['lib']['Numbers']) {
     Numbers['tan'] = tan;
     Numbers['acos'] = acos;
     Numbers['asin'] = asin;
+    Numbers['cosh'] = cosh;
+    Numbers['sinh'] = sinh;
     Numbers['imaginaryPart'] = imaginaryPart;
     Numbers['realPart'] = realPart;
     Numbers['round'] = round;

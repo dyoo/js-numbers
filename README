@@ -108,6 +108,11 @@ makeComplex: scheme-number scheme-number? -> scheme-number
     input must be basic scheme numbers (i.e. not complex).  If only one
     argument is given, assumes the imaginary part is 0.
 
+makeComplexPolar: scheme-number scheme-number -> scheme-number
+    Constructs a complex number; the radius and theta must be basic
+    scheme numbers (i.e. not complex).
+
+
 
 isSchemeNumber: any -> boolean
     Produces true if the thing is a scheme number.
@@ -217,13 +222,19 @@ tan: scheme-number -> scheme-number
     Produces the tangent.
 
 asin: scheme-number -> scheme-number
-    Produces the arc sine;
+    Produces the arc sine.
 
 acos: scheme-number -> scheme-number
     Produces the arc cosine.
 
 atan: scheme-number -> scheme-number
     Produces the arc tangent.
+
+cosh: scheme-number -> scheme-number
+    Produces the hyperbolic cosine.
+
+sinh: scheme-number -> scheme-number
+    Produces the hyperbolic sine.
 
 realPart: scheme-number -> scheme-number
     Produces the real part of the complex number.
