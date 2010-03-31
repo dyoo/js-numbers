@@ -2574,7 +2574,7 @@ describe('integerSqrt', {
     'fixnums': function() {
         assertFails(integerSqrt(Number.NaN));
         assertEquals(Number.POSITIVE_INFINITY, integerSqrt(Number.POSITIVE_INFINITY));
-        assertEquals(makeComplex(0,Number.POSITIVE_INFINITY), integerSqrt(Number.NEGATIVE_INFINITY));    
+        assertEquals(makeComplex(0,Number.POSITIVE_INFINITY), integerSqrt(Number.NEGATIVE_INFINITY));
         assertEquals(makeComplex(0,1), integerSqrt(-1));
         assertEquals(0, integerSqrt(-0));
         assertEquals(0, integerSqrt(0));
@@ -2586,9 +2586,6 @@ describe('integerSqrt', {
         assertEquals(5000000000, integerSqrt(25000000005000000000));
     },
     'bignums': function() {
-        assertFails(makeBignum(nan).integerSqrt());
-        assertEquals(makeBignum(inf), makeBignum(inf).integerSqrt());
-        assertEquals(makeComplex(makeBignum("0"),inf), makeBignum(negative_inf).integerSqrt());
         assertEquals(makeComplex(makeBignum("0"),makeBignum("1")), makeBignum("-1").integerSqrt());
         assertEquals(makeBignum("0"), makeBignum("-0").integerSqrt());
         assertEquals(makeBignum("0"), makeBignum("0").integerSqrt());
@@ -2602,14 +2599,7 @@ describe('integerSqrt', {
         assertEquals(makeBignum("999999999949999"), makeBignum("999999999900000000000000000000").integerSqrt()); // must be checked
     },
     'rationals': function() {
-	    assertFails(makeRational(makeBignum(nan)).integerSqrt());
-	    assertFails(makeRational(makeBignum("0"),makeBignum(nan)).integerSqrt());
-	    assertFails(makeRational(makeBignum(nan),makeBignum(nan)).integerSqrt());
-        assertEquals(makeBignum(inf), makeRational(makeBignum(inf)).integerSqrt());
-        assertEquals(makeComplex(makeBignum("0"),inf), makeRational(makeBignum(negative_inf)).integerSqrt());
-        assertEquals(makeComplex(makeBignum("0"),inf), makeRational(makeBignum("1"),negative_zero).integerSqrt());
-        assertEquals(makeBignum("0"), makeRational(negative_zero,makeBignum("1")).integerSqrt());
-        assertEquals(makeBignum("0"), makeRational(makeBignum("0"),makeBignum("-1")).integerSqrt());
+        assertEquals(makeBignum("0"), makeRational(makeBignum("0"),makeBignum("-1")).integerSqrt()); // must be verified
         assertEquals(makeBignum("0"), makeRational(makeBignum("1"),makeBignum("4")).integerSqrt());
         assertEquals(makeBignum("0"), makeRational(makeBignum("1"),makeBignum("5")).integerSqrt());
         assertEquals(makeBignum("1"), makeRational(makeBignum("5"),makeBignum("2")).integerSqrt());
