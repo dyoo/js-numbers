@@ -2573,19 +2573,23 @@ describe('lcm', {
 describe('integerSqrt', {
     'fixnums': function() {
         assertFails(integerSqrt(Number.NaN));
-        assertEquals(Number.POSITIVE_INFINITY, integerSqrt(Number.POSITIVE_INFINITY));
-        assertEquals(makeComplex(0,Number.POSITIVE_INFINITY), integerSqrt(Number.NEGATIVE_INFINITY));
+        assertFails(integerSqrt(Number.POSITIVE_INFINITY));
+        assertFails(integerSqrt(Number.NEGATIVE_INFINITY));
+        assertFails(integerSqrt(3/2));
         assertEquals(makeComplex(0,1), integerSqrt(-1));
         assertEquals(0, integerSqrt(-0));
         assertEquals(0, integerSqrt(0));
         assertEquals(1, integerSqrt(1));
         assertEquals(2, integerSqrt(4));
         assertEquals(2, integerSqrt(5));
-        assertEquals(1, integerSqrt(3/2));
         assertEquals(14, integerSqrt(200));
         assertEquals(5000000000, integerSqrt(25000000005000000000));
     },
     'bignums': function() {
+        assertFails(makeBignum(makeFloat(nan)).integerSqrt());
+        assertFails(makeBignum(makeFloat(inf)).integerSqrt());
+        assertFails(makeBignum(makeFloat(negative_inf)).integerSqrt());
+        
         assertEquals(makeComplex(makeBignum("0"),makeBignum("1")), makeBignum("-1").integerSqrt());
         assertEquals(makeBignum("0"), makeBignum("-0").integerSqrt());
         assertEquals(makeBignum("0"), makeBignum("0").integerSqrt());
@@ -2596,29 +2600,39 @@ describe('integerSqrt', {
         assertEquals(makeBignum("92113"), makeBignum("8484848484").integerSqrt());
         assertEquals(makeBignum("351364183"), makeBignum("123456789123456789").integerSqrt());
         assertEquals(makeBignum("50000000000"), makeBignum("2500000000050000000000").integerSqrt());
-        assertEquals(makeBignum("999999999949999"), makeBignum("999999999900000000000000000000").integerSqrt()); // must be checked
+        assertEquals(makeBignum("999999999949999"), makeBignum("999999999900000000000000000000").integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("92113")), makeBignum("-8484848484").integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("351364183")), makeBignum("-123456789123456789").integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("50000000000")), makeBignum("-2500000000050000000000").integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("999999999949999")), makeBignum("-999999999900000000000000000000").integerSqrt());
+
     },
     'rationals': function() {
-        assertEquals(makeBignum("0"), makeRational(makeBignum("0"),makeBignum("-1")).integerSqrt()); // must be verified
-        assertEquals(makeBignum("0"), makeRational(makeBignum("1"),makeBignum("4")).integerSqrt());
-        assertEquals(makeBignum("0"), makeRational(makeBignum("1"),makeBignum("5")).integerSqrt());
-        assertEquals(makeBignum("1"), makeRational(makeBignum("5"),makeBignum("2")).integerSqrt());
-        assertEquals(makeBignum("70"),makeRational(makeBignum("55555555559"),makeBignum("11111111")).integerSqrt());
-        assertEquals(makeBignum("857492925"), makeRational(makeBignum("25000000005000000000"),makeBignum("34")).integerSqrt());
-        assertEquals(makeBignum("3178224682340"), makeRational(makeBignum("999999999900000000000000000000"),makeBignum("98999")).integerSqrt());
+        assertFails(makeRational(makeFloat(nan),makeBignum("1")).integerSqrt());
+        assertFails(makeRational(makeFloat(inf),makeBignum("1")).integerSqrt());
+        assertFails(makeRational(makeFloat(negative_inf),makeBignum("1")).integerSqrt());
+        assertFails(makeRational(makeBignum("1"),makeBignum("4")).integerSqrt());
+        assertFails(makeRational(makeBignum("1"),makeBignum("5")).integerSqrt());
+        assertFails(makeRational(makeBignum("5"),makeBignum("2")).integerSqrt());
+        
+        assertEquals(makeBignum("0"), makeRational(makeBignum("0"),makeBignum("-1")).integerSqrt());
+        assertEquals(makeBignum("2"), makeRational(makeBignum("55555555555"),makeBignum("11111111111")).integerSqrt());
+        assertEquals(makeBignum("5000000000"), makeRational(makeBignum("25000000005000000000"),makeBignum("1")).integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("5000000000")), makeRational(makeBignum("-25000000005000000000"),makeBignum("1")).integerSqrt());
     },
     'floats': function() {
 	    assertFails(makeFloat(nan).integerSqrt());
-	    assertEquals(makeBignum(inf), makeFloat(inf).integerSqrt());
-	    assertEquals(makeComplex(0,inf),makeFloat(negative_inf).integerSqrt());
+	    assertFails(makeFloat(inf).integerSqrt());
+	    assertFails(makeFloat(negative_inf).integerSqrt());
+	    assertFails(makeFloat(0.1).integerSqrt());
+	    assertFails(makeFloat(-0.1).integerSqrt());
+	    assertFails(makeFloat(9999999999.000000000000000000001).integerSqrt());	
+	    
 	    assertEquals(makeBignum("0"), makeFloat(negative_zero).integerSqrt());
-	    assertEquals(makeComplex(0,1), makeFloat(-0.6).integerSqrt());
-	    assertEquals(makeComplex(0,2), makeFloat(-4.0).integerSqrt());
-	    assertEquals(makeComplex(0,64), makeFloat(-4123.0123123).integerSqrt());
-        assertEquals(makeBignum("0"), makeFloat(0.0).integerSqrt());
-        assertEquals(makeBignum("0"), makeFloat(0.5).integerSqrt());
+        assertEquals(makeBignum("0"), makeFloat(0.0).integerSqrt());        
         assertEquals(makeBignum("1"), makeFloat(1.0).integerSqrt());
-	    assertEquals(makeBignum("99999"), makeFloat(9999999999.000000000000000000001).integerSqrt());	
+        assertEquals(makeBignum("111"), makeFloat(12345.0).integerSqrt());
+        assertEquals(makeComplex(makeBigum("0"), makeBignum("111")), makeFloat(-12345.0).integerSqrt());
     },
     'complex': function() {
         assertFails(makeComplex(nan, 0).integerSqrt());
@@ -2630,17 +2644,22 @@ describe('integerSqrt', {
         assertFails(makeComplex(nan, negative_zero).integerSqrt());
         assertFails(makeComplex(negative_zero, nan).integerSqrt());
         assertFails(makeComplex(nan, nan).integerSqrt());
-        
-        assertEquals(makeComplex(inf,inf), makeComplex(inf,inf).integerSqrt()); // must be verified
-        assertEquals(makeComplex(inf,inf), makeComplex(0,inf).integerSqrt()); // must be verified
-        assertEquals(makeComplex(inf,inf), makeComplex(inf,0).integerSqrt()); // must be verified
-        assertEquals(makeComplex(inf,inf), makeComplex(negative_inf,negative_inf).integerSqrt()); // must be verified
+        assertFails(makeComplex(inf,inf).integerSqrt());
+        assertFails(makeComplex(0,inf).integerSqrt());
+        assertFails(makeComplex(inf,0).integerSqrt());
+        assertFails(makeComplex(negative_inf,negative_inf).integerSqrt());
+        assertFails(makeComplex(makeBignum("0"),makeBignum("2")).integerSqrt());
+        assertFails(makeComplex(makeBignum("1"),makeBignum("2")).integerSqrt());
+        assertFails(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),0).integerSqrt());
+        assertFails(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200")).integerSqrt());
+        assertFails(makeComplex(makeFloat(4.25), makeRational(3,2)).integerSqrt());
+
         assertEquals(makeComplex(makeBignum("0"),makeBignum("1")), makeComplex(makeBignum("-1"),makeBignum("0")).integerSqrt());
         assertEquals(makeComplex(makeBignum("1"),makeBignum("0")), makeComplex(makeBignum("1"),makeBignum("0")).integerSqrt());
-        assertEquals(makeComplex(makeBignum("1"),makeBignum("1")), makeComplex(makeBignum("0"),makeBignum("2")).integerSqrt());
-        assertEquals(makeComplex(makeBignum("3"),makeBignum("4")), makeComplex(makeBignum("-7"),makeBignum("24")).integerSqrt());
-        assertEquals(makeComplex(makeRational(makeBignum("100"),makeBignum("3")),makeBignum("3")), makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200")).integerSqrt());
-        assertEquals(makeComplex(makeFloat(3.2), makeRational(1,2)), makeComplex(makeFloat(4.25), makeRational(3,2)).integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("2")), makeComplex(makeBignum("-7"),makeBignum("0")).integerSqrt());
+        
+        assertEquals(makeBignum("351"), makeComplex(makeBignum("123456"),makeBignum("0")).integerSqrt());
+        assertEquals(makeComplex(makeBignum("0"),makeBignum("351")), makeComplex(makeBignum("-123456"),makeBignum("0")).integerSqrt());
     }
 });
 
