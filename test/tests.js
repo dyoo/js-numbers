@@ -2572,10 +2572,6 @@ describe('lcm', {
 
 describe('integerSqrt', {
     'fixnums': function() {
-        assertFails(integerSqrt(Number.NaN));
-        assertFails(integerSqrt(Number.POSITIVE_INFINITY));
-        assertFails(integerSqrt(Number.NEGATIVE_INFINITY));
-        assertFails(integerSqrt(3/2));
         assertEquals(makeComplex(0,1), integerSqrt(-1));
         assertEquals(0, integerSqrt(-0));
         assertEquals(0, integerSqrt(0));
