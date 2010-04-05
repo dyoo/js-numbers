@@ -2585,11 +2585,7 @@ describe('integerSqrt', {
         assertEquals(14, integerSqrt(200));
         assertEquals(5000000000, integerSqrt(25000000005000000000));
     },
-    'bignums': function() {
-        assertFails(makeBignum(makeFloat(nan)).integerSqrt());
-        assertFails(makeBignum(makeFloat(inf)).integerSqrt());
-        assertFails(makeBignum(makeFloat(negative_inf)).integerSqrt());
-        
+    'bignums': function() {        
         assertEquals(makeComplex(makeBignum("0"),makeBignum("1")), makeBignum("-1").integerSqrt());
         assertEquals(makeBignum("0"), makeBignum("-0").integerSqrt());
         assertEquals(makeBignum("0"), makeBignum("0").integerSqrt());
@@ -2608,9 +2604,6 @@ describe('integerSqrt', {
 
     },
     'rationals': function() {
-        assertFails(makeRational(makeFloat(nan)).integerSqrt());
-        assertFails(makeRational(makeFloat(inf)).integerSqrt());
-        assertFails(makeRational(makeFloat(negative_inf)).integerSqrt());
         assertFails(makeRational(makeBignum("1"),makeBignum("4")).integerSqrt());
         assertFails(makeRational(makeBignum("1"),makeBignum("5")).integerSqrt());
         assertFails(makeRational(makeBignum("5"),makeBignum("2")).integerSqrt());
