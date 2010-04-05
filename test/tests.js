@@ -2608,9 +2608,9 @@ describe('integerSqrt', {
 
     },
     'rationals': function() {
-        assertFails(makeRational(makeFloat(nan),makeBignum("1")).integerSqrt());
-        assertFails(makeRational(makeFloat(inf),makeBignum("1")).integerSqrt());
-        assertFails(makeRational(makeFloat(negative_inf),makeBignum("1")).integerSqrt());
+        assertFails(makeRational(makeFloat(nan)).integerSqrt());
+        assertFails(makeRational(makeFloat(inf)).integerSqrt());
+        assertFails(makeRational(makeFloat(negative_inf)).integerSqrt());
         assertFails(makeRational(makeBignum("1"),makeBignum("4")).integerSqrt());
         assertFails(makeRational(makeBignum("1"),makeBignum("5")).integerSqrt());
         assertFails(makeRational(makeBignum("5"),makeBignum("2")).integerSqrt());
@@ -2621,14 +2621,14 @@ describe('integerSqrt', {
         assertEquals(makeComplex(makeBignum("0"),makeBignum("5000000000")), makeRational(makeBignum("-25000000005000000000"),makeBignum("1")).integerSqrt());
     },
     'floats': function() {
-	assertFails(makeFloat(nan).integerSqrt());
-	assertFails(makeFloat(inf).integerSqrt());
-	assertFails(makeFloat(negative_inf).integerSqrt());
-	assertFails(makeFloat(0.1).integerSqrt());
-	assertFails(makeFloat(-0.1).integerSqrt());
-	assertFails(makeFloat(9999999999.000000000000000000001).integerSqrt());	
-	    
-	assertEquals(makeBignum("0"), makeFloat(negative_zero).integerSqrt());
+	    assertFails(makeFloat(nan).integerSqrt());
+	    assertFails(makeFloat(inf).integerSqrt());
+	    assertFails(makeFloat(negative_inf).integerSqrt());
+	    assertFails(makeFloat(0.1).integerSqrt());
+	    assertFails(makeFloat(-0.1).integerSqrt());
+	    assertFails(makeFloat(9999999999.000000000000000000001).integerSqrt());	
+	        
+	    assertEquals(makeBignum("0"), makeFloat(negative_zero).integerSqrt());
         assertEquals(makeBignum("0"), makeFloat(0.0).integerSqrt());        
         assertEquals(makeBignum("1"), makeFloat(1.0).integerSqrt());
         assertEquals(makeBignum("111"), makeFloat(12345.0).integerSqrt());
