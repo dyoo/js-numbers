@@ -2595,6 +2595,24 @@ if (! this['plt']['lib']['Numbers']) {
 	r.clamp();
     }
 
+    
+    // (protected) ---
+    function BnGoodEnough(guess) {
+        return lessThan(abs(subtract(this,sqr(guess))),makeRational(makeBignum("1"),makeBignum("1000")));
+    }
+    
+    // (protected) ---
+    function BnImprove(guess) {
+        return this.average(guess,divide(this,guess));
+    }
+    
+    // (protected) ---
+    function BnAverage(x,y) {
+        return divide(add(x,y),makeBignum("2"));
+    }
+
+
+
     // (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
     // r != q, this != m.  q or r may be null.
     function bnpDivRemTo(m,q,r) {
@@ -2757,15 +2775,15 @@ if (! this['plt']['lib']['Numbers']) {
 
     // (protected) this^e, e < 2^32, doing sqr and mul with "r" (HAC 14.79)
     function bnpExp(e,z) {
-	if(e > 0xffffffff || e < 1) return BigInteger.ONE;
-	var r = nbi(), r2 = nbi(), g = z.convert(this), i = nbits(e)-1;
-	g.copyTo(r);
-	while(--i >= 0) {
-	    z.sqrTo(r,r2);
-	    if((e&(1<<i)) > 0) z.mulTo(r2,g,r);
-	    else { var t = r; r = r2; r2 = t; }
-	}
-	return z.revert(r);
+	    if(e > 0xffffffff || e < 1) return BigInteger.ONE;
+	    var r = nbi(), r2 = nbi(), g = z.convert(this), i = nbits(e)-1;
+	    g.copyTo(r);
+	    while(--i >= 0) {
+	        z.sqrTo(r,r2);
+	        if((e&(1<<i)) > 0) z.mulTo(r2,g,r);
+	        else { var t = r; r = r2; r2 = t; }
+	    }
+	    return z.revert(r);
     }
 
     // (public) this^e % m, 0 <= e < 2^32
@@ -2791,6 +2809,9 @@ if (! this['plt']['lib']['Numbers']) {
     BigInteger.prototype.invDigit = bnpInvDigit;
     BigInteger.prototype.isEven = bnpIsEven;
     BigInteger.prototype.exp = bnpExp;
+    BigInteger.prototype.goodEnough = BnGoodEnough; // new added
+    BigInteger.prototype.improve = BnImprove; // new added
+    BigInteger.prototype.average = BnAverage; // new added
 
     // public
     BigInteger.prototype.toString = bnToString;
@@ -3409,6 +3430,8 @@ if (! this['plt']['lib']['Numbers']) {
     BigInteger.prototype.multiplyUpperTo = bnpMultiplyUpperTo;
     BigInteger.prototype.modInt = bnpModInt;
     BigInteger.prototype.millerRabin = bnpMillerRabin;
+    
+    
 
     // public
     BigInteger.prototype.clone = bnClone;
@@ -3598,7 +3621,38 @@ if (! this['plt']['lib']['Numbers']) {
     // sqrt: -> scheme-number
     // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
     // Produce the square root.
-
+    
+    BigInteger.prototype.integerSqrt = function() {
+        if(this.isInteger()) {
+            if(this.toString() == "0") return makeBignum("0");
+            if(this.toString() == "1") return makeBignum("1");
+            if(this.toString() == "-1") return makeComplex(makeBignum("0"),makeBignum("1"));
+            var tmpThis = this;
+            if(this.s == -1) {
+                tmpThis = this.abs();
+            }
+            var guess = makeRational(makeBignum("1"),makeBignum("1"));
+            while(!(tmpThis.goodEnough(guess))) {
+                guess = tmpThis.improve(guess);
+            }
+            if(this.s == -1) {
+                if(guess.isInteger()) {
+                    return makeComplex(makeBignum("0"),makeBignum(guess));
+                }else {
+                    return makeComplex(makeBignum("0"),makeBignum(guess.floor()));
+                }            
+            }else {
+                if(guess.isInteger()) {
+                    return makeBignum(guess);
+                }else {
+                    return makeBignum(guess.floor());
+                }
+            }
+        }else {
+            return throwRuntimeError("invalid input. Expected: integer, but:", this);
+        }
+    }
+    
 
     // floor: -> scheme-number
     // Produce the floor.
