@@ -3620,13 +3620,30 @@ if (! this['plt']['lib']['Numbers']) {
     // Produce the square root.
     
     BigInteger.prototype.integerSqrt = function() {
-        if(this.toString() == "0") return makeBignum("0");
-        if(this.toString() == "1") return makeBignum("1");
-        var guess = makeRational(makeBignum("1"));
-        while(!(this.goodEnough(guess,this))) {    
-            guess = this.improve(guess,this);
+        var isThisPositive = true;
+        var tmpThis = this;
+        if(this.s == -1) {
+            isThisPositive = false;
+            tmpThis = this.abs();
         }
-        return guess;
+        var guess = makeRational(makeBignum("1"));
+        while(!(this.goodEnough(guess,tmpThis))) {    
+            guess = this.improve(guess,tmpThis);
+        }
+        if(isThisPositive) {
+            if(!(guess.isInteger())) {
+                return makeBignum(guess.floor());
+            }else {
+                return guess;
+            }
+        }else {
+            if(!(guess.isInteger())) {
+                return makeComplex(makeBignum("0"),makeBignum(guess.floor()));
+            }else {
+                return makeComplex(makeBignum("0"),guess);
+            }
+        }
+        
     }
     
 
