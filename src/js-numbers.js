@@ -3398,8 +3398,7 @@ if (! this['plt']['lib']['Numbers']) {
     
     // (protected)
     function bnpGoodEnough(guess,x) {
-        return lessThan(abs(subtract(sqr(guess),x)),
-                        makeRational(makeBignum("1"),makeBignum("1000")));
+        return lessThan(abs(subtract(sqr(guess),x)), makeFloat(1.0));
     }
     
     // (proteccted)
@@ -3409,7 +3408,7 @@ if (! this['plt']['lib']['Numbers']) {
     
     // (protected)
     function bnpAverage(x,y) {
-        return divide(add(x,y),makeBignum("2"));
+        return divide(add(x,y),makeFloat(2.0));
     }
 
     // protected
@@ -3626,7 +3625,7 @@ if (! this['plt']['lib']['Numbers']) {
             isThisPositive = false;
             tmpThis = this.abs();
         }
-        var guess = makeRational(makeBignum("1"));
+        var guess = makeFloat(1.0);
         while(!(this.goodEnough(guess,tmpThis))) {    
             guess = this.improve(guess,tmpThis);
         }
@@ -3638,9 +3637,9 @@ if (! this['plt']['lib']['Numbers']) {
             }
         }else {
             if(!(guess.isInteger())) {
-                return makeComplex(makeBignum("0"),makeBignum(guess.floor()));
+                return makeComplex(makeFloat(0.0),makeBignum(guess.floor()));
             }else {
-                return makeComplex(makeBignum("0"),guess);
+                return makeComplex(makeFloat(0.0),guess);
             }
         }
         
