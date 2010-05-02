@@ -3397,19 +3397,37 @@ if (! this['plt']['lib']['Numbers']) {
     }
     
     // (protected)
-    function bnpGoodEnough(guess,x) {
-        return lessThan(abs(subtract(sqr(guess),x)), makeFloat(1.0));
+    function bnpSearchIter(guess) {
+        tmpGuess = guess;
+        while(!(this.goodEnough(tmpGuess))) {
+            tmpGuess = this.improve(tmpGuess);
+        }
+        return tmpGuess;
     }
-    
-    // (proteccted)
-    function bnpImprove(guess,x) {
-        return this.average(guess,divide(x,guess));
+
+    // (protected)
+    function bnpImprove(guess) {
+        a = divide(this,guess);
+        if(!(isInteger(a))) {
+            a = makeBignum(floor(a) + ""); // "" is added because the floor function does not return bignum value
+        }
+        return this.average(guess, a);
     }
-    
+
     // (protected)
     function bnpAverage(x,y) {
-        return divide(add(x,y),makeFloat(2.0));
+        a = divide(add(x,y), makeBignum("2"))
+        if(!(isInteger(a))) {
+            return makeBignum(floor(a) + ""); // "" is added because the floor function does not return bignum value
+        }
+        return a;
     }
+
+    // (protected)
+    function bnpGoodEnough(guess) {
+        return lessThanOrEqual(sqr(guess),this) && lessThan(this,sqr(add(guess, makeBignum("1"))));
+    }
+    
 
     // protected
     BigInteger.prototype.chunkSize = bnpChunkSize;
@@ -3425,9 +3443,10 @@ if (! this['plt']['lib']['Numbers']) {
     BigInteger.prototype.multiplyUpperTo = bnpMultiplyUpperTo;
     BigInteger.prototype.modInt = bnpModInt;
     BigInteger.prototype.millerRabin = bnpMillerRabin;
-    BigInteger.prototype.goodEnough = bnpGoodEnough;    
-    BigInteger.prototype.improve = bnpImprove;
-    BigInteger.prototype.average = bnpAverage;
+    BigInteger.prototype.searchIter = bnpSearchIter
+    BigInteger.prototype.improve = bnpImprove
+    BigInteger.prototype.average = bnpAverage
+    BigInteger.prototype.goodEnough = bnpGoodEnough
 
     // public
     BigInteger.prototype.clone = bnClone;
@@ -3617,32 +3636,14 @@ if (! this['plt']['lib']['Numbers']) {
     // sqrt: -> scheme-number
     // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
     // Produce the square root.
-    
+
     BigInteger.prototype.integerSqrt = function() {
-        var isThisPositive = true;
-        var tmpThis = this;
-        if(this.s == -1) {
-            isThisPositive = false;
-            tmpThis = this.abs();
-        }
-        var guess = makeFloat(1.0);
-        while(!(this.goodEnough(guess,tmpThis))) {    
-            guess = this.improve(guess,tmpThis);
-        }
-        if(isThisPositive) {
-            if(!(guess.isInteger())) {
-                return makeBignum(guess.floor());
-            }else {
-                return guess;
-            }
+        if(this.s == 0) {
+            return this.searchIter(this);
         }else {
-            if(!(guess.isInteger())) {
-                return makeComplex(makeFloat(0.0),makeBignum(guess.floor()));
-            }else {
-                return makeComplex(makeFloat(0.0),guess);
-            }
+            this.s = 0;
+            return makeComplex(makeFloat(0), this.searchIter(this));
         }
-        
     }
     
 
