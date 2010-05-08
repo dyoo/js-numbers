@@ -1301,12 +1301,12 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     Rational.prototype.floor = function() {
-	return fromFixnum(Math.floor(this.n / this.d));
+	    return _integerQuotient(this.n,this.d);
     };
 
 
     Rational.prototype.ceiling = function() {
-	return fromFixnum(Math.ceil(this.n / this.d));
+	    return add(_integerQuotient(this.n,this.d),makeBignum("1"));
     };
 
     Rational.prototype.conjugate = function() {
@@ -3398,29 +3398,20 @@ if (! this['plt']['lib']['Numbers']) {
     
     // (protected)
     function bnpSearchIter(guess) {
-        tmpGuess = guess;
-        while(!(this.goodEnough(tmpGuess))) {
-            tmpGuess = this.improve(tmpGuess);
+        while(!(this.goodEnough(guess))) {
+            guess = this.improve(guess);
         }
-        return tmpGuess;
+        return guess;
     }
 
     // (protected)
     function bnpImprove(guess) {
-        a = divide(this,guess);
-        if(!(isInteger(a))) {
-            a = makeBignum(floor(a) + ""); // "" is added because the floor function does not return bignum value
-        }
-        return this.average(guess, a);
+        return this.average(guess, floor(divide(this,guess)));
     }
 
     // (protected)
     function bnpAverage(x,y) {
-        a = divide(add(x,y), makeBignum("2"))
-        if(!(isInteger(a))) {
-            return makeBignum(floor(a) + ""); // "" is added because the floor function does not return bignum value
-        }
-        return a;
+        return floor(divide(add(x,y), makeBignum("2")))
     }
 
     // (protected)
@@ -3633,25 +3624,30 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     // integerSqrt: -> scheme-number
-    // sqrt: -> scheme-number
-    // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
-    // Produce the square root.
-
     BigInteger.prototype.integerSqrt = function() {
         if(this.s == 0) {
             return this.searchIter(this);
         }else {
             this.s = 0;
-            return makeComplex(makeFloat(0), this.searchIter(this));
+            return makeComplex(makeFloat(0), multiply(this.searchIter(this)),makeBignum("-1"));
         }
     }
     
+    // sqrt: -> scheme-number
+    // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
+    // Produce the square root.
 
     // floor: -> scheme-number
     // Produce the floor.
+    BigInteger.prototype.floor = function() {
+        return this;
+    }
 
     // ceiling: -> scheme-number
     // Produce the ceiling.
+    BigInteger.prototype.ceiling = function() {
+        return this;
+    }
 
     // conjugate: -> scheme-number
     // Produce the conjugate.
@@ -3687,10 +3683,10 @@ if (! this['plt']['lib']['Numbers']) {
     // Produce the arc sine.
 
     BigInteger.prototype.imaginaryPart = function() {
-	return 0;
+	    return 0;
     }
     BigInteger.prototype.realPart = function() {
-	return this;
+	    return this;
     }
 
     // round: -> scheme-number

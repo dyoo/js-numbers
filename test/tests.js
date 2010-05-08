@@ -2056,19 +2056,77 @@ describe('abs', {
 
 describe('floor', {
     'fixnums': function() {
-	// FIXME: we're missing this
+        assertEquals(0, floor(0));
+        assertEquals(1, floor(1));
+        assertEquals(-1, floor(-1));
+        assertEquals(1, floor(1.2));
+        assertEquals(-2, floor(-1.2));
+        assertEquals(123123123, floor(123123123.9));
+        assertEquals(-1000000000, floor(-999999999.9));
     },
     'bignums': function() {
-	// FIXME: we're missing this
+        assertEquals(makeBignum("0"), floor(makeBignum("0")));
+        assertEquals(makeBignum("1"), floor(makeBignum("1")));
+        assertEquals(makeBignum("-1"), floor(makeBignum("-1")));
+        assertEquals(makeBignum("100"), floor(makeBignum("100")));
+        assertEquals(makeBignum("-100"), floor(makeBignum("-100")));
+        assertEquals(makeBignum("10000000000"), floor(makeBignum("10000000000")));
+        assertEquals(makeBignum("-10000000000"), floor(makeBignum("-10000000000")));
+        assertEquals(makeBignum("100000000000000000000"), floor(makeBignum("100000000000000000000")));
+        assertEquals(makeBignum("-100000009000000800000"), floor(makeBignum("-100000009000000800000")));
     },
     'rationals': function() {
-	// FIXME: we're missing this
+        assertEquals(makeBignum("0"), floor(makeRational(makeBignum("0"),makeBignum("1"))))
+        assertEquals(makeBignum("0"), floor(makeRational(makeBignum("0"),makeBignum("-1"))))
+        assertEquals(makeBignum("0"), floor(makeRational(makeBignum("1"),makeBignum("2"))))
+        assertEquals(makeBignum("1"), floor(makeRational(makeBignum("1"),makeBignum("1"))))
+        assertEquals(makeBignum("1"), floor(makeRational(makeBignum("3"),makeBignum("2"))))
+        assertEquals(makeBignum("-1"), floor(makeRational(makeBignum("-3"),makeBignum("2"))))
+        assertEquals(makeBignum("1"), floor(makeRational(makeBignum("-3"),makeBignum("-2"))))
+        assertEquals(makeBignum("0"), floor(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000"))))
+        assertEquals(makeBignum("33333333"), floor(makeRational(makeBignum("100000001"),makeBignum("3"))))
+        assertEquals(makeBignum("99481699535420"), floor(makeRational(makeBignum("123456789123456789"),makeBignum("1241"))))
+        assertEquals(makeBignum("88104168679280445959689"), floor(makeRational(makeBignum("8236487236482736823687236826582365827652875"),makeBignum("93485783475983475983"))))
     },
     'floats': function() {
-	// FIXME: we're missing this
+        assertEquals(makeBignum("0"), floor(makeFloat(0.0)))
+        assertEquals(makeBignum("1"), floor(makeFloat(1.0)))
+        assertEquals(makeBignum("-1"), floor(makeFloat(-1.0)))
+        assertEquals(makeBignum("1"), floor(makeFloat(1.1)))
+        assertEquals(makeBignum("1"), floor(makeFloat(1.999)))
+        assertEquals(makeBignum("-2"), floor(makeFloat(-1.999)))
+        assertEquals(makeBignum("123456"), floor(makeFloat(123456.789)))
+        assertEquals(makeBignum("1234567891234567"), floor(makeFloat(1234567891234567.8)))
+        assertEquals(makeBignum("-1234567891234568"), floor(makeFloat(-1234567891234567.8)))
     },
     'complex': function() {
-	// FIXME: we're missing this
+        assertFails(floor(makeComplex(nan, 0)));
+        assertFails(floor(makeComplex(0, nan)));
+        assertFails(floor(makeComplex(nan, 1)));
+        assertFails(floor(makeComplex(1, nan)));
+        assertFails(floor(makeComplex(nan, inf)));
+        assertFails(floor(makeComplex(inf, nan)));
+        assertFails(floor(makeComplex(nan, negative_zero)));
+        assertFails(floor(makeComplex(negative_zero, nan)));
+        assertFails(floor(makeComplex(nan, nan)));
+        assertFails(floor(makeComplex(inf,inf)));
+        assertFails(floor(makeComplex(0,inf)));
+        assertFails(floor(makeComplex(inf,0)));
+        assertFails(floor(makeComplex(negative_inf,negative_inf)));
+        assertFails(floor(makeComplex(makeBignum("0"),makeBignum("2"))));
+        assertFails(floor(makeComplex(makeBignum("1"),makeBignum("2"))));
+        assertFails(floor(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),0)));
+        assertFails(floor(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200"))));
+        assertFails(floor(makeComplex(makeFloat(4.25), makeRational(3,2))));
+
+        assertEquals(makeBignum("0"), floor(makeComplex(makeBignum("0"),makeBignum("0"))));
+        assertEquals(makeBignum("-1"), floor(makeComplex(makeBignum("-1"),makeBignum("0"))));
+        assertEquals(makeBignum("1"), floor(makeComplex(makeBignum("1"),makeBignum("0"))));
+        assertEquals(makeBignum("1"), floor(makeComplex(makeRational(makeBignum("1")),makeBignum("0"))));
+        assertEquals(makeBignum("1"), floor(makeComplex(makeRational(makeBignum("3"),makeBignum("2")),makeBignum("0"))));
+        assertEquals(makeBignum("0"), floor(makeComplex(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000")),makeBignum("0"))));
+        assertEquals(makeBignum("-2"), floor(makeComplex(makeRational(makeFloat(-1.999),makeBignum("0")))));
+        assertEquals(makeBignum("1234567891234567"), floor(makeComplex(makeRational(makeFloat(1234567891234567.8),makeBignum("0")))));
     }
 
 });
@@ -2076,19 +2134,77 @@ describe('floor', {
 
 describe('ceiling', {
     'fixnums': function() {
-	// FIXME: we're missing this
+        assertEquals(0, ceiling(0));
+        assertEquals(1, ceiling(1));
+        assertEquals(-1, ceiling(-1));
+        assertEquals(2, ceiling(1.2));
+        assertEquals(-2, ceiling(-1.2));
+        assertEquals(123123124, ceiling(123123123.9));
+        assertEquals(-999999999, ceiling(-999999999.9));
     },
     'bignums': function() {
-	// FIXME: we're missing this
+        assertEquals(makeBignum("0"), ceiling(makeBignum("0")));
+        assertEquals(makeBignum("1"), ceiling(makeBignum("1")));
+        assertEquals(makeBignum("-1"), ceiling(makeBignum("-1")));
+        assertEquals(makeBignum("100"), ceiling(makeBignum("100")));
+        assertEquals(makeBignum("-100"), ceiling(makeBignum("-100")));
+        assertEquals(makeBignum("10000000000"), ceiling(makeBignum("10000000000")));
+        assertEquals(makeBignum("-10000000000"), ceiling(makeBignum("-10000000000")));
+        assertEquals(makeBignum("100000000000000000000"), ceiling(makeBignum("100000000000000000000")));
+        assertEquals(makeBignum("-100000009000000800000"), ceiling(makeBignum("-100000009000000800000")));
     },
     'rationals': function() {
-	// FIXME: we're missing this
+        assertEquals(makeBignum("0"), ceiling(makeRational(makeBignum("0"),makeBignum("1"))))
+        assertEquals(makeBignum("0"), ceiling(makeRational(makeBignum("0"),makeBignum("-1"))))
+        assertEquals(makeBignum("1"), ceiling(makeRational(makeBignum("1"),makeBignum("2"))))
+        assertEquals(makeBignum("1"), ceiling(makeRational(makeBignum("1"),makeBignum("1"))))
+        assertEquals(makeBignum("2"), ceiling(makeRational(makeBignum("3"),makeBignum("2"))))
+        assertEquals(makeBignum("-1"), ceiling(makeRational(makeBignum("-3"),makeBignum("2"))))
+        assertEquals(makeBignum("2"), ceiling(makeRational(makeBignum("-3"),makeBignum("-2"))))
+        assertEquals(makeBignum("1"), ceiling(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000"))))
+        assertEquals(makeBignum("33333334"), ceiling(makeRational(makeBignum("100000001"),makeBignum("3"))))
+        assertEquals(makeBignum("99481699535421"), ceiling(makeRational(makeBignum("123456789123456789"),makeBignum("1241"))))
+        assertEquals(makeBignum("88104168679280445959690"), ceiling(makeRational(makeBignum("8236487236482736823687236826582365827652875"),makeBignum("93485783475983475983"))))
     },
     'floats': function() {
-	// FIXME: we're missing this
+        assertEquals(makeBignum("0"), ceiling(makeFloat(0.0)))
+        assertEquals(makeBignum("1"), ceiling(makeFloat(1.0)))
+        assertEquals(makeBignum("-1"), ceiling(makeFloat(-1.0)))
+        assertEquals(makeBignum("2"), ceiling(makeFloat(1.1)))
+        assertEquals(makeBignum("2"), ceiling(makeFloat(1.999)))
+        assertEquals(makeBignum("-1"), ceiling(makeFloat(-1.999)))
+        assertEquals(makeBignum("123457"), ceiling(makeFloat(123456.789)))
+        assertEquals(makeBignum("1234567891234567"), ceiling(makeFloat(1234567891234567.8)))
+        assertEquals(makeBignum("-1234567891234569"), ceiling(makeFloat(-1234567891234567.8)))
     },
     'complex': function() {
-	// FIXME: we're missing this
+        assertFails(ceiling(makeComplex(nan, 0)));
+        assertFails(ceiling(makeComplex(0, nan)));
+        assertFails(ceiling(makeComplex(nan, 1)));
+        assertFails(ceiling(makeComplex(1, nan)));
+        assertFails(ceiling(makeComplex(nan, inf)));
+        assertFails(ceiling(makeComplex(inf, nan)));
+        assertFails(ceiling(makeComplex(nan, negative_zero)));
+        assertFails(ceiling(makeComplex(negative_zero, nan)));
+        assertFails(ceiling(makeComplex(nan, nan)));
+        assertFails(ceiling(makeComplex(inf,inf)));
+        assertFails(ceiling(makeComplex(0,inf)));
+        assertFails(ceiling(makeComplex(inf,0)));
+        assertFails(ceiling(makeComplex(negative_inf,negative_inf)));
+        assertFails(ceiling(makeComplex(makeBignum("0"),makeBignum("2"))));
+        assertFails(ceiling(makeComplex(makeBignum("1"),makeBignum("2"))));
+        assertFails(ceiling(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),0)));
+        assertFails(ceiling(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200"))));
+        assertFails(ceiling(makeComplex(makeFloat(4.25), makeRational(3,2))));
+
+        assertEquals(makeBignum("0"), ceiling(makeComplex(makeBignum("0"),makeBignum("0"))));
+        assertEquals(makeBignum("-1"), ceiling(makeComplex(makeBignum("-1"),makeBignum("0"))));
+        assertEquals(makeBignum("1"), ceiling(makeComplex(makeBignum("1"),makeBignum("0"))));
+        assertEquals(makeBignum("1"), ceiling(makeComplex(makeRational(makeBignum("1")),makeBignum("0"))));
+        assertEquals(makeBignum("1"), ceiling(makeComplex(makeRational(makeBignum("3"),makeBignum("2")),makeBignum("0"))));
+        assertEquals(makeBignum("1"), ceiling(makeComplex(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000")),makeBignum("0"))));
+        assertEquals(makeBignum("-1"), ceiling(makeComplex(makeRational(makeFloat(-1.999),makeBignum("0")))));
+        assertEquals(makeBignum("1234567891234568"), ceiling(makeComplex(makeRational(makeFloat(1234567891234567.8),makeBignum("0")))));
     }
 });
 
@@ -2572,7 +2688,7 @@ describe('lcm', {
 
 describe('integerSqrt', {
     'fixnums': function() {
-//        assertEquals(makeComplex(0,1), integerSqrt(-1));
+        assertEquals(makeComplex(0,1), integerSqrt(-1));
         assertEquals(0, integerSqrt(-0));
         assertEquals(0, integerSqrt(0));
         assertEquals(1, integerSqrt(1));
@@ -2593,12 +2709,12 @@ describe('integerSqrt', {
         assertEquals(makeBignum("26"), integerSqrt(makeBignum("700")));
         assertEquals(makeBignum("92113"), integerSqrt(makeBignum("8484848484")));
         assertEquals(makeBignum("35136418"), integerSqrt(makeBignum("1234567891234567")));
-//        assertEquals(makeBignum("50000000000"), integerSqrt(makeBignum("2500000000050000000000")));
-//        assertEquals(makeBignum("999999999949999"), integerSqrt(makeBignum("999999999900000000000000000000")));
+        assertEquals(makeBignum("50000000000"), integerSqrt(makeBignum("2500000000050000000000")));
+        assertEquals(makeBignum("999999999949999"), integerSqrt(makeBignum("999999999900000000000000000000")));
         assertEquals(makeComplex(makeFloat(0.0),makeBignum("92113")), integerSqrt(makeBignum("-8484848484")));
         assertEquals(makeComplex(makeFloat(0.0),makeBignum("35136418")), integerSqrt(makeBignum("-1234567891234567")));
-//        assertEquals(makeComplex(makeFloat(0.0),makeBignum("50000000000")), integerSqrt(makeBignum("-2500000000050000000000")));
-//        assertEquals(makeComplex(makeFloat(0.0),makeBignum("999999999949999")), integerSqrt(makeBignum("-999999999900000000000000000000")));
+        assertEquals(makeComplex(makeFloat(0.0),makeBignum("50000000000")), integerSqrt(makeBignum("-2500000000050000000000")));
+        assertEquals(makeComplex(makeFloat(0.0),makeBignum("999999999949999")), integerSqrt(makeBignum("-999999999900000000000000000000")));
 
     },
     'rationals': function() {
