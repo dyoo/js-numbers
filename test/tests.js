@@ -2125,8 +2125,8 @@ describe('floor', {
         assertEquals(makeBignum("1"), floor(makeComplex(makeRational(makeBignum("1")),makeBignum("0"))));
         assertEquals(makeBignum("1"), floor(makeComplex(makeRational(makeBignum("3"),makeBignum("2")),makeBignum("0"))));
         assertEquals(makeBignum("0"), floor(makeComplex(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000")),makeBignum("0"))));
-        assertEquals(makeBignum("-2"), floor(makeComplex(makeRational(makeFloat(-1.999),makeBignum("0")))));
-        assertEquals(makeBignum("1234567891234567"), floor(makeComplex(makeRational(makeFloat(1234567891234567.8),makeBignum("0")))));
+        assertEquals(makeBignum("-2"), floor(makeComplex(makeFloat(-1.999),makeBignum("0"))));
+        assertEquals(makeBignum("1234567891234567"), floor(makeComplex(makeFloat(1234567891234567.8),makeBignum("0"))));
     }
 
 });
