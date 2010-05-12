@@ -1301,12 +1301,21 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     Rational.prototype.floor = function() {
-	    return _integerQuotient(this.n,this.d);
+        if(this.n.s == -1 && this.d.s == -1 || this.n.s == 0 && this.d.s == 0) {
+            return _integerQuotient(this.n,this.d);
+        }else {
+            return subtract(_integerQuotient(this.n,this.d),makeBignum("1"));
+        }
     };
 
 
     Rational.prototype.ceiling = function() {
-	    return add(_integerQuotient(this.n,this.d),makeBignum("1"));
+        if(this.n.s == -1 && this.d.s == -1 || this.n.s == 0 && this.d.s == 0) {
+            return add(_integerQuotient(this.n,this.d),makeBignum("1"));
+        }else {
+            return _integerQuotient(this.n,this.d);
+        }
+	    
     };
 
     Rational.prototype.conjugate = function() {
@@ -3629,7 +3638,7 @@ if (! this['plt']['lib']['Numbers']) {
             return this.searchIter(this);
         }else {
             this.s = 0;
-            return makeComplex(makeFloat(0), multiply(this.searchIter(this)),makeBignum("-1"));
+            return makeComplex(makeFloat(0), multiply(this.searchIter(this),makeBignum("-1")));
         }
     }
     
