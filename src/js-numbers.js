@@ -1714,14 +1714,16 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     FloatPoint.prototype.integerSqrt = function() {
-	var result = sqrt(x);
-	if (isRational(result)) {
-	    return toExact(floor(result));
-	} else if (isReal(result)) {
-	    return toExact(floor(result));
+	if (isInteger(this)) {
+	    if(this.n >= 0) {
+	        return FloatPoint.makeInstance(floor(sqrt(this.n)));
+	    }else {
+	        return Complex.makeInstance(0,
+	               FloatPoint.makeInstance(floor(sqrt(-this.n))))
+	    }
+	    
 	} else {
-	    return Complex.makeInstance(toExact(floor(realPart(result))),
-					toExact(floor(imaginaryPart(result))));
+	    throwRuntimeError("floor: can only be applied to an integer", this);
 	}
     };
 
@@ -2036,14 +2038,10 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     Complex.prototype.integerSqrt = function() {
-	var result = sqrt(x);
-	if (isRational(result)) {
-	    return toExact(floor(result));
-	} else if (isReal(result)) {
-	    return toExact(floor(result));
+	if (isInteger(this)) {
+	    return integerSqrt(this.r);
 	} else {
-	    return Complex.makeInstance(toExact(floor(realPart(result))),
-					toExact(floor(imaginaryPart(result))));
+	    throwRuntimeError("integerSqrt: can only be applied to an integer", this);
 	}
     };
 
@@ -3637,8 +3635,8 @@ if (! this['plt']['lib']['Numbers']) {
         if(this.s == 0) {
             return this.searchIter(this);
         }else {
-            this.s = 0;
-            return makeComplex(makeFloat(0), multiply(this.searchIter(this),makeBignum("-1")));
+            tmpThis = multiply(this,makeBignum("-1"));
+            return makeComplex(makeFloat(0), tmpThis.searchIter(tmpThis));
         }
     }
     
