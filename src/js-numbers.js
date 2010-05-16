@@ -1723,7 +1723,7 @@ if (! this['plt']['lib']['Numbers']) {
 	    }
 	    
 	} else {
-	    throwRuntimeError("floor: can only be applied to an integer", this);
+	    throwRuntimeError("integerSqrt: can only be applied to an integer", this);
 	}
     };
 
