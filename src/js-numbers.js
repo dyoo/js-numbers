@@ -613,7 +613,11 @@ if (! this['plt']['lib']['Numbers']) {
     // integerSqrt: scheme-number -> scheme-number
     var integerSqrt = function(x) {
 	if (typeof (x) === 'number') {
-	    return Math.floor(Math.sqrt(x));
+	    if(x < 0) {
+	        return Complex.makeInstance(0,Math.floor(Math.sqrt(-x)))
+	    }else {
+            return Math.floor(Math.sqrt(x));
+	    }
 	}
 
 	return x.integerSqrt();

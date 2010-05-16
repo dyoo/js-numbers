@@ -2735,8 +2735,8 @@ describe('lcm', {
 
 describe('integerSqrt', {
     'fixnums': function() {
-        // this line must be proved
-    //  assertEquals(Number.NaN, integerSqrt(-1));  
+        assertEquals(makeComplex(0,1), integerSqrt(-1));
+        assertEquals(makeComplex(0,11096), integerSqrt(-123123123));  
         assertEquals(0, integerSqrt(-0));
         assertEquals(0, integerSqrt(0));
         assertEquals(1, integerSqrt(1));
