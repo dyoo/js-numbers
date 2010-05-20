@@ -1,16 +1,23 @@
 // Scheme numbers.
 
+var __PLTNUMBERS_TOP__;
+if (typeof(exports) !== 'undefined') {
+    __PLTNUMBERS_TOP__ = exports;
+} else {
     if (! this['plt']) {
 	this['plt'] = {};
     }
-
-if (! this['plt']['lib']) {
-    this['plt']['lib'] = {};
+    
+    if (! this['plt']['lib']) {
+	this['plt']['lib'] = {};
+    }
+    
+    if (! this['plt']['lib']['Numbers']) {
+	this['plt']['lib']['Numbers'] = {};
+    }
+    __PLTNUMBERS_TOP__  = this['plt']['lib']['Numbers'];
 }
 
-if (! this['plt']['lib']['Numbers']) {
-    this['plt']['lib']['Numbers'] = {};
-}
 
 
 // The numeric tower has the following levels:
@@ -36,8 +43,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 (function() {
     // Abbreviation
-    var Numbers = plt.lib.Numbers;
-
+    var Numbers = __PLTNUMBERS_TOP__;
 
     // makeNumericBinop: (fixnum fixnum -> any) (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
     // Creates a binary function that works either on fixnums or boxnums.
@@ -2327,11 +2333,11 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 	return c;
     }
-    if(j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
+    if(j_lm && (typeof(navigator) !== 'undefined' && navigator.appName == "Microsoft Internet Explorer")) {
 	BigInteger.prototype.am = am2;
 	dbits = 30;
     }
-    else if(j_lm && (navigator.appName != "Netscape")) {
+    else if(j_lm && (typeof(navigator) !== 'undefined' && navigator.appName != "Netscape")) {
 	BigInteger.prototype.am = am1;
 	dbits = 26;
     }
