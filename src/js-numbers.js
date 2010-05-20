@@ -614,9 +614,10 @@ if (! this['plt']['lib']['Numbers']) {
     var integerSqrt = function(x) {
 	if (typeof (x) === 'number') {
 	    if(x < 0) {
-	        return Complex.makeInstance(0,Math.floor(Math.sqrt(-x)))
-	    }else {
-            return Math.floor(Math.sqrt(x));
+	        return Complex.makeInstance(0,
+					    Math.floor(Math.sqrt(-x)))
+	    } else {
+		return Math.floor(Math.sqrt(x));
 	    }
 	}
 
@@ -937,7 +938,7 @@ if (! this['plt']['lib']['Numbers']) {
     //_integerQuotient: integer-scheme-number integer-scheme-number -> integer-scheme-number
     var _integerQuotient = makeIntegerBinop(
 	function(m, n) {
-	    return m / n;
+	    return (m / n - m % n / n);
 	},
 	function(m, n) {
             return bnDivide.call(m, n);
@@ -1305,21 +1306,27 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     Rational.prototype.floor = function() {
-        if(this.n.s == -1 && this.d.s == -1 || this.n.s == 0 && this.d.s == 0) {
-            return _integerQuotient(this.n,this.d);
-        }else {
-            return subtract(_integerQuotient(this.n,this.d),makeBignum("1"));
-        }
+	var quotient = _integerQuotient(this.n, this.d);
+	if (_integerLessThan(this.n, 0)) {
+	    return subtract(quotient, 1);
+	} else {
+	    return quotient;
+	}
     };
 
 
     Rational.prototype.ceiling = function() {
-        if(this.n.s == -1 && this.d.s == -1 || this.n.s == 0 && this.d.s == 0) {
-            return add(_integerQuotient(this.n,this.d),makeBignum("1"));
-        }else {
-            return _integerQuotient(this.n,this.d);
-        }
-	    
+	var quotient = _integerQuotient(this.n, this.d);
+	if (_integerLessThan(this.n, 0)) {
+	    return quotient;
+	} else {
+	    return add(quotient, 1);
+	}
+        // if(this.n.s == -1 && this.d.s == -1 || this.n.s == 0 && this.d.s == 0) {
+        //     return add(_integerQuotient(this.n,this.d),makeBignum("1"));
+        // }else {
+        //     return _integerQuotient(this.n,this.d);
+        // }
     };
 
     Rational.prototype.conjugate = function() {
