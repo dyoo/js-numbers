@@ -3409,28 +3409,6 @@ if (! this['plt']['lib']['Numbers']) {
 	return true;
     }
     
-    // (protected)
-    function bnpSearchIter(guess) {
-        while(!(this.goodEnough(guess))) {
-            guess = this.improve(guess);
-        }
-        return guess;
-    }
-
-    // (protected)
-    function bnpImprove(guess) {
-        return this.average(guess, floor(divide(this,guess)));
-    }
-
-    // (protected)
-    function bnpAverage(x,y) {
-        return floor(divide(add(x,y), makeBignum("2")))
-    }
-
-    // (protected)
-    function bnpGoodEnough(guess) {
-        return lessThanOrEqual(sqr(guess),this) && lessThan(this,sqr(add(guess, makeBignum("1"))));
-    }
     
 
     // protected
@@ -3447,10 +3425,6 @@ if (! this['plt']['lib']['Numbers']) {
     BigInteger.prototype.multiplyUpperTo = bnpMultiplyUpperTo;
     BigInteger.prototype.modInt = bnpModInt;
     BigInteger.prototype.millerRabin = bnpMillerRabin;
-    BigInteger.prototype.searchIter = bnpSearchIter
-    BigInteger.prototype.improve = bnpImprove
-    BigInteger.prototype.average = bnpAverage
-    BigInteger.prototype.goodEnough = bnpGoodEnough
 
     // public
     BigInteger.prototype.clone = bnClone;
@@ -3636,15 +3610,42 @@ if (! this['plt']['lib']['Numbers']) {
 	return 1;
     };
 
-    // integerSqrt: -> scheme-number
-    BigInteger.prototype.integerSqrt = function() {
-        if(this.s == 0) {
-            return this.searchIter(this);
-        }else {
-            tmpThis = multiply(this,makeBignum("-1"));
-            return makeComplex(makeFloat(0), tmpThis.searchIter(tmpThis));
-        }
-    }
+
+    (function() {
+	// Classic implementation of Newton-Ralphson square-root search,
+	// adapted for integer-sqrt.
+	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
+	    var searchIter = function(n, guess) {
+		while(!(goodEnough(n, guess))) {
+		    guess = average(guess, floor(divide(n, guess)));
+		}
+		return guess;
+	    };
+	    	    
+	    var average = function (x,y) {
+		return floor(divide(add(x,y), 2));
+	    };
+
+	    var goodEnough = function(n, guess) {
+		return (lessThanOrEqual(sqr(guess),n) &&
+			lessThan(n,sqr(add(guess, 1))));
+	    };
+
+	    // integerSqrt: -> scheme-number
+	    BigInteger.prototype.integerSqrt = function() {
+		if(this.s == 0) {
+		    return searchIter(this, this);
+		} else {
+		    var tmpThis = multiply(this, -1);
+		    return makeComplex(0, 
+				       searchIter(tmpThis, tmpThis));
+		}
+	    };
+    })();
+
+
+
+
     
     // sqrt: -> scheme-number
     // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number

@@ -2935,7 +2935,7 @@ describe('integerSqrt', {
         assertTrue(eqv(makeBignum("351"), 
 		       integerSqrt(makeComplex(makeBignum("123456"),
 					       makeBignum("0")))));
-        assertTrue(eqv(makeComplex(makeFloat(0.0),makeBignum("351")),
+        assertTrue(eqv(makeComplex(0,makeBignum("351")),
 		       integerSqrt(makeComplex(makeBignum("-123456"),
 					       makeBignum("0")))));
     }
