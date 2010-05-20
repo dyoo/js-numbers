@@ -1,16 +1,23 @@
 // Scheme numbers.
 
+var __PLTNUMBERS_TOP__;
+if (typeof(exports) !== 'undefined') {
+    __PLTNUMBERS_TOP__ = exports;
+} else {
     if (! this['plt']) {
 	this['plt'] = {};
     }
-
-if (! this['plt']['lib']) {
-    this['plt']['lib'] = {};
+    
+    if (! this['plt']['lib']) {
+	this['plt']['lib'] = {};
+    }
+    
+    if (! this['plt']['lib']['Numbers']) {
+	this['plt']['lib']['Numbers'] = {};
+    }
+    __PLTNUMBERS_TOP__  = this['plt']['lib']['Numbers'];
 }
 
-if (! this['plt']['lib']['Numbers']) {
-    this['plt']['lib']['Numbers'] = {};
-}
 
 
 // The numeric tower has the following levels:
@@ -36,8 +43,7 @@ if (! this['plt']['lib']['Numbers']) {
 
 (function() {
     // Abbreviation
-    var Numbers = plt.lib.Numbers;
-
+    var Numbers = __PLTNUMBERS_TOP__;
 
     // makeNumericBinop: (fixnum fixnum -> any) (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
     // Creates a binary function that works either on fixnums or boxnums.
@@ -623,7 +629,12 @@ if (! this['plt']['lib']['Numbers']) {
     // integerSqrt: scheme-number -> scheme-number
     var integerSqrt = function(x) {
 	if (typeof (x) === 'number') {
-	    return Math.floor(Math.sqrt(x));
+	    if(x < 0) {
+	        return Complex.makeInstance(0,
+					    Math.floor(Math.sqrt(-x)))
+	    } else {
+		return Math.floor(Math.sqrt(x));
+	    }
 	}
 
 	return x.integerSqrt();
@@ -943,7 +954,7 @@ if (! this['plt']['lib']['Numbers']) {
     //_integerQuotient: integer-scheme-number integer-scheme-number -> integer-scheme-number
     var _integerQuotient = makeIntegerBinop(
 	function(m, n) {
-	    return m / n;
+	    return ((m / n) - ((m % n) / n));
 	},
 	function(m, n) {
             return bnDivide.call(m, n);
@@ -1311,12 +1322,22 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     Rational.prototype.floor = function() {
-	return fromFixnum(Math.floor(this.n / this.d));
+	var quotient = _integerQuotient(this.n, this.d);
+	if (_integerLessThan(this.n, 0)) {
+	    return subtract(quotient, 1);
+	} else {
+	    return quotient;
+	}
     };
 
 
     Rational.prototype.ceiling = function() {
-	return fromFixnum(Math.ceil(this.n / this.d));
+	var quotient = _integerQuotient(this.n, this.d);
+	if (_integerLessThan(this.n, 0)) {
+	    return quotient;
+	} else {
+	    return add(quotient, 1);
+	}
     };
 
     Rational.prototype.conjugate = function() {
@@ -1715,14 +1736,16 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     FloatPoint.prototype.integerSqrt = function() {
-	var result = sqrt(x);
-	if (isRational(result)) {
-	    return toExact(floor(result));
-	} else if (isReal(result)) {
-	    return toExact(floor(result));
+	if (isInteger(this)) {
+	    if(this.n >= 0) {
+	        return FloatPoint.makeInstance(floor(sqrt(this.n)));
+	    }else {
+	        return Complex.makeInstance(0,
+	               FloatPoint.makeInstance(floor(sqrt(-this.n))))
+	    }
+	    
 	} else {
-	    return Complex.makeInstance(toExact(floor(realPart(result))),
-					toExact(floor(imaginaryPart(result))));
+	    throwRuntimeError("integerSqrt: can only be applied to an integer", this);
 	}
     };
 
@@ -2037,14 +2060,10 @@ if (! this['plt']['lib']['Numbers']) {
     };
 
     Complex.prototype.integerSqrt = function() {
-	var result = sqrt(x);
-	if (isRational(result)) {
-	    return toExact(floor(result));
-	} else if (isReal(result)) {
-	    return toExact(floor(result));
+	if (isInteger(this)) {
+	    return integerSqrt(this.r);
 	} else {
-	    return Complex.makeInstance(toExact(floor(realPart(result))),
-					toExact(floor(imaginaryPart(result))));
+	    throwRuntimeError("integerSqrt: can only be applied to an integer", this);
 	}
     };
 
@@ -2324,11 +2343,11 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 	return c;
     }
-    if(j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
+    if(j_lm && (typeof(navigator) !== 'undefined' && navigator.appName == "Microsoft Internet Explorer")) {
 	BigInteger.prototype.am = am2;
 	dbits = 30;
     }
-    else if(j_lm && (navigator.appName != "Netscape")) {
+    else if(j_lm && (typeof(navigator) !== 'undefined' && navigator.appName != "Netscape")) {
 	BigInteger.prototype.am = am1;
 	dbits = 26;
     }
@@ -2605,6 +2624,7 @@ if (! this['plt']['lib']['Numbers']) {
 	r.clamp();
     }
 
+
     // (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
     // r != q, this != m.  q or r may be null.
     function bnpDivRemTo(m,q,r) {
@@ -2767,15 +2787,15 @@ if (! this['plt']['lib']['Numbers']) {
 
     // (protected) this^e, e < 2^32, doing sqr and mul with "r" (HAC 14.79)
     function bnpExp(e,z) {
-	if(e > 0xffffffff || e < 1) return BigInteger.ONE;
-	var r = nbi(), r2 = nbi(), g = z.convert(this), i = nbits(e)-1;
-	g.copyTo(r);
-	while(--i >= 0) {
-	    z.sqrTo(r,r2);
-	    if((e&(1<<i)) > 0) z.mulTo(r2,g,r);
-	    else { var t = r; r = r2; r2 = t; }
-	}
-	return z.revert(r);
+	    if(e > 0xffffffff || e < 1) return BigInteger.ONE;
+	    var r = nbi(), r2 = nbi(), g = z.convert(this), i = nbits(e)-1;
+	    g.copyTo(r);
+	    while(--i >= 0) {
+	        z.sqrTo(r,r2);
+	        if((e&(1<<i)) > 0) z.mulTo(r2,g,r);
+	        else { var t = r; r = r2; r2 = t; }
+	    }
+	    return z.revert(r);
     }
 
     // (public) this^e % m, 0 <= e < 2^32
@@ -3404,6 +3424,8 @@ if (! this['plt']['lib']['Numbers']) {
 	}
 	return true;
     }
+    
+    
 
     // protected
     BigInteger.prototype.chunkSize = bnpChunkSize;
@@ -3604,17 +3626,58 @@ if (! this['plt']['lib']['Numbers']) {
 	return 1;
     };
 
-    // integerSqrt: -> scheme-number
+
+    (function() {
+	// Classic implementation of Newton-Ralphson square-root search,
+	// adapted for integer-sqrt.
+	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
+	    var searchIter = function(n, guess) {
+		while(!(goodEnough(n, guess))) {
+		    guess = average(guess, floor(divide(n, guess)));
+		}
+		return guess;
+	    };
+	    	    
+	    var average = function (x,y) {
+		return floor(divide(add(x,y), 2));
+	    };
+
+	    var goodEnough = function(n, guess) {
+		return (lessThanOrEqual(sqr(guess),n) &&
+			lessThan(n,sqr(add(guess, 1))));
+	    };
+
+	    // integerSqrt: -> scheme-number
+	    BigInteger.prototype.integerSqrt = function() {
+		if(this.s == 0) {
+		    return searchIter(this, this);
+		} else {
+		    var tmpThis = multiply(this, -1);
+		    return makeComplex(0, 
+				       searchIter(tmpThis, tmpThis));
+		}
+	    };
+    })();
+
+
+
+
+    
     // sqrt: -> scheme-number
     // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
     // Produce the square root.
 
-
     // floor: -> scheme-number
     // Produce the floor.
+    BigInteger.prototype.floor = function() {
+        return this;
+    }
 
     // ceiling: -> scheme-number
     // Produce the ceiling.
+    BigInteger.prototype.ceiling = function() {
+        return this;
+    }
 
     // conjugate: -> scheme-number
     // Produce the conjugate.
@@ -3656,10 +3719,10 @@ if (! this['plt']['lib']['Numbers']) {
     // Produce the arc sine.
 
     BigInteger.prototype.imaginaryPart = function() {
-	return 0;
+	    return 0;
     }
     BigInteger.prototype.realPart = function() {
-	return this;
+	    return this;
     }
 
     // round: -> scheme-number
