@@ -371,23 +371,33 @@ if (! this['plt']['lib']['Numbers']) {
 
 
     // expt: scheme-number scheme-number -> scheme-number
-    var expt = makeNumericBinop(
-	function(x, y){
-	    if (y >= 0) {
-		var pow = Math.pow(x, y);
-		if (isOverflow(pow)) {
-		    return (makeBignum(x)).expt(makeBignum(y));
+    var expt = (function() {
+	var _expt = makeNumericBinop(
+	    function(x, y){
+		if (y > 0) {
+		    var pow = Math.pow(x, y);
+		    if (isOverflow(pow)) {
+			return (makeBignum(x)).expt(makeBignum(y));
+		    } else {
+			return pow;
+		    }
 		} else {
-		    return pow;
+		    return (makeBignum(x)).expt(makeBignum(y));
 		}
-	    } else {
-		return (makeBignum(x)).expt(makeBignum(y));
-	    }
-	},
-	function(x, y) {
-	    return x.expt(y);
-	});
-
+	    },
+	    function(x, y) {
+		if (equals(y, 0)) {
+		    return add(y, 1);
+		} else {
+		return x.expt(y);
+		}
+	    });
+	return function(x, y) {
+	    if (equals(y, 0)) 
+		return add(y, 1);
+	    return _expt(x, y);
+	};
+    })();
 
 
     // exp: scheme-number -> scheme-number
@@ -3627,8 +3637,14 @@ if (! this['plt']['lib']['Numbers']) {
     // sin: -> scheme-number
     // Produce the sine.
 
+
     // expt: scheme-number -> scheme-number
     // Produce the power to the input.
+    BigInteger.prototype.expt = function(n) {
+	return bnPow.call(this, n);
+    };
+
+
 
     // exp: -> scheme-number
     // Produce e raised to the given power.
