@@ -2215,19 +2215,55 @@ describe('ceiling', {
         assertTrue(eqv(makeBignum("100000000000000000000"), ceiling(makeBignum("100000000000000000000"))));
         assertTrue(eqv(makeBignum("-100000009000000800000"), ceiling(makeBignum("-100000009000000800000"))));
     },
+
     'rationals': function() {
-        assertTrue(eqv(makeBignum("0"), ceiling(makeRational(makeBignum("0"),makeBignum("1")))));
-        assertTrue(eqv(makeBignum("0"), ceiling(makeRational(makeBignum("0"),makeBignum("-1")))));
-        assertTrue(eqv(makeBignum("1"), ceiling(makeRational(makeBignum("1"),makeBignum("2")))));
-        assertTrue(eqv(makeBignum("1"), ceiling(makeRational(makeBignum("1"),makeBignum("1")))));
-        assertTrue(eqv(makeBignum("2"), ceiling(makeRational(makeBignum("3"),makeBignum("2")))));
-        assertTrue(eqv(makeBignum("-1"), ceiling(makeRational(makeBignum("-3"),makeBignum("2")))));
-        assertTrue(eqv(makeBignum("2"), ceiling(makeRational(makeBignum("-3"),makeBignum("-2")))));
-        assertTrue(eqv(makeBignum("1"), ceiling(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000")))));
-        assertTrue(eqv(makeBignum("33333334"), ceiling(makeRational(makeBignum("100000001"),makeBignum("3")))));
-        assertTrue(eqv(makeBignum("99481699535421"), ceiling(makeRational(makeBignum("123456789123456789"),makeBignum("1241")))));
-        assertTrue(eqv(makeBignum("88104168679280445959690"), ceiling(makeRational(makeBignum("8236487236482736823687236826582365827652875"),makeBignum("93485783475983475983")))));
+        assertTrue(eqv(makeBignum("0"),
+		       ceiling(makeRational(makeBignum("0"),makeBignum("1")))));
+        assertTrue(eqv(makeBignum("0"),
+		       ceiling(makeRational(makeBignum("0"),makeBignum("-1")))));
+        assertTrue(eqv(makeBignum("1"),
+		       ceiling(makeRational(makeBignum("1"),makeBignum("2")))));
+        assertTrue(eqv(makeBignum("1"),
+		       ceiling(makeRational(makeBignum("1"),makeBignum("1")))));
+        assertTrue(eqv(makeBignum("2"), 
+		       ceiling(makeRational(makeBignum("3"),makeBignum("2")))));
+        assertTrue(eqv(makeBignum("-1"), 
+		       ceiling(makeRational(makeBignum("-3"),makeBignum("2")))));
+        assertTrue(eqv(makeBignum("2"),
+		       ceiling(makeRational(makeBignum("-3"),makeBignum("-2")))));
+        assertTrue(eqv(makeBignum("1"),
+		       ceiling(makeRational(makeBignum("100000000000000000000"),makeBignum("200000000000000000000")))));
+        assertTrue(eqv(makeBignum("33333334"), 
+		       ceiling(makeRational(makeBignum("100000001"),makeBignum("3")))));
+        assertTrue(eqv(makeBignum("99481699535421"),
+		       ceiling(makeRational(makeBignum("123456789123456789"),makeBignum("1241")))));
+        assertTrue(eqv(makeBignum("88104168679280445959690"),
+		       ceiling(makeRational(makeBignum("8236487236482736823687236826582365827652875"),
+					    makeBignum("93485783475983475983")))));
+
+
+        assertTrue(eqv(makeBignum("0"),
+		       ceiling(makeRational(0, 1))));
+        assertTrue(eqv(makeBignum("0"),
+		       ceiling(makeRational(0, -1))));
+        assertTrue(eqv(makeBignum("1"),
+		       ceiling(makeRational(1, 2))));
+        assertTrue(eqv(makeBignum("1"),
+		       ceiling(makeRational(1, 1))));
+        assertTrue(eqv(makeBignum("2"), 
+		       ceiling(makeRational(3, 2))));
+        assertTrue(eqv(makeBignum("-1"), 
+		       ceiling(makeRational(-3, 2))));
+        assertTrue(eqv(makeBignum("2"),
+		       ceiling(makeRational(-3, -2))));
+        assertTrue(eqv(makeBignum("33333334"), 
+		       ceiling(makeRational(100000001, 3))));
+        assertTrue(eqv(makeBignum("99481699535421"),
+		       ceiling(makeRational(makeBignum("123456789123456789"),
+					    1241))));
     },
+
+
     'floats': function() {
         assertEquals(makeBignum("0"), ceiling(makeFloat(0.0)));
         assertEquals(makeBignum("1"), ceiling(makeFloat(1.0)));

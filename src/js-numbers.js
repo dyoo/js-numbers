@@ -938,7 +938,7 @@ if (! this['plt']['lib']['Numbers']) {
     //_integerQuotient: integer-scheme-number integer-scheme-number -> integer-scheme-number
     var _integerQuotient = makeIntegerBinop(
 	function(m, n) {
-	    return (m / n - m % n / n);
+	    return ((m / n) - ((m % n) / n));
 	},
 	function(m, n) {
             return bnDivide.call(m, n);
@@ -1322,11 +1322,6 @@ if (! this['plt']['lib']['Numbers']) {
 	} else {
 	    return add(quotient, 1);
 	}
-        // if(this.n.s == -1 && this.d.s == -1 || this.n.s == 0 && this.d.s == 0) {
-        //     return add(_integerQuotient(this.n,this.d),makeBignum("1"));
-        // }else {
-        //     return _integerQuotient(this.n,this.d);
-        // }
     };
 
     Rational.prototype.conjugate = function() {
