@@ -12,9 +12,12 @@ automatically coerse between fixnums, bignums, rationals, floating
 point, and complex numbers.
 
 
-Contributors:
+Contributors: I want to express my thanks to the following people:
+
     Zhe Zhang
     Ethan Cecchetti
+    Ugur Cekmez
+
 
 Other sources:
     The bignum implementation (content from jsbn.js and jsbn2.js) used
