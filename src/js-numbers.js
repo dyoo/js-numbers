@@ -684,6 +684,24 @@ if (typeof(exports) !== 'undefined') {
 	}
 	return result;
     };
+    
+
+    var quotient = function(x, y) {
+ 	if (! isInteger(x)) {
+	}
+	if (! isInteger(y)) {
+	}
+	return _integerQuotient(x, y);
+    };
+
+    
+    var remainder = function(x, y) {
+	if (! isInteger(x)) {
+	}
+	if (! isInteger(y)) {
+	}
+	return _integerRemainder(x, y);
+    };
 
 
     // Implementation of the hyperbolic functions
@@ -706,8 +724,8 @@ if (typeof(exports) !== 'undefined') {
 	if (equals(theta, 0)) {
 	    return r;
 	}
-	return makeComplex(multiply(r, cos(theta)),
-			   multiply(r, sin(theta)));
+	return Complex.makeInstance(multiply(r, cos(theta)),
+				    multiply(r, sin(theta)));
     };
 
 
@@ -958,6 +976,14 @@ if (typeof(exports) !== 'undefined') {
 	},
 	function(m, n) {
             return bnDivide.call(m, n);
+	});
+
+    var _integerRemainder = makeIntegerBinop(
+	function(m, n) {
+	    return m % n;
+	},
+	function(m, n) {
+	    return bnRemainder.call(m, n);
 	});
 
 
@@ -2231,14 +2257,14 @@ if (typeof(exports) !== 'undefined') {
     var fromString = function(x) {
 	var aMatch = x.match(rationalRegexp);
 	if (aMatch) {
-	    return makeRational(fromString(aMatch[1]),
-				fromString(aMatch[2]));
+	    return Rational.makeInstance(fromString(aMatch[1]),
+					 fromString(aMatch[2]));
 	}
 
 	var cMatch = x.match(complexRegexp);
 	if (cMatch) {
-	    return makeComplex(fromString(cMatch[1] || "0"),
-			       fromString(cMatch[2] + (cMatch[3] || "1")));
+	    return Complex.makeInstance(fromString(cMatch[1] || "0"),
+					fromString(cMatch[2] + (cMatch[3] || "1")));
 	}
 
 	if (x === '+nan.0' || x === '-nan.0')
@@ -3653,8 +3679,8 @@ if (typeof(exports) !== 'undefined') {
 		    return searchIter(this, this);
 		} else {
 		    var tmpThis = multiply(this, -1);
-		    return makeComplex(0, 
-				       searchIter(tmpThis, tmpThis));
+		    return Complex.makeInstance(0, 
+						searchIter(tmpThis, tmpThis));
 		}
 	    };
     })();
@@ -3786,6 +3812,8 @@ if (typeof(exports) !== 'undefined') {
     Numbers['integerSqrt'] = integerSqrt;
     Numbers['sqrt'] = sqrt;
     Numbers['abs'] = abs;
+    Numbers['quotient'] = quotient;
+    Numbers['remainder'] = remainder;
     Numbers['floor'] = floor;
     Numbers['ceiling'] = ceiling;
     Numbers['conjugate'] = conjugate;
@@ -3807,7 +3835,6 @@ if (typeof(exports) !== 'undefined') {
     Numbers['sqr'] = sqr;
     Numbers['gcd'] = gcd;
     Numbers['lcm'] = lcm;
-
 
 
 })();

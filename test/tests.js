@@ -1827,6 +1827,15 @@ describe('lessThan', {
 
 describe('expt', {
     'fixnum / fixnum' : function() {
+	assertTrue(eqv(expt(2, 0), 1));
+	assertTrue(eqv(expt(2, 1), 2));
+	assertTrue(eqv(expt(2, 100), makeBignum("1125899906842624")));
+	assertTrue(eqv(expt(2, -1),
+		       makeRational(1,2)));
+	assertTrue(eqv(expt(2, -2),
+		       makeRational(1,4)));
+	assertTrue(eqv(expt(2, -100),
+		       makeRational(1, makeBignum("1267650600228229401496703205376"))));
 	// FIXME: add test case where value needs to become a bignum.
     },
 
