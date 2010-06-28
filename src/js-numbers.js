@@ -388,14 +388,15 @@ if (typeof(exports) !== 'undefined') {
 			return pow;
 		    }
 		} else {
-		    return (makeBignum(x)).expt(makeBignum(y));
+		    return expt(makeRational(1, x),
+				negate(y));
 		}
 	    },
 	    function(x, y) {
 		if (equals(y, 0)) {
 		    return add(y, 1);
 		} else {
-		return x.expt(y);
+		    return x.expt(y);
 		}
 	    });
 	return function(x, y) {

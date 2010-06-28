@@ -1828,15 +1828,14 @@ describe('lessThan', {
 describe('expt', {
     'fixnum / fixnum' : function() {
 	assertTrue(eqv(expt(2, 0), 1));
-	assertTrue(eqv(expt(2, 1), 2));
-	assertTrue(eqv(expt(2, 100), makeBignum("1125899906842624")));
-	assertTrue(eqv(expt(2, -1),
-		       makeRational(1,2)));
-	assertTrue(eqv(expt(2, -2),
-		       makeRational(1,4)));
-	assertTrue(eqv(expt(2, -100),
-		       makeRational(1, makeBignum("1267650600228229401496703205376"))));
-	// FIXME: add test case where value needs to become a bignum.
+ 	assertTrue(eqv(expt(2, 1), 2));
+ 	assertTrue(eqv(expt(2, 100), makeBignum("1267650600228229401496703205376")));
+ 	assertTrue(eqv(expt(2, -1),
+ 		       makeRational(1,2)));
+ 	assertTrue(eqv(expt(2, -2),
+ 		       makeRational(1,4)));
+ 	assertTrue(eqv(expt(2, -100),
+ 		       makeRational(1, makeBignum("1267650600228229401496703205376"))));
     },
 
     'fixnum overflows to bignum': function() {
@@ -1845,13 +1844,41 @@ describe('expt', {
     },
 
     'fixnum / bignum': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(expt(1, makeBignum("123689321689125689")),
+		       1));
+
+	assertTrue(eqv(expt(1, makeBignum("-123689321689125689")),
+		       1));
     },
 
     'bignum / bignum' : function() {
-	// FIXME: we're missing this
-    },
+	assertTrue(eqv(expt(makeBignum("0"),
+			    makeBignum("0")),
+		       1));
+	assertTrue(eqv(expt(makeBignum("2"),
+			    makeBignum("999")),
+		       makeBignum("5357543035931336604742125245300009052807024058527668037218751941851755255624680612465991894078479290637973364587765734125935726428461570217992288787349287401967283887412115492710537302531185570938977091076523237491790970633699383779582771973038531457285598238843271083830214915826312193418602834034688")));
 
+	
+	assertTrue(eqv(expt(makeBignum("-2"),
+			    makeBignum("1")),
+		       -2));
+
+	assertTrue(eqv(expt(makeBignum("-2"),
+			    makeBignum("2")),
+		       4));
+
+	assertTrue(eqv(expt(makeBignum("2"),
+			    makeBignum("-1")),
+		       makeRational(1, 2)));
+
+
+	assertTrue(eqv(expt(makeBignum("2"),
+			    makeBignum("-999")),
+		       makeRational(1, 
+				    makeBignum("5357543035931336604742125245300009052807024058527668037218751941851755255624680612465991894078479290637973364587765734125935726428461570217992288787349287401967283887412115492710537302531185570938977091076523237491790970633699383779582771973038531457285598238843271083830214915826312193418602834034688"))));
+    },
+	
     'bignum / rational': function() {
 	// FIXME: we're missing this
     },
