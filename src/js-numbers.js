@@ -380,16 +380,11 @@ if (typeof(exports) !== 'undefined') {
     var expt = (function() {
 	var _expt = makeNumericBinop(
 	    function(x, y){
-		if (y > 0) {
-		    var pow = Math.pow(x, y);
-		    if (isOverflow(pow)) {
-			return (makeBignum(x)).expt(makeBignum(y));
-		    } else {
-			return pow;
-		    }
+		var pow = Math.pow(x, y);
+		if (isOverflow(pow)) {
+		    return (makeBignum(x)).expt(makeBignum(y));
 		} else {
-		    return expt(makeRational(1, x),
-				negate(y));
+		    return pow;
 		}
 	    },
 	    function(x, y) {
@@ -402,6 +397,9 @@ if (typeof(exports) !== 'undefined') {
 	return function(x, y) {
 	    if (equals(y, 0)) 
 		return add(y, 1);
+	    if (isReal(y) && lessThan(y, 0)) {
+		return _expt(divide(1, x), negate(y));
+	    }
 	    return _expt(x, y);
 	};
     })();
@@ -1451,7 +1449,6 @@ if (typeof(exports) !== 'undefined') {
 
 
 
-    var _rationalCache = {};
     Rational.makeInstance = function(n, d) {
 	if (n === undefined)
 	    throwRuntimeError("n undefined", n, d);
@@ -1475,18 +1472,6 @@ if (typeof(exports) !== 'undefined') {
 
 	return new Rational(n, d);
     };
-
-    //     _rationalCache = {};
-    //     (function() {
-    // 	var i;
-    // 	for(i = -500; i < 500; i++) {
-    // 	    _rationalCache[i] = new Rational(i, 1);
-    // 	}
-    //     })();
-    //     Rational.NEGATIVE_ONE = new Rational(-1, 1);
-    //     Rational.ZERO = new Rational(0, 1);
-    //     Rational.ONE = new Rational(1, 1);
-    //     Rational.TWO = new Rational(2, 1);
 
 
 
