@@ -475,7 +475,7 @@ if (typeof(exports) !== 'undefined') {
 		    return FloatPoint.makeInstance(result);
 		}
 	    } else {
-		return (makeComplex(0, sqrt(-n)));
+		return (Complex.makeInstance(0, sqrt(-n)));
 	    }
 	}
 	return n.sqrt();
