@@ -1,6 +1,6 @@
 
 // Let's open up plt.lib.Numbers to make it easy to test.
-var N = plt.lib.Numbers;
+var N = jsnums;
 for (val in N) {
     if (N.hasOwnProperty(val)) {
 	this[val] = N[val];
@@ -2024,16 +2024,17 @@ describe('sqrt', {
     'fixnums': function() {
 	assertTrue(eqv(sqrt(4), 2));
 	assertTrue(eqv(sqrt(-4), makeComplex(0, 2)));
-
 	assertTrue(eqv(sqrt(-1), makeComplex(0, 1)));
 	assertTrue(eqv(sqrt(297354289), makeFloat(17243.963842458033)));
 	assertTrue(eqv(sqrt(-297354289), 
 		       makeComplex(0, 
 				   makeFloat(17243.963842458033))));
     },
+
     'bignums': function() {
 	// FIXME: we're missing this
     },
+
     'rationals': function() {
 	// FIXME: we're missing this
     },
@@ -3536,7 +3537,7 @@ describe('old tests from Moby Scheme', {
 
     
     testNumberQuestion : function() {
-	assertTrue(Kernel.number_question_(plt.types.makeRational(42)));
+	assertTrue(Kernel.number_question_(makeRational(42)));
 	assertTrue(Kernel.number_question_(42) == false);
     },
 
@@ -3628,9 +3629,7 @@ describe('old tests from Moby Scheme', {
 	assertTrue(Kernel.real_question_(1));
 	assertTrue(!Kernel.real_question_(makeComplex(makeRational(0),makeRational(1))));
 	assertTrue(Kernel.real_question_(makeComplex(makeRational(1),makeRational(0))));
-	assertTrue(!Kernel.real_question_(plt.types.Empty.EMPTY));
-	assertTrue(!Kernel.real_question_(String.makeInstance("hi")));
-	assertTrue(!Kernel.real_question_(Symbol.makeInstance('h')));
+	assertTrue(!Kernel.real_question_("hi"));
     },
     
     testRound : function(){
@@ -3654,7 +3653,7 @@ describe('old tests from Moby Scheme', {
 
     testSgn : function(){
 	assertTrue(equals(Kernel.sgn(makeFloat(4)), 1));
-	assertTrue(equals(Kernel.sgn(makeFloat(-4)), Rational.NEGATIVE_ONE));
+	assertTrue(equals(Kernel.sgn(makeFloat(-4)), makeRational(-1)));
 	assertTrue(equals(Kernel.sgn(0), 0));
     },
    

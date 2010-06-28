@@ -12,7 +12,7 @@ automatically coerse between fixnums, bignums, rationals, floating
 point, and complex numbers.
 
 
-Contributors: I want to express my thanks to the following people:
+Contributors: I want to thank the following people:
 
     Zhe Zhang
     Ethan Cecchetti
@@ -52,9 +52,9 @@ Examples
 API
 
 
-Loading js-numbers.js will define a namespace called
+Loading js-numbers.js will define a toplevel namespace called
 
-    plt.lib.Numbers
+    jsnums
 
 which contains following constants and functions:
 
@@ -114,8 +114,6 @@ makeComplex: scheme-number scheme-number? -> scheme-number
 makeComplexPolar: scheme-number scheme-number -> scheme-number
     Constructs a complex number; the radius and theta must be basic
     scheme numbers (i.e. not complex).
-
-
 
 isSchemeNumber: any -> boolean
     Produces true if the thing is a scheme number.
@@ -187,6 +185,12 @@ numerator: scheme-number -> scheme-number
 
 denominator: scheme-number -> scheme-number
     Produces the denominator of the rational number.
+
+quotient: scheme-number scheme-number -> scheme-number
+    Produces the quotient.  Both inputs must be integers.
+
+remainder: scheme-number scheme-number -> scheme-number
+    Produces the remainder.  Both inputs must be integers.
 
 sqrt: scheme-number -> scheme-number
     Produces the square root.
@@ -279,33 +283,18 @@ TODO
 
 * Absorb implementations of:
 
-  atan2, cosh, sinh, makePolar, makeRectangular, quotient, remainder,
-  sgn
+  atan2, cosh, sinh, sgn
 
 * Bring over the numeric test cases from Moby.
 
 * Add real documentation.
 
-* Integrate bignums.
 
-    - There are two bignum libraries to look into:
-
-    jbsn:  http://www-cs-students.stanford.edu/~tjw/jsbn/
-    BigInteger: http://silentmatt.com/biginteger/
-
-We're going to use jsbn: it looks more mature, given that it's been around
-for a longer time than the BigInteger package.
-
-
-* Find out: what is the implementation mentioned in:
-
-Deniz A. Gursel, Ugur Cekmez, R. Emre Basar.  "Implementation of
-Scheme Numeric System for JavaScript"
-http://ab.org.tr/ab10/bildiri/161.pdf
-
-I suspect it's worldwithweb, but it's hard to find.
 
 ======================================================================
 History
 
 February 2010: initial refactoring from the moby-scheme source tree.
+
+June 2010: got implementation of integer-sqrt from Ugur Cekmez;
+brought in some fixes from Ethan Cecchetti.

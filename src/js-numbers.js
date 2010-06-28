@@ -4,18 +4,10 @@ var __PLTNUMBERS_TOP__;
 if (typeof(exports) !== 'undefined') {
     __PLTNUMBERS_TOP__ = exports;
 } else {
-    if (! this['plt']) {
-	this['plt'] = {};
+    if (! this['jsnums']) {
+	this['jsnums'] = {};
     }
-    
-    if (! this['plt']['lib']) {
-	this['plt']['lib'] = {};
-    }
-    
-    if (! this['plt']['lib']['Numbers']) {
-	this['plt']['lib']['Numbers'] = {};
-    }
-    __PLTNUMBERS_TOP__  = this['plt']['lib']['Numbers'];
+    __PLTNUMBERS_TOP__  = this['jsnums'];
 }
 
 
@@ -687,8 +679,12 @@ if (typeof(exports) !== 'undefined') {
 
     var quotient = function(x, y) {
  	if (! isInteger(x)) {
+	    throwRuntimeError('quotient: the first argument ' + x.toString() +
+			      " is not an integer.", x);
 	}
 	if (! isInteger(y)) {
+	    throwRuntimeError('quotient: the second argument ' + y.toString() +
+			      " is not an integer.", y);
 	}
 	return _integerQuotient(x, y);
     };
@@ -696,8 +692,12 @@ if (typeof(exports) !== 'undefined') {
     
     var remainder = function(x, y) {
 	if (! isInteger(x)) {
+	    throwRuntimeError('remainder: the first argument ' + x.toString() +
+			      " is not an integer.", x);
 	}
 	if (! isInteger(y)) {
+	    throwRuntimeError('remainder: the second argument ' + y.toString() +
+			      " is not an integer.", y);
 	}
 	return _integerRemainder(x, y);
     };
