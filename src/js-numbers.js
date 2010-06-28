@@ -483,7 +483,7 @@ if (typeof(exports) !== 'undefined') {
 		    return FloatPoint.makeInstance(result);
 		}
 	    } else {
-		return (makeBignum(n)).sqrt();
+		return (makeComplex(0, sqrt(-n)));
 	    }
 	}
 	return n.sqrt();
@@ -1302,7 +1302,7 @@ if (typeof(exports) !== 'undefined') {
     };
 
     Rational.prototype.integerSqrt = function() {
-	var result = sqrt(x);
+	var result = sqrt(this);
 	if (isRational(result)) {
 	    return toExact(floor(result));
 	} else if (isReal(result)) {

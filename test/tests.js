@@ -2022,7 +2022,14 @@ describe('denominator', {
 
 describe('sqrt', {
     'fixnums': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqrt(4), 2));
+	assertTrue(eqv(sqrt(-4), makeComplex(0, 2)));
+
+	assertTrue(eqv(sqrt(-1), makeComplex(0, 1)));
+	assertTrue(eqv(sqrt(297354289), makeFloat(17243.963842458033)));
+	assertTrue(eqv(sqrt(-297354289), 
+		       makeComplex(0, 
+				   makeFloat(17243.963842458033))));
     },
     'bignums': function() {
 	// FIXME: we're missing this
@@ -2030,9 +2037,12 @@ describe('sqrt', {
     'rationals': function() {
 	// FIXME: we're missing this
     },
+
     'floats': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqrt(makeFloat(-4)), makeComplex(0, makeFloat(2))));
+	assertTrue(eqv(sqrt(makeFloat(4)), makeFloat(2)));
     },
+
     'complex': function() {
 	// FIXME: we're missing this
     }
