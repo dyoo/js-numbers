@@ -3665,67 +3665,68 @@ describe('old tests from Moby Scheme', {
 
 
     testIsRational : function() {
-	assertTrue(Kernel.rational_question_(makeRational(42)));
-	assertTrue(! Kernel.rational_question_(makeFloat(3.1415)));
-	assertTrue(! Kernel.rational_question_("blah"));
+	assertTrue(isRational(makeRational(42)));
+	assertTrue(isRational(makeFloat(3.1415)));
+	assertTrue(isRational(pi));
+	assertFalse(isRational(nan));
+	assertFalse(isRational(inf));
+	assertFalse(isRational(negative_inf));
+	assertTrue(! isRational("blah"));
     },	
 
     
     testNumberQuestion : function() {
-	assertTrue(Kernel.number_question_(makeRational(42)));
-	assertTrue(Kernel.number_question_(42) == false);
+	assertTrue(isSchemeNumber(makeRational(42)));
+	assertTrue(isSchemeNumber(42));
+	assertFalse(isSchemeNumber(false));
+	assertFalse(isSchemeNumber("blah again"));
     },
 
 
     testNumber_dash__greaterthan_string : function(){
-	assertTrue(Kernel.string_equal__question_(String.makeInstance("1"), Kernel.number_dash__greaterthan_string(1),[]));
-	assertTrue(!Kernel.string_equal__question_(String.makeInstance("2"), Kernel.number_dash__greaterthan_string(1),[]));
-
-	assertEquals("5+0i",
-			 Kernel.number_dash__greaterthan_string(makeComplex(5, 0)));
-
+	assertTrue("1" === (1).toString());
+	assertEquals("5+0.0i",
+		     (makeComplex(5, makeFloat(0))).toString());
 	assertEquals("5+1i",
-			 Kernel.number_dash__greaterthan_string(makeComplex(5, 1)));
-
+		     (makeComplex(5, 1)).toString());
 	assertEquals("4-2i",
-			 Kernel.number_dash__greaterthan_string(makeComplex(4, -2)));
-
+		     (makeComplex(4, -2)).toString());
     },
     
     testQuotient : function(){
-	assertTrue(equals(Kernel.quotient(makeFloat(3), makeFloat(4)), 0));	
-	assertTrue(equals(Kernel.quotient(makeFloat(4), makeFloat(3)), 1));
+	assertTrue(equals(quotient(makeFloat(3), makeFloat(4)), 0));	
+	assertTrue(equals(quotient(makeFloat(4), makeFloat(3)), 1));
 
 	assertTrue(equals(
-	    Kernel.quotient(makeRational(-36),
-			    makeRational(7)),
+	    quotient(makeRational(-36),
+		     makeRational(7)),
 	    makeRational(-5)));
 
 
 	assertTrue(equals(
-	    Kernel.quotient(makeRational(-36),
-			    makeRational(-7)),
-	    makeRational(5)));
-
-
-	assertTrue(equals(
-	    Kernel.quotient(makeRational(36),
-			    makeRational(-7)),
-	    makeRational(-5)));
-
-
-	assertTrue(equals(
-	    Kernel.quotient(makeRational(36),
-			    makeRational(7)),
+	    quotient(makeRational(-36),
+		     makeRational(-7)),
 	    makeRational(5)));
 
 	
+	assertTrue(equals(
+	    quotient(makeRational(36),
+		     makeRational(-7)),
+	    makeRational(-5)));
 
+
+	assertTrue(equals(
+	    quotient(makeRational(36),
+		     makeRational(7)),
+	    makeRational(5)));
     },
+
     
     testRemainder : function(){
-	assertTrue(equals(Kernel.remainder(makeFloat(3), makeFloat(4)), makeFloat(3)));	
-	assertTrue(equals(Kernel.remainder(makeFloat(4), makeFloat(3)), makeFloat(1)));
+	assertTrue(equals(remainder(makeFloat(3), makeFloat(4)),
+			  makeFloat(3)));	
+	assertTrue(equals(remainder(makeFloat(4), makeFloat(3)),
+			  makeFloat(1)));
     },
 
     
@@ -3733,71 +3734,70 @@ describe('old tests from Moby Scheme', {
 	var n1 = makeRational(17);
 	var n2 = makeRational(3);
 	var n3 = makeRational(2);
-	assertEquals(n3, Kernel.modulo(n1, n2));
-	assertEquals(n2, Kernel.modulo(n2, n1));
+	assertEquals(n3, modulo(n1, n2));
+	assertEquals(n2, modulo(n2, n1));
 	assertTrue(equals(
 	    makeRational(-3), 
-	    Kernel.modulo(makeRational(13),
-			  makeRational(-4))));
+	    modulo(makeRational(13),
+		   makeRational(-4))));
 
 	assertTrue(equals(
 	    makeRational(3), 
-	    Kernel.modulo(makeRational(-13),
-			  makeRational(4))));
+	    modulo(makeRational(-13),
+		   makeRational(4))));
 
 	assertTrue(equals(
 	    makeRational(-1), 
-	    Kernel.modulo(makeRational(-13),
-			  makeRational(-4))));
+	    modulo(makeRational(-13),
+		   makeRational(-4))));
 
 
 	assertTrue(equals(
 	    makeRational(0), 
-	    Kernel.modulo(makeRational(4),
-			  makeRational(-2))));
-
+	    modulo(makeRational(4),
+		   makeRational(-2))));
     },
 
     
     testReal_question_ : function(){
-	assertTrue(Kernel.real_question_(pi));
-	assertTrue(Kernel.real_question_(1));
-	assertTrue(!Kernel.real_question_(makeComplex(makeRational(0),makeRational(1))));
-	assertTrue(Kernel.real_question_(makeComplex(makeRational(1),makeRational(0))));
-	assertTrue(!Kernel.real_question_("hi"));
+	assertTrue(isReal(pi));
+	assertTrue(isReal(1));
+	assertTrue(!isReal(makeComplex(makeRational(0),makeRational(1))));
+	assertTrue(isReal(makeComplex(makeRational(1),makeRational(0))));
+	assertTrue(!isReal("hi"));
     },
     
     testRound : function(){
-	assertTrue(equals(Kernel.round(makeFloat(3.499999)), 
+	assertTrue(equals(round(makeFloat(3.499999)), 
 					   makeFloat(3)));
-	assertTrue(equals(Kernel.round(makeFloat(3.5)), 
+	assertTrue(equals(round(makeFloat(3.5)), 
 					   makeFloat(4)));
-	assertTrue(equals(Kernel.round(makeFloat(3.51)),
+	assertTrue(equals(round(makeFloat(3.51)),
 					   makeFloat(4)));
-	assertTrue(equals(Kernel.round(makeRational(3)),
+	assertTrue(equals(round(makeRational(3)),
 					   makeRational(3)));
 
-	assertTrue(equals(Kernel.round(makeRational(17, 4)),
+	assertTrue(equals(round(makeRational(17, 4)),
 					   makeRational(4)));
 
 
-	assertTrue(equals(Kernel.round(makeRational(-17, 4)),
+	assertTrue(equals(round(makeRational(-17, 4)),
 					   makeRational(-4)));
     },
     
 
-    testSgn : function(){
-	assertTrue(equals(Kernel.sgn(makeFloat(4)), 1));
-	assertTrue(equals(Kernel.sgn(makeFloat(-4)), makeRational(-1)));
-	assertTrue(equals(Kernel.sgn(0), 0));
-    },
+//     testSgn : function(){
+// 	assertTrue(equals(sgn(makeFloat(4)), 1));
+// 	assertTrue(equals(sgn(makeFloat(-4)), makeRational(-1)));
+// 	assertTrue(equals(sgn(0), 0));
+//     },
    
  
-    testZero_question_ : function(){
-	assertTrue(Kernel.zero_question_(0));
-	assertTrue(!Kernel.zero_question_(1));
-	assertTrue(Kernel.zero_question_(makeComplex(makeRational(0),makeRational(0))));
-    }
+//     testZero_question_ : function(){
+// 	assertTrue(Kernel.zero_question_(0));
+// 	assertTrue(!Kernel.zero_question_(1));
+// 	assertTrue(Kernel.zero_question_(makeComplex(makeRational(0),makeRational(0))));
+//     }
 
 
 });
