@@ -764,6 +764,72 @@ describe('isExact', {
 });
 
 
+
+
+
+
+describe('isInexact', {
+    'fixnums': function() {
+	assertFalse(isInexact(19));
+	assertFalse(isInexact(0));
+	assertFalse(isInexact(-1));
+	assertFalse(isInexact(1));
+    },
+
+    'bignums': function() {
+	assertFalse(isInexact(makeBignum("0")));
+	assertFalse(isInexact(makeBignum("1")));
+	assertFalse(isInexact(makeBignum("-1")));
+	assertFalse(isInexact(makeBignum("23497842398287924789232439723")));
+	assertFalse(isInexact(makeBignum("1e1000")));
+	assertFalse(isInexact(makeBignum("-1e1000")));
+	assertFalse(isInexact(makeBignum("12342357892297851728921374891327893")));
+	assertFalse(isInexact(makeBignum("4.1321e200")));
+	assertFalse(isInexact(makeBignum("-4.1321e200")));
+    },
+
+    'rationals': function() {
+	assertFalse(isInexact(makeRational(19)));
+	assertFalse(isInexact(makeRational(0)));
+	assertFalse(isInexact(makeRational(-1)));
+	assertFalse(isInexact(makeRational(1)));
+	assertFalse(isInexact(makeRational(1, 2)));
+	assertFalse(isInexact(makeRational(1, 29291)));
+    },
+
+    'floats': function() {
+	assertTrue(isInexact(e));
+	assertTrue(isInexact(pi));
+	assertTrue(isInexact(inf));
+	assertTrue(isInexact(negative_inf));
+	assertTrue(isInexact(nan));
+	assertTrue(isInexact(makeFloat(0)));
+	assertTrue(isInexact(makeFloat(1111.1)));
+    },
+
+    'complex': function() {
+	assertFalse(isInexact(makeComplex(0, 0)));
+	assertFalse(isInexact(makeComplex(makeRational(1,2),
+					  makeRational(1, 17))));
+	assertTrue(isInexact(makeComplex(e,
+					 makeRational(1, 17))));
+	assertTrue(isInexact(makeComplex(makeRational(1,2),
+					 pi)));
+	assertTrue(isInexact(makeComplex(makeRational(1,2),
+					 nan)));
+	
+	assertTrue(isInexact(makeComplex(negative_inf,
+					 nan)));
+    }
+});
+
+
+
+
+
+
+
+
 describe('isInteger', {
     'fixnums': function() {
 	assertTrue(isInteger(1));
@@ -3467,10 +3533,9 @@ describe('old tests from Moby Scheme', {
 
 
     testExactToInexact : function() {
-	assertTrue(equals(Kernel.exact_dash__greaterthan_inexact(makeRational(3)),
-				   makeFloat(3.0)
-				   ));
-	assertTrue(Kernel.inexact_question_(Kernel.exact_dash__greaterthan_inexact(makeRational(3))));
+	assertTrue(eqv(toInexact(makeRational(3)),
+		       makeFloat(3.0)));
+	assertTrue(isInexact(toInexact(makeRational(3))));
     },
 
 

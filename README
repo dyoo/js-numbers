@@ -127,6 +127,9 @@ isReal: scheme-number -> boolean
 isExact: scheme-number -> boolean
     Produces true if the number is being represented exactly.
 
+isInexact: scheme-number -> boolean
+    Produces true if the number is inexact.
+
 isInteger: scheme-number -> boolean
     Produces true if the number is an integer.
 
@@ -136,6 +139,9 @@ toFixnum: scheme-number -> javascript-number
 
 toExact: scheme-number -> scheme-number
     Converts the number to an exact scheme-number.
+
+toInexact: scheme-number -> scheme-number
+    Converts the number to an inexact scheme-number.
 
 add: scheme-number scheme-number -> scheme-number
     Adds the two numbers together.
