@@ -180,6 +180,15 @@ if (typeof(exports) !== 'undefined') {
     };
 
 
+    // toExact: scheme-number -> scheme-number
+    var toInexact = function(n) {
+	if (typeof(n) === 'number')
+	    return FloatPoint.makeInstance(n);
+	return n.toInexact();
+    };
+
+
+
     //////////////////////////////////////////////////////////////////////
 
 
@@ -1263,6 +1272,11 @@ if (typeof(exports) !== 'undefined') {
 	return this;
     };
 
+    Rational.prototype.toInexact = function() {
+	return FloatPoint.makeInstance(this.toFixnum());
+    };
+
+
     Rational.prototype.isExact = function() {
         return true;
     };
@@ -1530,6 +1544,10 @@ if (typeof(exports) !== 'undefined') {
 	var intPart = this.n - fracPart;
 	return add(intPart,
 		   Rational.makeInstance(Math.floor(fracPart * 10e16), 10e16));
+    };
+
+    FloatPoint.prototype.toInexact = function() {
+	return this;
     };
 
     FloatPoint.prototype.isExact = function() {
@@ -1919,6 +1937,12 @@ if (typeof(exports) !== 'undefined') {
 	}
 	return toExact(this.r);
     };
+
+    Complex.prototype.toInexact = function() {
+	return Complex.makeInstance(toInexact(this.r),
+				    toInexact(this.i));
+    };
+
 
     Complex.prototype.isExact = function() {
         return isExact(this.r) && isExact(this.i);
@@ -3583,6 +3607,10 @@ if (typeof(exports) !== 'undefined') {
 
     BigInteger.prototype.toExact = function() {
 	return this;
+    };
+
+    BigInteger.prototype.toInexact = function() {
+	return FloatPoint.makeInstance(this.toFixnum());
     };
 
     BigInteger.prototype.toFixnum = function() {
