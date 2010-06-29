@@ -666,7 +666,7 @@ if (typeof(exports) !== 'undefined') {
 	    while (! _integerIsZero(b)) {
 		t = a;
 		a = b;
-		b = integerModulo(t, b);
+		b = _integerModulo(t, b);
 	    }
 	}
 	return a;
@@ -685,7 +685,7 @@ if (typeof(exports) !== 'undefined') {
 		throwRuntimeError('lcm: the argument ' + rest[i].toString() +
 				  " is not an integer.", rest[i]);
 	    }
-	    var divisor = gcd(result, rest[i]);
+	    var divisor = _integerGcd(result, rest[i]);
 	    if (_integerIsZero(divisor)) {
 		return 0;
 	    }

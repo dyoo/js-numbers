@@ -3540,114 +3540,127 @@ describe('old tests from Moby Scheme', {
 
 
     testInexactToExact : function() {
-	assertTrue(equals(Kernel.inexact_dash__greaterthan_exact(makeFloat(3)),
-				   makeRational(3)
-				   ));
-	assertTrue(Kernel.exact_question_(Kernel.inexact_dash__greaterthan_exact(makeFloat(3))));
+	assertTrue(equals(toExact(makeFloat(3)),
+			  makeRational(3)));
+	assertTrue(isExact(toExact(makeFloat(3))));
     },
 
     testFloatsAreInexact: function() {
-	assertTrue(! Kernel.exact_question_(makeFloat(3.0)));
+	assertTrue(! isExact(makeFloat(3.0)));
     },
 
     
-    testOdd_question_ : function(){
-	assertTrue(Kernel.odd_question_(1));
-	assertTrue(! Kernel.odd_question_(0));
-	assertTrue(Kernel.odd_question_(makeFloat(1)));
-	assertTrue(Kernel.odd_question_(makeComplex(makeRational(1),makeRational( 0))));
-	assertTrue(Kernel.odd_question_(makeRational(-1, 1)));
-    },
+//     testOdd_question_ : function(){
+// 	assertTrue(Kernel.odd_question_(1));
+// 	assertTrue(! Kernel.odd_question_(0));
+// 	assertTrue(Kernel.odd_question_(makeFloat(1)));
+// 	assertTrue(Kernel.odd_question_(makeComplex(makeRational(1),makeRational( 0))));
+// 	assertTrue(Kernel.odd_question_(makeRational(-1, 1)));
+//     },
     
     testInfinityComputations : function() {
 	assertTrue(equals(0, multiply(0, inf)));
     },
 
-    testEven_question_ : function(){
-	assertTrue(Kernel.even_question_(0));
-	assertTrue(! Kernel.even_question_(1));
-	assertTrue(Kernel.even_question_(makeFloat(2)));
-	assertTrue(Kernel.even_question_(makeComplex(makeRational(2),makeRational( 0))));
-    },
+//     testEven_question_ : function(){
+// 	assertTrue(Kernel.even_question_(0));
+// 	assertTrue(! Kernel.even_question_(1));
+// 	assertTrue(Kernel.even_question_(makeFloat(2)));
+// 	assertTrue(Kernel.even_question_(makeComplex(makeRational(2),makeRational( 0))));
+//     },
     
-    testPositive_question_ : function(){
-	assertTrue(Kernel.positive_question_(1));
-	assertTrue(!Kernel.positive_question_(0));
-	assertTrue(Kernel.positive_question_(makeFloat(1.1)));
-	assertTrue(Kernel.positive_question_(makeComplex(makeRational(1),makeRational(0))));
-    },
+//     testPositive_question_ : function(){
+// 	assertTrue(Kernel.positive_question_(1));
+// 	assertTrue(!Kernel.positive_question_(0));
+// 	assertTrue(Kernel.positive_question_(makeFloat(1.1)));
+// 	assertTrue(Kernel.positive_question_(makeComplex(makeRational(1),makeRational(0))));
+//     },
     
-    testNegative_question_ : function(){
-	assertTrue(Kernel.negative_question_(makeRational(-5)));
-	assertTrue(!Kernel.negative_question_(1));
-	assertTrue(!Kernel.negative_question_(0));
-	assertTrue(!Kernel.negative_question_(makeFloat(1.1)));
-	assertTrue(!Kernel.negative_question_(makeComplex(makeRational(1),makeRational(0))));
-    },
+//     testNegative_question_ : function(){
+// 	assertTrue(Kernel.negative_question_(makeRational(-5)));
+// 	assertTrue(!Kernel.negative_question_(1));
+// 	assertTrue(!Kernel.negative_question_(0));
+// 	assertTrue(!Kernel.negative_question_(makeFloat(1.1)));
+// 	assertTrue(!Kernel.negative_question_(makeComplex(makeRational(1),makeRational(0))));
+//     },
     
     testCeiling : function(){
-	assertTrue(equals(Kernel.ceiling(1), 1));
-	assertTrue(equals(Kernel.ceiling(pi), makeFloat(4)));
-	assertTrue(equals(Kernel.ceiling(makeComplex(makeFloat(3.1),makeRational(0))), makeFloat(4)));
+	assertTrue(equals(ceiling(1), 1));
+	assertTrue(equals(ceiling(pi), makeFloat(4)));
+	assertTrue(equals(ceiling(makeComplex(makeFloat(3.1),
+					      makeRational(0))),
+			  makeFloat(4)));
     },
     
     testFloor : function(){
-	assertTrue(equals(Kernel.floor(1), 1));
-	assertTrue(equals(Kernel.floor(pi), makeFloat(3)));
-	assertTrue(equals(Kernel.floor(makeComplex(makeFloat(3.1),makeRational(0))), makeFloat(3)));
+	assertTrue(equals(floor(1), 1));
+	assertTrue(equals(floor(pi), makeFloat(3)));
+	assertTrue(equals(floor(makeComplex(makeFloat(3.1),
+					    makeRational(0))), 
+			  makeFloat(3)));
     },
     
     testImag_dash_part : function(){
-	assertTrue(equals(Kernel.imag_dash_part(1), 0));
-	assertTrue(equals(Kernel.imag_dash_part(pi), 0));
-	assertTrue(equals(Kernel.imag_dash_part(makeComplex(makeRational(0),makeRational(1))), 1));
+	assertTrue(equals(imaginaryPart(1), 0));
+	assertTrue(equals(imaginaryPart(pi), 0));
+	assertTrue(equals(imaginaryPart(makeComplex(makeRational(0),
+						    makeRational(1))),
+			  1));
     },
     
     testReal_dash_part : function(){
-	assertTrue(equals(Kernel.real_dash_part(1), 1));
-	assertTrue(equals(Kernel.real_dash_part(pi), pi));
-	assertTrue(equals(Kernel.real_dash_part(makeComplex(makeRational(0),makeRational(1))), 0));
+	assertTrue(equals(realPart(1), 1));
+	assertTrue(equals(realPart(pi), pi));
+	assertTrue(equals(realPart(makeComplex(makeRational(0),
+					       makeRational(1))), 0));
     },
     
     testInteger_question_ : function(){
-	assertTrue(Kernel.integer_question_(1));
-	assertTrue(Kernel.integer_question_(makeFloat(3.0)));
-	assertTrue(!Kernel.integer_question_(makeFloat(3.1)));
-	assertTrue(Kernel.integer_question_(makeComplex(makeRational(3),makeRational(0))));
-	assertTrue(!Kernel.integer_question_(makeComplex(makeFloat(3.1),makeRational(0))));
+	assertTrue(isInteger(1));
+	assertTrue(isInteger(makeFloat(3.0)));
+	assertTrue(!isInteger(makeFloat(3.1)));
+	assertTrue(isInteger(makeComplex(makeRational(3),makeRational(0))));
+	assertTrue(!isInteger(makeComplex(makeFloat(3.1),makeRational(0))));
     },
     
-    testMake_dash_rectangular: function(){
-	assertTrue(equals(Kernel.make_dash_rectangular(1, 1), makeComplex(makeRational(1),makeRational(1))));
-    },
+//     testMake_dash_rectangular: function(){
+// 	assertTrue(equals(makeComplex(1, 1), 
+// 			  makeComplex(makeRational(1),makeRational(1))));
+//     },
     
-    testMaxAndMin : function(){
-	var n1 = makeFloat(-1);
-	var n2 = 0;
-	var n3 = 1;
-	var n4 = makeComplex(makeRational(4),makeRational(0));
-	assertTrue(equals(n4, Kernel.max(n1, [n2,n3,n4])));
-	assertTrue(equals(n1, Kernel.min(n1, [n2,n3,n4])));
+//     testMaxAndMin : function(){
+// 	var n1 = makeFloat(-1);
+// 	var n2 = 0;
+// 	var n3 = 1;
+// 	var n4 = makeComplex(makeRational(4),makeRational(0));
+// 	assertTrue(equals(n4, max(n1, [n2,n3,n4])));
+// 	assertTrue(equals(n1, min(n1, [n2,n3,n4])));
 
-	var n5 = makeFloat(1.1);
-	assertEquals(n5, Kernel.max(n1, [n2, n3, n5]));
-	assertEquals(n1, Kernel.min(n2, [n3, n4, n5, n1]));
-    },
+// 	var n5 = makeFloat(1.1);
+// 	assertEquals(n5, Kernel.max(n1, [n2, n3, n5]));
+// 	assertEquals(n1, Kernel.min(n2, [n3, n4, n5, n1]));
+//     },
 
     testLcm : function () {
 	assertTrue(equals(makeRational(12),
-					   Kernel.lcm(makeRational(1),
-						      [makeRational(2), makeRational(3), makeRational(4)])));
+			  lcm(makeRational(1),
+			      [makeRational(2),
+			       makeRational(3), 
+			       makeRational(4)])));
     },
 
     testGcd : function () {
 	assertTrue(equals(makeRational(1),
-					   Kernel.gcd(makeRational(1),
-						      [makeRational(2), makeRational(3), makeRational(4)])));
-
+			  gcd(makeRational(1),
+			      [makeRational(2), 
+			       makeRational(3),
+			       makeRational(4)])));
+	
 	assertTrue(equals(makeRational(5),
-					   Kernel.gcd(makeRational(100),
-						      [makeRational(5), makeRational(10), makeRational(25)])));
+			  gcd(makeRational(100),
+			      [makeRational(5), 
+			       makeRational(10),
+			       makeRational(25)])));
     },
 
 
