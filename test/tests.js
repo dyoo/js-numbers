@@ -922,6 +922,61 @@ describe('toExact', {
 });
 
 
+
+describe('toInexact', {
+    'fixnum' : function() {
+	assertTrue(eqv(toInexact(5), makeFloat(5)));
+	assertTrue(eqv(toInexact(0), makeFloat(0)));
+	assertTrue(eqv(toInexact(-167), makeFloat(-167)));
+    },
+
+    'bignum': function() {
+	assertTrue(eqv(toInexact(makeBignum('5')), makeFloat(5)));
+	assertTrue(eqv(toInexact(makeBignum('0')), makeFloat(0)));
+	assertTrue(eqv(toInexact(makeBignum('-167')), makeFloat(-167)));
+	assertTrue(eqv(toInexact(expt(2, 10000)),
+		       inf));
+	assertTrue(eqv(toInexact(subtract(0, expt(2, 10000))),
+		       negative_inf));
+    },
+
+    'rational': function() {
+	assertTrue(eqv(toInexact(makeRational(1, 2)),
+		       makeFloat(0.5)));
+	assertTrue(eqv(toInexact(makeRational(12362534, 237)),
+		       makeFloat(52162.59071729958)));
+    },
+
+    'float': function() {
+	assertTrue(eqv(toInexact(makeFloat(0)),
+		       toInexact(makeFloat(0))));
+
+	assertTrue(eqv(toInexact(makeFloat(123.4)),
+		       toInexact(makeFloat(123.4))));
+	assertTrue(eqv(toInexact(makeFloat(-42)),
+		       toInexact(makeFloat(-42))));
+	assertTrue(eqv(toInexact(inf),
+		       inf));
+	assertTrue(eqv(toInexact(negative_inf),
+		       negative_inf));
+	assertTrue(eqv(toInexact(negative_zero),
+		       negative_zero));
+    },
+
+
+    'complex': function() {
+	assertTrue(eqv(toInexact(makeComplex(1, 2)),
+		       makeComplex(makeFloat(1), makeFloat(2))));
+
+	assertTrue(eqv(toInexact(makeComplex(makeRational(1, 2), 
+					     2)),
+		       makeComplex(makeFloat(0.5), makeFloat(2))));
+    }});
+
+
+
+
+
 describe('add', {
     'fixnum / fixnum' : function() {
 	assertEquals(0, add(0, 0));
@@ -2799,6 +2854,8 @@ describe('gcd', {
 	// FIXME: we're missing this
     }
 });
+
+
 
 
 describe('lcm', {

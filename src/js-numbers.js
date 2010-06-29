@@ -3779,6 +3779,7 @@ if (typeof(exports) !== 'undefined') {
 
     Numbers['toFixnum'] = toFixnum;
     Numbers['toExact'] = toExact;
+    Numbers['toInexact'] = toInexact;
     Numbers['add'] = add;
     Numbers['subtract'] = subtract;
     Numbers['multiply'] = multiply;
