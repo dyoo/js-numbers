@@ -1,5 +1,6 @@
 // Scheme numbers.
 
+
 var __PLTNUMBERS_TOP__;
 if (typeof(exports) !== 'undefined') {
     __PLTNUMBERS_TOP__ = exports;
@@ -10,6 +11,7 @@ if (typeof(exports) !== 'undefined') {
     __PLTNUMBERS_TOP__  = this['jsnums'];
 }
 
+//var jsnums = {};
 
 
 // The numeric tower has the following levels:
@@ -36,6 +38,8 @@ if (typeof(exports) !== 'undefined') {
 (function() {
     // Abbreviation
     var Numbers = __PLTNUMBERS_TOP__;
+    //var Numbers = jsnums;
+
 
     // makeNumericBinop: (fixnum fixnum -> any) (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
     // Creates a binary function that works either on fixnums or boxnums.
@@ -417,6 +421,9 @@ if (typeof(exports) !== 'undefined') {
 
     // exp: scheme-number -> scheme-number
     var exp = function(n) {
+	if ( eqv(n, 0) ) {
+		return 1;
+	}
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.exp(n));
 	}
@@ -538,6 +545,9 @@ if (typeof(exports) !== 'undefined') {
 
     // log: scheme-number -> scheme-number
     var log = function(n) {
+	if ( eqv(n, 1) ) {
+		return 0;
+	}
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.log(n));
 	}
@@ -1562,10 +1572,19 @@ if (typeof(exports) !== 'undefined') {
 	if (! isFinite(this.n) || isNaN(this.n)) {
 	    throwRuntimeError("toExact: no exact representation for " + this, this);
 	}
-	var fracPart = this.n - Math.floor(this.n);
-	var intPart = this.n - fracPart;
-	return add(intPart,
-		   Rational.makeInstance(Math.floor(fracPart * 10e16), 10e16));
+
+	var stringRep = this.n.toString();
+	var match = stringRep.match(/^(.*)\.(.*)$/);
+	if (match) {
+	    var intPart = parseInt(match[1]);
+	    var fracPart = parseInt(match[2]);
+	    var tenToDecimalPlaces = Math.pow(10, match[2].length);
+	    return Rational.makeInstance(Math.round(this.n * tenToDecimalPlaces),
+					 tenToDecimalPlaces);
+	}
+	else {
+	    return this.n;
+	}
     };
 
     FloatPoint.prototype.toInexact = function() {
@@ -1595,9 +1614,12 @@ if (typeof(exports) !== 'undefined') {
 	    return "-inf.0";
 	if (this === NEGATIVE_ZERO)
 	    return "-0.0";
-	if (this.n === 0)
-	    return "0.0";
-	return this.n.toString();
+	var partialResult = this.n.toString();
+	if (! partialResult.match('\\.')) {
+	    return partialResult + ".0";
+	} else {
+	    return partialResult;
+	}
     };
 
 
@@ -1737,7 +1759,11 @@ if (typeof(exports) !== 'undefined') {
 	var stringRep = this.n.toString();
 	var match = stringRep.match(/^(.*)\.(.*)$/);
 	if (match) {
-	    return FloatPoint.makeInstance(parseFloat(match[1] + match[2]));
+	    var afterDecimal = parseInt(match[2]);
+	    var factorToInt = Math.pow(10, match[2].length);
+	    var extraFactor = _integerGcd(factorToInt, afterDecimal);
+	    var multFactor = factorToInt / extraFactor;
+	    return FloatPoint.makeInstance( Math.round(this.n * multFactor) );
 	} else {
 	    return this;
 	}
@@ -1747,9 +1773,12 @@ if (typeof(exports) !== 'undefined') {
 	var stringRep = this.n.toString();
 	var match = stringRep.match(/^(.*)\.(.*)$/);
 	if (match) {
-	    return FloatPoint.makeInstance(Math.pow(10, match[2].length));
+	    var afterDecimal = parseInt(match[2]);
+	    var factorToInt = Math.pow(10, match[2].length);
+	    var extraFactor = _integerGcd(factorToInt, afterDecimal);
+	    return FloatPoint.makeInstance( Math.round(factorToInt/extraFactor) );
 	} else {
-	    return FloatPoint.makeInstance(1.0);
+	    return FloatPoint.makeInstance(1);
 	}
     };
 
@@ -1926,6 +1955,10 @@ if (typeof(exports) !== 'undefined') {
 	if (isExact(i) && isInteger(i) && _integerIsZero(i)) {
 	    return r;
 	}
+	if (isInexact(r) || isInexact(i)) {
+	    r = toInexact(r);
+	    i = toInexact(i);
+	}
 	return new Complex(r, i);
     };
 
@@ -1954,10 +1987,7 @@ if (typeof(exports) !== 'undefined') {
     };
 
     Complex.prototype.toExact = function() {
-	if (! this.isReal()) {
-	    throwRuntimeError("inexact->exact: expects argument of type real number", this);
-	}
-	return toExact(this.r);
+	return Complex.makeInstance( toExact(this.r), toExact(this.i) );
     };
 
     Complex.prototype.toInexact = function() {
@@ -2137,7 +2167,7 @@ if (typeof(exports) !== 'undefined') {
 
 	var r = sqrt(halve(r_plus_x));
 
-	var i = divide(this.i, sqrt(multiply(r_plus_x, FloatPoint.makeInstance(2))));
+	var i = divide(this.i, sqrt(multiply(r_plus_x, 2)));
 
 
 	return Complex.makeInstance(r, i);

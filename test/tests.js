@@ -574,10 +574,13 @@ describe('eqv', {
     },
 
     'tricky case with complex': function() {
+	// If any component of a complex is inexact, both
+	// the real and imaginary parts get turned into
+	// inexact quantities.
 	value_of(eqv(makeComplex(0, 
 				 makeFloat(1.1)),
 		     makeComplex(makeFloat(0.0),
-				 makeFloat(1.1)))).should_be_false();
+				 makeFloat(1.1)))).should_be_true();
     }
 });
 
@@ -975,15 +978,13 @@ describe('toExact', {
 	assertEquals(99, toExact(makeComplex(99, 0)));
 	assertEquals(makeRational(-1, 2),
 		     toExact(makeComplex(makeRational(-1, 2), 0)));
-	assertEquals(makeRational(1, 4),
-		     toExact(makeComplex(.25, 0)));
-	assertFails(function() { toExact(makeComplex(nan, 0)); });
-	assertFails(function() { toExact(makeComplex(inf, 0)); });
-	assertFails(function() { toExact(makeComplex(negative_inf, 0)); });
-	assertFails(function() { toExact(makeComplex(0, 1)); });
-	assertFails(function() { toExact(makeComplex(0, pi)); });
-	assertFails(function() { toExact(makeComplex(0, e)); });
-	assertFails(function() { toExact(makeComplex(0, nan)); });
+ 	assertEquals(makeRational(1, 4),
+ 		     toExact(makeComplex(makeFloat(.25), 0)));
+ 	assertFails(function() { toExact(makeComplex(nan, 0)); });
+ 	assertFails(function() { toExact(makeComplex(inf, 0)); });
+ 	assertFails(function() { toExact(makeComplex(negative_inf, 0)); });
+ 	assertTrue(eqv(toExact(makeComplex(0, 1)), makeComplex(0, 1)));
+ 	assertFails(function() { toExact(makeComplex(0, nan)); });
     }
 });
 
@@ -3145,7 +3146,7 @@ describe('toString', {
 	assertEquals('1.2354e+200', makeFloat(1.2354e200).toString());
 	assertEquals('1.2354e-200', makeFloat(1.2354e-200).toString());
 	assertEquals('-1.2354e-200', makeFloat(-1.2354e-200).toString());
-	assertEquals('-1', makeFloat(-1).toString());
+	assertEquals('-1.0', makeFloat(-1).toString());
 	assertEquals("+nan.0", nan.toString());
 	assertEquals("+inf.0", inf.toString());
 	assertEquals("-inf.0", negative_inf.toString());
@@ -3153,11 +3154,11 @@ describe('toString', {
 
     },
     'complex': function() {
-	assertEquals("1+0.0i", makeComplex(1, makeFloat(0)).toString());
-	assertEquals("-1+0.0i", makeComplex(-1, makeFloat(0)).toString());
+	assertEquals("1.0+0.0i", makeComplex(1, makeFloat(0)).toString());
+	assertEquals("-1.0+0.0i", makeComplex(-1, makeFloat(0)).toString());
 	assertEquals("0+1i", makeComplex(0, 1).toString());
 	assertEquals("0-1i", makeComplex(0, -1).toString());
-	assertEquals("0-0.0i", makeComplex(0, negative_zero).toString());
+	assertEquals("0.0-0.0i", makeComplex(0, negative_zero).toString());
 	assertEquals("3/4+5/6i", makeComplex(makeRational(3, 4),
 					     makeRational(5, 6)).toString());
 	assertEquals("3/4-5/6i", makeComplex(makeRational(3, 4),
@@ -3685,7 +3686,7 @@ describe('old tests from Moby Scheme', {
 
     testNumber_dash__greaterthan_string : function(){
 	assertTrue("1" === (1).toString());
-	assertEquals("5+0.0i",
+	assertEquals("5.0+0.0i",
 		     (makeComplex(5, makeFloat(0))).toString());
 	assertEquals("5+1i",
 		     (makeComplex(5, 1)).toString());
