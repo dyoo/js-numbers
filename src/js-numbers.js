@@ -6,7 +6,7 @@ if (typeof(exports) !== 'undefined') {
     __PLTNUMBERS_TOP__ = exports;
 } else {
     if (! this['jsnums']) {
-	this['jsnums'] = {};
+ 	this['jsnums'] = {};
     }
     __PLTNUMBERS_TOP__  = this['jsnums'];
 }
@@ -1270,7 +1270,7 @@ if (typeof(exports) !== 'undefined') {
     };
 
     Rational.prototype.negate = function() { 
-	return Rational.makeInstance(-this.n, d) 
+	return Rational.makeInstance(-this.n, this.d) 
     };
 
     Rational.prototype.multiply = function(other) {
@@ -2579,7 +2579,12 @@ if (typeof(exports) !== 'undefined') {
 	var r = this.s-a.s;
 	if(r != 0) return r;
 	var i = this.t;
-	r = i-a.t;
+	if ( this.s < 0 ) {
+		r = a.t - i;
+	}
+	else {
+		r = i - a.t;
+	}
 	if(r != 0) return r;
 	while(--i >= 0) if((r=this[i]-a[i]) != 0) return r;
 	return 0;
