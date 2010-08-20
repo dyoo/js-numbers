@@ -103,7 +103,7 @@ if (typeof(exports) !== 'undefined') {
 	case 3: // Complex
 	    return new Complex(x, 0);
 	default:
-	    return throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString(), x, other);
+	    throwRuntimeError("IMPOSSIBLE: cannot lift fixnum integer to " + other.toString(), x, other);
 	}
     };
     
@@ -3837,6 +3837,90 @@ if (typeof(exports) !== 'undefined') {
 
 
 
+    //////////////////////////////////////////////////////////////////////
+    // toRepeatingDecimal: jsnum jsnum -> [string, string, string]
+    //
+    // Given the numerator and denominator parts of a rational,
+    // produces the repeating-decimal representation, where the first
+    // part are the digits before the decimal, the second are the
+    // non-repeating digits after the decimal, and the third are the
+    // remaining repeating decimals.
+    var toRepeatingDecimal = (function() {
+	var getResidue = function(remainder, divisor) {
+	    var digits = [];
+	    var seenRemainders = {};
+	    seenRemainders[remainder] = true;
+	    while(true) {	
+		var nextDigit = quotient(
+		    multiply(remainder, 10), divisor);
+		var nextRemainder = remainder(
+		    multiply(remainder, 10),
+		    divisor);
+
+		digits.push(nextDigit.toString());
+		if (seenRemainders[nextRemainder]) {
+		    remainder = nextRemainder;
+		    break;
+		} else {
+		    seenRemainders[nextRemainder] = true;
+		    remainder = nextRemainder;
+		}
+	    }
+	    
+	    var firstRepeatingRemainder = remainder;
+	    var repeatingDigits = [];
+	    while (true) {
+		var nextDigit = quotient(
+		    multiply(remainder, 10), divisor);
+		var nextRemainder = remainder(
+		    multiply(remainder, 10),
+		    divisor);
+		repeatingDigits.push(nextDigit.toString());
+		if (equals(nextRemainder, firstRepeatingRemainder)) {
+		    break;
+		} else {
+		    remainder = nextRemainder;
+		}
+	    };
+
+	    var digitString = digits.join('');
+	    var repeatingDigitString = repeatingDigits.join('');
+
+	    while (digitString.length >= repeatingDigitString.length &&
+		   (digitString.substring(
+		       digitString.length - repeatingDigitString.length)
+		    === repeatingDigitString)) {
+		digitString = digitString.substring(
+		    0, digitString.length - repeatingDigitString.length);
+	    }
+
+	    return [digitString, repeatingDigitString];
+
+	};
+
+	return function(n, d) {
+	    if (! isInteger(n)) {
+		throwRuntimeError('toRepeatingDecimal: n ' + n.toString() +
+				  " is not an integer.");
+	    }
+	    if (! isInteger(d)) {
+		throwRuntimeError('toRepeatingDecimal: d ' + d.toString() +
+				  " is not an integer.");
+	    }
+	    if (equals(d, 0)) {
+		throwRuntimeError('toRepeatingDecimal: d equals 0');
+	    }
+	    if (lessThan(d, 0)) {
+		throwRuntimeError('toRepeatingDecimal: d < 0');
+	    }
+	    var sign = (lessThan(n, 0) ? "-" : "");
+	    n = abs(n);
+	    var beforeDecimalPoint = sign + quotient(n, d);
+	    var afterDecimals = getResidue(remainder(n, d), d);
+	    return [beforeDecimalPoint].concat(afterDecimals);
+	};
+    })();
+    //////////////////////////////////////////////////////////////////////
 
 
 
@@ -3917,5 +4001,6 @@ if (typeof(exports) !== 'undefined') {
     Numbers['gcd'] = gcd;
     Numbers['lcm'] = lcm;
 
+    Numbers['toRepeatingDecimal'] = toRepeatingDecimal;
 
 })();
