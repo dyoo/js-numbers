@@ -3175,6 +3175,30 @@ describe('toString', {
 
 
 
+describe('repeating decimals', {
+    tests: function() {
+	assertEquals(['1', '', '0'], toRepeatingDecimal(1, 1));
+	assertEquals(['0', '5', '0'], toRepeatingDecimal(1, 2));
+	assertEquals(['0', '', '3'], toRepeatingDecimal(1, 3));
+	assertEquals(['0', '25', '0'], toRepeatingDecimal(1, 4));
+	assertEquals(['0', '2', '0'], toRepeatingDecimal(1, 5));
+	assertEquals(['0', '1', '6'], toRepeatingDecimal(1, 6));
+	assertEquals(['0', '', '142857'], toRepeatingDecimal(1, 7));
+	assertEquals(['0', '125', '0'], toRepeatingDecimal(1, 8));
+	assertEquals(['0', '', '1'], toRepeatingDecimal(1, 9));
+	assertEquals(['0', '1', '0'], toRepeatingDecimal(1, 10));
+	assertEquals(['0', '', '09'], toRepeatingDecimal(1, 11));
+	assertEquals(['0', '08', '3'], toRepeatingDecimal(1, 12));
+	assertEquals(['0', '', '076923'], toRepeatingDecimal(1, 13));
+	assertEquals(['0', '0', '714285'], toRepeatingDecimal(1, 14));
+	assertEquals(['0', '0', '6'], toRepeatingDecimal(1, 15));
+	assertEquals(['0', '0625', '0'], toRepeatingDecimal(1, 16));
+	assertEquals(['0', '', '0588235294117647'], toRepeatingDecimal(1, 17));
+	assertEquals(['5', '8', '144'], toRepeatingDecimal(3227, 555));
+    }
+});
+
+
 
 
 

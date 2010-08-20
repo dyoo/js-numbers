@@ -999,7 +999,7 @@ if (typeof(exports) !== 'undefined') {
     //_integerQuotient: integer-scheme-number integer-scheme-number -> integer-scheme-number
     var _integerQuotient = makeIntegerBinop(
 	function(m, n) {
-	    return ((m / n) - ((m % n) / n));
+	    return ((m - (m % n))/ n);
 	},
 	function(m, n) {
             return bnDivide.call(m, n);
@@ -3846,40 +3846,38 @@ if (typeof(exports) !== 'undefined') {
     // non-repeating digits after the decimal, and the third are the
     // remaining repeating decimals.
     var toRepeatingDecimal = (function() {
-	var getResidue = function(remainder, divisor) {
+	var getResidue = function(r, d) {
 	    var digits = [];
 	    var seenRemainders = {};
-	    seenRemainders[remainder] = true;
+	    seenRemainders[r] = true;
 	    while(true) {	
 		var nextDigit = quotient(
-		    multiply(remainder, 10), divisor);
+		    multiply(r, 10), d);
 		var nextRemainder = remainder(
-		    multiply(remainder, 10),
-		    divisor);
-
+		    multiply(r, 10),
+		    d);
 		digits.push(nextDigit.toString());
 		if (seenRemainders[nextRemainder]) {
-		    remainder = nextRemainder;
+		    r = nextRemainder;
 		    break;
 		} else {
 		    seenRemainders[nextRemainder] = true;
-		    remainder = nextRemainder;
+		    r = nextRemainder;
 		}
 	    }
 	    
-	    var firstRepeatingRemainder = remainder;
+	    var firstRepeatingRemainder = r;
 	    var repeatingDigits = [];
 	    while (true) {
-		var nextDigit = quotient(
-		    multiply(remainder, 10), divisor);
+		var nextDigit = quotient(multiply(r, 10), d);
 		var nextRemainder = remainder(
-		    multiply(remainder, 10),
-		    divisor);
+		    multiply(r, 10),
+		    d);
 		repeatingDigits.push(nextDigit.toString());
 		if (equals(nextRemainder, firstRepeatingRemainder)) {
 		    break;
 		} else {
-		    remainder = nextRemainder;
+		    r = nextRemainder;
 		}
 	    };
 
@@ -3913,11 +3911,11 @@ if (typeof(exports) !== 'undefined') {
 	    if (lessThan(d, 0)) {
 		throwRuntimeError('toRepeatingDecimal: d < 0');
 	    }
-	    var sign = (lessThan(n, 0) ? "-" : "");
-	    n = abs(n);
-	    var beforeDecimalPoint = sign + quotient(n, d);
-	    var afterDecimals = getResidue(remainder(n, d), d);
-	    return [beforeDecimalPoint].concat(afterDecimals);
+ 	    var sign = (lessThan(n, 0) ? "-" : "");
+ 	    n = abs(n);
+ 	    var beforeDecimalPoint = sign + quotient(n, d);
+ 	    var afterDecimals = getResidue(remainder(n, d), d);
+ 	    return [beforeDecimalPoint].concat(afterDecimals);
 	};
     })();
     //////////////////////////////////////////////////////////////////////
