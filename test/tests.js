@@ -24,7 +24,7 @@ var assertTrue = function(aVal) {
 };
 
 var assertFalse = function(aVal) {
-    value_of(aVal).should_be_false();
+    value_of(aVal === false).should_be_true();
 };
 
 var assertEquals = function(expected, aVal) {
