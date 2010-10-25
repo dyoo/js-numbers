@@ -2318,6 +2318,7 @@ if (typeof(exports) !== 'undefined') {
     var bignumScientificPattern = new RegExp("^([+-]?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$");
     var complexRegexp = new RegExp("^([+-]?[\\d\\w/\\.]*)([+-])([\\d\\w/\\.]*)i$");
     var flonumRegexp = new RegExp("^([+-]?\\d*)\\.?(\\d*)$");
+    var digitRegexp = new RegExp("\\d");
 
     // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
@@ -2342,7 +2343,8 @@ if (typeof(exports) !== 'undefined') {
 	if (x === "-0.0") {
 	    return NEGATIVE_ZERO;
 	}
-	if (x.match(flonumRegexp) || x.match(bignumScientificPattern)) {
+	if (x.match(digitRegexp) &&
+	    (x.match(flonumRegexp) || x.match(bignumScientificPattern))) {
 	    var n = Number(x);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
