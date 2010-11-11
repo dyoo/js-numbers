@@ -1724,7 +1724,7 @@ describe('divide', {
     'division 0 by 0': function() {
 	assertFails(function() { divide(0, 0); });
 	assertFails(function() { divide(makeFloat(0), 0); });
-	assertTrue(eqv(negative_zero,
+	assertTrue(eqv(nan,
 		       divide(makeFloat(0), makeFloat(0))));
 	assertTrue(eqv(0,
 		       divide(0, makeFloat(0))));

@@ -303,6 +303,36 @@ if (typeof(exports) !== 'undefined') {
 	},
 	function(x, y) {
 	    return x.divide(y);
+	},
+	{ isYSpecialCase: function(y) { 
+	    return (isInexact(y) && isReal(y) && equals(y, 0))},
+	  onYSpecialCase: function(x, y) {
+	      if (isReal(x)) {
+		  if (isExact(x)) {
+		      if (greaterThan(x, 0)) {
+			  return inf;
+		      } else if (lessThan(x, 0)) {
+			  return neginf;
+		      } else {
+			  return 0;
+		      }
+		  } else {
+		      if (isNaN(toFixnum(x))) {
+			  return NaN;
+		      } else if (greaterThan(x, 0)) {
+			  return inf;
+		      } else if (lessThan(x, 0)) {
+			  return neginf;
+		      } else {
+			  return NaN;
+		      }
+		  }
+	      } else {
+		  if (x.level < y.level) x = x.liftTo(y);
+		  if (y.level < x.level) y = y.liftTo(x);
+		  return x.divide(y);
+	      }
+	  }
 	});
     
     
