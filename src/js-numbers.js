@@ -305,24 +305,28 @@ if (typeof(exports) !== 'undefined') {
 	    return x.divide(y);
 	},
 	{ isYSpecialCase: function(y) { 
-	    return (eqv(y, INEXACT_ZERO))},
+	    return (eqv(y, INEXACT_ZERO) || eqv(y, NEGATIVE_ZERO))},
 	  onYSpecialCase: function(x, y) {
+	      var pos = (y !== NEGATIVE_ZERO);
+
+
 	      if (isReal(x)) {
 		  if (isExact(x)) {
 		      if (greaterThan(x, 0)) {
-			  return inf;
+			  return pos ? inf : neginf;
 		      } else if (lessThan(x, 0)) {
-			  return neginf;
+			  return pos ? neginf : inf;
 		      } else {
 			  return 0;
 		      }
 		  } else {
+		      // both x and y are inexact
 		      if (isNaN(toFixnum(x))) {
 			  return NaN;
 		      } else if (greaterThan(x, 0)) {
-			  return inf;
+			  return pos ? inf : neginf;
 		      } else if (lessThan(x, 0)) {
-			  return neginf;
+			  return pos ? neginf : inf;
 		      } else {
 			  return NaN;
 		      }

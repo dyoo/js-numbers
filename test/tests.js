@@ -1714,16 +1714,15 @@ describe('divide', {
 	assertFails(function() {divide(makeRational(1, 2), 0);});
 	assertFails(function() {divide(makeComplex(1, 2), 0);});
 
-	assertTrue(eqv(inf, divide(1, makeFloat(0.0))));
-	assertTrue(eqv(negative_inf, divide(1, negative_zero)));
+ 	assertTrue(eqv(inf, divide(1, makeFloat(0.0))));
+ 	assertTrue(eqv(negative_inf, divide(1, negative_zero)));
 
-	assertTrue(eqv(inf, divide(makeFloat(42), makeFloat(0.0))));
-	assertTrue(eqv(negative_inf, divide(makeFloat(-42), makeFloat(0.0))));
-	assertTrue(eqv(negative_inf, divide(makeFloat(42), negative_zero)));
-	assertTrue(eqv(inf, divide(makeFloat(-42), negative_zero)));
-
-	assertTrue(eqv(inf, divide(makeRational(1, 2), makeFloat(0.0))));
-	assertTrue(eqv(makeComplex(inf, inf), divide(makeComplex(1, 2), makeFloat(0.0))));
+ 	assertTrue(eqv(inf, divide(makeFloat(42), makeFloat(0.0))));
+ 	assertTrue(eqv(negative_inf, divide(makeFloat(-42), makeFloat(0.0))));
+ 	assertTrue(eqv(negative_inf, divide(makeFloat(42), negative_zero)));
+ 	assertTrue(eqv(inf, divide(makeFloat(-42), negative_zero)));
+ 	assertTrue(eqv(inf, divide(makeRational(1, 2), makeFloat(0.0))));
+ 	assertTrue(eqv(makeComplex(inf, inf), divide(makeComplex(1, 2), makeFloat(0.0))));
     },
 
     'division 0 by 0': function() {
