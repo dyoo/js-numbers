@@ -291,7 +291,7 @@ if (typeof(exports) !== 'undefined') {
     var divide = makeNumericBinop(
 	function(x, y) {
 	    if (_integerIsZero(y))
-		throwRuntimeError("division by zero", x, y);
+		throwRuntimeError("/: division by zero", x, y);
 	    var div = x / y;
 	    if (isOverflow(div)) {
 		return (makeBignum(x)).divide(makeBignum(y));
@@ -305,7 +305,7 @@ if (typeof(exports) !== 'undefined') {
 	    return x.divide(y);
 	},
 	{ isYSpecialCase: function(y) { 
-	    return (isInexact(y) && isReal(y) && equals(y, 0))},
+	    return (eqv(y, INEXACT_ZERO))},
 	  onYSpecialCase: function(x, y) {
 	      if (isReal(x)) {
 		  if (isExact(x)) {
@@ -376,7 +376,7 @@ if (typeof(exports) !== 'undefined') {
 	function(x, y) {
 	    if (!(isReal(x) && isReal(y)))
 		throwRuntimeError(
-		    "greaterThanOrEqual: couldn't be applied to complex number", x, y);
+		    ">=: couldn't be applied to complex number", x, y);
 	    return x.greaterThanOrEqual(y);
 	});
 
@@ -389,7 +389,7 @@ if (typeof(exports) !== 'undefined') {
 	},
 	function(x, y) {
 	    if (!(isReal(x) && isReal(y)))
-		throwRuntimeError("lessThanOrEqual: couldn't be applied to complex number", x, y);
+		throwRuntimeError("<=: couldn't be applied to complex number", x, y);
 	    return x.lessThanOrEqual(y);
 	});
 
@@ -401,7 +401,7 @@ if (typeof(exports) !== 'undefined') {
 	},
 	function(x, y) {
 	    if (!(isReal(x) && isReal(y)))
-		throwRuntimeError("greaterThan: couldn't be applied to complex number", x, y);
+		throwRuntimeError(">: couldn't be applied to complex number", x, y);
 	    return x.greaterThan(y);
 	});
 
@@ -414,7 +414,7 @@ if (typeof(exports) !== 'undefined') {
 	},
 	function(x, y) {
 	    if (!(isReal(x) && isReal(y)))
-		throwRuntimeError("lessThan: couldn't be applied to complex number", x, y);
+		throwRuntimeError("<: couldn't be applied to complex number", x, y);
 	    return x.lessThan(y);
 	});
 
@@ -1310,7 +1310,7 @@ if (typeof(exports) !== 'undefined') {
 
     Rational.prototype.divide = function(other) {
 	if (_integerIsZero(this.d) || _integerIsZero(other.n)) {
-	    throwRuntimeError("division by zero", this, other);
+	    throwRuntimeError("/: division by zero", this, other);
 	}
 	return Rational.makeInstance(_integerMultiply(this.n, other.d),
 				     _integerMultiply(this.d, other.n));
@@ -1562,6 +1562,7 @@ if (typeof(exports) !== 'undefined') {
     // Negative zero is a distinguished value representing -0.0.
     // There should only be one instance for -0.0.
     var NEGATIVE_ZERO = new FloatPoint(0);
+    var INEXACT_ZERO = new FloatPoint(0.0);
 
     FloatPoint.pi = new FloatPoint(Math.PI);
     FloatPoint.e = new FloatPoint(Math.E);
@@ -1764,7 +1765,7 @@ if (typeof(exports) !== 'undefined') {
     FloatPoint.prototype.divide = function(other) {
 	if (this.isFinite() && other.isFinite()) {
 	    if (other.n === 0) {
-		return throwRuntimeError("division by zero", this, other);
+		return throwRuntimeError("/: division by zero", this, other);
 	    }
             return FloatPoint.makeInstance(this.n / other.n);
 	} else if (isNaN(this.n) || isNaN(other.n)) {
@@ -2153,7 +2154,7 @@ if (typeof(exports) !== 'undefined') {
 	var up = multiply(this, con);
 
 	// Down is guaranteed to be real by this point.
-	var down = multiply(other, con);
+	var down = realPart(multiply(other, con));
 
 	var result = Complex.makeInstance(
 	    divide(realPart(up), down),

@@ -1701,6 +1701,11 @@ describe('divide', {
 	// FIXME: we're missing this
     },
     'complex / complex' : function() {
+	assertTrue(eqv(divide(makeComplex(makeFloat(1e300),
+					  makeFloat(1e300)),
+			      makeComplex(makeFloat(4e300), 
+					  makeFloat(4e300))),
+		       makeFloat(.25)))
 	// FIXME: we're missing this
     },
 
