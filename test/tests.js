@@ -24,7 +24,7 @@ var assertTrue = function(aVal) {
 };
 
 var assertFalse = function(aVal) {
-    value_of(aVal).should_be_false();
+    value_of(aVal === false).should_be_true();
 };
 
 var assertEquals = function(expected, aVal) {
@@ -2294,6 +2294,9 @@ describe('floor', {
         assertTrue(eqv(makeBignum("99481699535420"),
 		       floor(makeRational(makeBignum("123456789123456789"),
 					  1241))));
+
+	assertTrue(eqv(1,
+		       floor(makeRational(7, 5))));
     },
 
 
@@ -3744,6 +3747,10 @@ describe('old tests from Moby Scheme', {
 	    quotient(makeRational(36),
 		     makeRational(7)),
 	    makeRational(5)));
+
+
+
+	assertTrue(eqv(1, quotient(7, 5)));
     },
 
     
