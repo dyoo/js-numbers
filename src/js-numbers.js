@@ -1821,15 +1821,19 @@ if (typeof(exports) !== 'undefined') {
     FloatPoint.prototype.floor = function() {
 	if (! isFinite(this.n)) {
 	    return this;
+	} else if (this === NEGATIVE_ZERO) {
+	    return this;
+	} else {
+	    return FloatPoint.makeInstance(Math.floor(this.n));
 	}
-	return fromFixnum(Math.floor(this.n));
     };
 
     FloatPoint.prototype.ceiling = function() {
 	if (! isFinite(this.n)) {
 	    return this;
-	}
-	return fromFixnum(Math.ceil(this.n));
+	} else if (this === NEGATIVE_ZERO) {
+	    return this;
+	} return FloatPoint.makeInstance(Math.ceil(this.n));
     };
 
 

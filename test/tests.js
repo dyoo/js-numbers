@@ -19,6 +19,11 @@ var diffPercent = function(x, y) {
 };
 
 
+
+var assertEqv = function(x, y) {
+    value_of(eqv(x, y)).should_be_true();
+};
+
 var assertTrue = function(aVal) {
     value_of(aVal).should_be_true();
 };
@@ -2305,19 +2310,21 @@ describe('floor', {
 
 
     'floats': function() {
-        assertEquals(makeBignum("0"), floor(makeFloat(0.0)));
-        assertEquals(makeBignum("1"), floor(makeFloat(1.0)));
-        assertEquals(makeBignum("-1"), floor(makeFloat(-1.0)));
-        assertEquals(makeBignum("1"), floor(makeFloat(1.1)));
-        assertEquals(makeBignum("1"), floor(makeFloat(1.999)));
-        assertEquals(makeBignum("-2"), floor(makeFloat(-1.999)));
-        assertEquals(makeBignum("123456"), floor(makeFloat(123456.789)));
-        assertEquals(makeBignum("1234567891234567"), floor(makeFloat(1234567891234567.8)));
-        assertEquals(makeBignum("-1234567891234568"), floor(makeFloat(-1234567891234567.8)));
-	    assertEquals(nan, floor(nan));
-	    assertEquals(inf, floor(inf));
-	    assertEquals(negative_inf, floor(negative_inf));
-	    assertEquals(negative_zero, floor(negative_zero));
+        assertEqv(makeFloat(0.0), floor(makeFloat(0.0)));
+        assertEqv(makeFloat(1), floor(makeFloat(1.0)));
+        assertEqv(makeFloat(-1), floor(makeFloat(-1.0)));
+        assertEqv(makeFloat(1), floor(makeFloat(1.1)));
+        assertEqv(makeFloat(1), floor(makeFloat(1.999)));
+        assertEqv(makeFloat(-2), floor(makeFloat(-1.999)));
+        assertEqv(makeFloat(123456), floor(makeFloat(123456.789)));
+        assertEqv(makeFloat(1234567891234567),
+		  floor(makeFloat(1234567891234567.8)));
+        assertEqv(makeFloat(-1234567891234568),
+		     floor(makeFloat(-1234567891234567.8)));
+ 	assertEqv(nan, floor(nan));
+ 	assertEqv(inf, floor(inf));
+ 	assertEqv(negative_inf, floor(negative_inf));
+ 	assertEqv(negative_zero, floor(negative_zero));
     },
 
     'complex': function() {
@@ -2343,7 +2350,7 @@ describe('floor', {
 					 0))));
 
         assertFails(function() { floor(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200")))});
-        assertFails(function() { floor(makeComplex(makeFloat(4.25), makeRational(3,2)))});
+        assertFails(function() { floor(makeComplex(makeFloat(4.25), makeFloat(1.5)))});
 
         assertTrue(eqv(makeBignum("0"), floor(makeComplex(makeBignum("0"),
 							  makeBignum("0")))));
@@ -2361,11 +2368,11 @@ describe('floor', {
 			   makeRational(makeBignum("100000000000000000000"),
 					makeBignum("200000000000000000000")),
 			   makeBignum("0")))));
-        assertTrue(eqv(makeBignum("-2"), floor(makeComplex(makeFloat(-1.999),
-							   makeBignum("0")))));
-        assertTrue(eqv(makeBignum("1234567891234567"), 
+        assertTrue(eqv(makeFloat(-2), floor(makeComplex(makeFloat(-1.999),
+							makeFloat(0.0)))));
+        assertTrue(eqv(makeFloat(1234567891234567), 
 		       floor(makeComplex(makeFloat(1234567891234567.8),
-					 makeBignum("0")))));
+					 makeFloat(0)))));
     }
 });
 
