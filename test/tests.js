@@ -2449,19 +2449,21 @@ describe('ceiling', {
 
 
     'floats': function() {
-        assertEquals(makeBignum("0"), ceiling(makeFloat(0.0)));
-        assertEquals(makeBignum("1"), ceiling(makeFloat(1.0)));
-        assertEquals(makeBignum("-1"), ceiling(makeFloat(-1.0)));
-        assertEquals(makeBignum("2"), ceiling(makeFloat(1.1)));
-        assertEquals(makeBignum("2"), ceiling(makeFloat(1.999)));
-        assertEquals(makeBignum("-1"), ceiling(makeFloat(-1.999)));
-        assertEquals(makeBignum("123457"), ceiling(makeFloat(123456.789)));
-        assertEquals(makeBignum("1234567891234568"), ceiling(makeFloat(1234567891234567.8)));
-        assertEquals(makeBignum("-1234567891234567"), ceiling(makeFloat(-1234567891234567.8)));
-	    assertEquals(nan, ceiling(nan));
-	    assertEquals(inf, ceiling(inf));
-	    assertEquals(negative_inf, ceiling(negative_inf));
-	    assertEquals(negative_zero, ceiling(negative_zero));
+        assertEqv(makeFloat(0), ceiling(makeFloat(0.0)));
+        assertEqv(makeFloat(1), ceiling(makeFloat(1.0)));
+        assertEqv(makeFloat(-1), ceiling(makeFloat(-1.0)));
+        assertEqv(makeFloat(2), ceiling(makeFloat(1.1)));
+        assertEqv(makeFloat(2), ceiling(makeFloat(1.999)));
+        assertEqv(makeFloat(-1), ceiling(makeFloat(-1.999)));
+        assertEqv(makeFloat(123457), ceiling(makeFloat(123456.789)));
+        assertEqv(makeFloat(1234567891234568),
+		  ceiling(makeFloat(1234567891234567.8)));
+        assertEqv(makeFloat(-1234567891234567),
+		  ceiling(makeFloat(-1234567891234567.8)));
+	assertEqv(nan, ceiling(nan));
+	assertEqv(inf, ceiling(inf));
+	assertEqv(negative_inf, ceiling(negative_inf));
+	assertEqv(negative_zero, ceiling(negative_zero));
     },
     'complex': function() {
         assertTrue(eqv(nan, ceiling(makeComplex(nan, 0))));
@@ -2486,7 +2488,7 @@ describe('ceiling', {
 					 0))));
 
         assertFails(function() { ceiling(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200")))});
-        assertFails(function() { ceiling(makeComplex(makeFloat(4.25), makeRational(3,2)))});
+        assertFails(function() { ceiling(makeComplex(makeFloat(4.25), makeFloat(1.5)))});
 
         assertTrue(eqv(makeBignum("0"), ceiling(makeComplex(makeBignum("0"),
 							  makeBignum("0")))));
@@ -2504,11 +2506,11 @@ describe('ceiling', {
 			   makeRational(makeBignum("100000000000000000000"),
 					makeBignum("200000000000000000000")),
 			   makeBignum("0")))));
-        assertTrue(eqv(makeBignum("-1"), ceiling(makeComplex(makeFloat(-1.999),
-							   makeBignum("0")))));
-        assertTrue(eqv(makeBignum("1234567891234568"), 
+        assertTrue(eqv(makeFloat(-1), ceiling(makeComplex(makeFloat(-1.999),
+							     makeFloat(0)))));
+        assertTrue(eqv(makeFloat(1234567891234568), 
 		       ceiling(makeComplex(makeFloat(1234567891234567.8),
-					 makeBignum("0")))));
+					   makeFloat(0)))));
     }
 });
 
