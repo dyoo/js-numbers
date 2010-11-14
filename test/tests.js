@@ -646,6 +646,7 @@ describe('isRational', {
 	assertFalse(isRational(makeComplex(nan, 0)));
 	assertFalse(isRational(makeComplex(0, 1)));
 	assertFalse(isRational(makeComplex(0, negative_inf)));
+	assertFalse(isRational(makeComplex(makeFloat(0), makeFloat(0))));
     },
 
     'others': function() {
@@ -704,6 +705,8 @@ describe('isReal', {
 	assertFalse(isReal(makeComplex(0, negative_inf)));
 	assertFalse(isReal(makeComplex(pi, inf)));
 	assertFalse(isReal(makeComplex(234, nan)));
+	assertFalse(isReal(makeComplex(makeFloat(3),
+				       makeFloat(0))));
     },
 
     'others': function() {
@@ -866,6 +869,7 @@ describe('isInteger', {
 
     'complex': function() {
 	assertTrue(isInteger(makeComplex(42, 0)));
+	assertFalse(isInteger(makeComplex(makeFloat(42), makeFloat(0))));
 	assertFalse(isInteger(makeComplex(42, 42)));
 	assertFalse(isInteger(i));
 	assertFalse(isInteger(negative_i));
