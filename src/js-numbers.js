@@ -1955,12 +1955,15 @@ if (typeof(exports) !== 'undefined') {
 
     FloatPoint.prototype.round = function(){
 	if (isFinite(this.n)) {
+	    if (this === NEGATIVE_ZERO) {
+		return this;
+	    }
 	    if (Math.abs(Math.floor(this.n) - this.n) === 0.5) {
 		if (Math.floor(this.n) % 2 === 0)
-		    return fromFixnum(Math.floor(this.n));
-		return fromFixnum(Math.ceil(this.n));
+		    return FloatPoint.makeInstance(Math.floor(this.n));
+		return FloatPoint.makeInstance(Math.ceil(this.n));
 	    } else {
-		return fromFixnum(Math.round(this.n));
+		return FloatPoint.makeInstance(Math.round(this.n));
 	    }
 	} else {
 	    return this;
