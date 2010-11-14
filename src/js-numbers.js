@@ -633,6 +633,7 @@ if (typeof(exports) !== 'undefined') {
 
     // acos: scheme-number -> scheme-number
     var acos = function(n) {
+	if (eqv(n, 1)) { return 0; }
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.acos(n));
 	}
