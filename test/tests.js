@@ -3288,7 +3288,8 @@ describe('old tests from Moby Scheme', {
 	    divide(1, 0);
 	});
 	assertFails(function() { divide(makeFloat(1), 0); });
-	assertFails(function() { divide(makeFloat(1),makeFloat(0)); });
+	assertEqv(divide(makeFloat(1),makeFloat(0)),
+		  inf);
     },
     
 
@@ -3814,20 +3815,20 @@ describe('old tests from Moby Scheme', {
     
     testRound : function(){
 	assertTrue(equals(round(makeFloat(3.499999)), 
-					   makeFloat(3)));
+			  makeFloat(3)));
 	assertTrue(equals(round(makeFloat(3.5)), 
-					   makeFloat(4)));
+			  makeFloat(4)));
 	assertTrue(equals(round(makeFloat(3.51)),
-					   makeFloat(4)));
+			  makeFloat(4)));
 	assertTrue(equals(round(makeRational(3)),
-					   makeRational(3)));
-
+			  makeRational(3)));
+	
 	assertTrue(equals(round(makeRational(17, 4)),
-					   makeRational(4)));
-
-
+			  makeRational(4)));
+	
+	
 	assertTrue(equals(round(makeRational(-17, 4)),
-					   makeRational(-4)));
+			  makeRational(-4)));
     },
     
 
