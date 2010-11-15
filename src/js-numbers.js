@@ -770,6 +770,9 @@ if (typeof(exports) !== 'undefined') {
     // Implementation of the hyperbolic functions
     // http://en.wikipedia.org/wiki/Hyperbolic_cosine
     var cosh = function(x) {
+	if (eqv(x, 0)) {
+	    return FloatPoint.makeInstance(1.0);
+	}
 	return divide(add(exp(x), exp(negate(x))),
 		      2);
     };
