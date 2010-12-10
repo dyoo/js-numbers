@@ -2203,7 +2203,7 @@ if (typeof(exports) !== 'undefined') {
 		y = divide(subtract(multiply(b, r), a),
 			   add(multiply(c, r), d));
 	    }
-	    return makeComplex(x, y);
+	    return Complex.makeInstance(x, y);
 	} else {
 	    var con = conjugate(other);
 	    var up = multiply(this, con);
