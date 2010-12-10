@@ -3941,19 +3941,28 @@ if (typeof(exports) !== 'undefined') {
 
 
     //////////////////////////////////////////////////////////////////////
-    // toRepeatingDecimal: jsnum jsnum -> [string, string, string]
+    // toRepeatingDecimal: jsnum jsnum {limit: number}? -> [string, string, string]
     //
     // Given the numerator and denominator parts of a rational,
     // produces the repeating-decimal representation, where the first
     // part are the digits before the decimal, the second are the
     // non-repeating digits after the decimal, and the third are the
     // remaining repeating decimals.
+    // 
+    // An optional limit on the decimal expansion can be provided, in which
+    // case the search cuts off if we go past the limit.
+    // If this happens, the third argument returned becomes '...' to indicate
+    // that the search was prematurely cut off.
     var toRepeatingDecimal = (function() {
-	var getResidue = function(r, d) {
+	var getResidue = function(r, d, limit) {
 	    var digits = [];
 	    var seenRemainders = {};
 	    seenRemainders[r] = true;
 	    while(true) {	
+		if (limit-- <= 0) {
+		    return [digits.join(''), '...']
+		}
+
 		var nextDigit = quotient(
 		    multiply(r, 10), d);
 		var nextRemainder = remainder(
@@ -3999,7 +4008,12 @@ if (typeof(exports) !== 'undefined') {
 
 	};
 
-	return function(n, d) {
+	return function(n, d, options) {
+	    // default limit on decimal expansion; can be overridden
+	    var limit = 512;
+	    if (options && typeof(options.limit) !== 'undefined') {
+		limit = options.limit;
+	    }
 	    if (! isInteger(n)) {
 		throwRuntimeError('toRepeatingDecimal: n ' + n.toString() +
 				  " is not an integer.");
@@ -4017,7 +4031,7 @@ if (typeof(exports) !== 'undefined') {
  	    var sign = (lessThan(n, 0) ? "-" : "");
  	    n = abs(n);
  	    var beforeDecimalPoint = sign + quotient(n, d);
- 	    var afterDecimals = getResidue(remainder(n, d), d);
+ 	    var afterDecimals = getResidue(remainder(n, d), d, limit);
  	    return [beforeDecimalPoint].concat(afterDecimals);
 	};
     })();

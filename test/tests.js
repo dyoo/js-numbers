@@ -3232,7 +3232,34 @@ describe('repeating decimals', {
 	assertEquals(['0', '0625', '0'], toRepeatingDecimal(1, 16));
 	assertEquals(['0', '', '0588235294117647'], toRepeatingDecimal(1, 17));
 	assertEquals(['5', '8', '144'], toRepeatingDecimal(3227, 555));
+    },
+    
+    limitRendering: function() {
+	var OPTIONS = {limit: 5};
+	assertEquals(['1', '', '0'], toRepeatingDecimal(1, 1, OPTIONS));
+	assertEquals(['0', '5', '0'], toRepeatingDecimal(1, 2, OPTIONS));
+	assertEquals(['0', '', '3'], toRepeatingDecimal(1, 3, OPTIONS));
+	assertEquals(['0', '25', '0'], toRepeatingDecimal(1, 4, OPTIONS));
+	assertEquals(['0', '2', '0'], toRepeatingDecimal(1, 5, OPTIONS));
+	assertEquals(['0', '1', '6'], toRepeatingDecimal(1, 6, OPTIONS));
+	assertEquals(['0', '05882', '...'], 
+		     toRepeatingDecimal(1, 17, {limit : 5}));
+
+	assertEquals(['0', '125', '0'], toRepeatingDecimal(1, 8, {limit : 4}));
+	assertEquals(['0', '125', '...'], toRepeatingDecimal(1, 8, {limit : 3}));
+	assertEquals(['0', '12', '...'], toRepeatingDecimal(1, 8, {limit : 2}));
+    	assertEquals(['0', '1', '...'], toRepeatingDecimal(1, 8, {limit : 1}));
+    	assertEquals(['0', '', '...'], toRepeatingDecimal(1, 8, {limit : 0}));
+
+	assertEquals(['10012718086',
+		      '8577149703838870007766167',
+		      '...'],
+		     toRepeatingDecimal(makeBignum("239872983562893234879"),
+					makeBignum("23956829852"),
+					{limit:25}));
+
     }
+    
 });
 
 

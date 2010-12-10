@@ -268,9 +268,13 @@ lcm: scheme-number [scheme-number ...] -> scheme-number
     Produces the least common mulitple.
 
 
+toRepeatedDecimal: scheme-number scheme-number {limit: number}? -> [string, string, string]
+    Produces a string representation of the decimal expansion; the first and second
+    argument must be integers.  Returns an array of three parts: the portion before
+    the decimal, the non-repeating part, and then the repeating part. 
 
-
-
+    If the expansion goes beyond the limit (by default, 256 characters), then
+    the expansion will be cut off, and the third portion will be '...'.
 
 
 ======================================================================
