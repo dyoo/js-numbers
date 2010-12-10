@@ -1471,21 +1471,20 @@ describe('subtract', {
     'fixnum / complex' : function() {
 	assertTrue(eqv(makeComplex(0, -1),
 		       subtract(0, makeComplex(0, 1))));
-	assertTrue(eqv(makeComplex(0, makeFloat(-1.1234)),
-		       subtract(0, makeComplex(0, makeFloat(1.1234)))));
-	assertTrue(eqv(makeComplex(0, makeFloat(1.1234)),
-		       subtract(0, makeComplex(0, makeFloat(-1.1234)))));
-	assertTrue(eqv(makeComplex(234, makeFloat(1.1234)),
-		       subtract(234, makeComplex(0, makeFloat(-1.1234)))));
-	assertTrue(eqv(makeComplex(200, makeFloat(1.1234)),
-		       subtract(234, makeComplex(34, makeFloat(-1.1234)))));
-	assertTrue(eqv(makeComplex(-24, makeFloat(1.1234)),
-		       subtract(0, makeComplex(24, makeFloat(-1.1234)))));
-
-	assertTrue(eqv(makeComplex(makeRational(16, 17), 
-				   makeFloat(1.1234)),
-		       subtract(1, makeComplex(makeRational(1, 17), 
-					       makeFloat(-1.1234)))));
+ 	assertTrue(eqv(makeComplex(negative_zero, makeFloat(-1.1234)),
+ 		       subtract(0, makeComplex(makeFloat(0), makeFloat(1.1234)))));
+ 	assertTrue(eqv(makeComplex(negative_zero, makeFloat(1.1234)),
+ 		       subtract(0, makeComplex(makeFloat(0), makeFloat(-1.1234)))));
+ 	assertTrue(eqv(makeComplex(makeFloat(234), makeFloat(1.1234)),
+ 		       subtract(234, makeComplex(makeFloat(0), makeFloat(-1.1234)))));
+ 	assertTrue(eqv(makeComplex(makeFloat(200), makeFloat(1.1234)),
+ 		       subtract(234, makeComplex(makeFloat(34), makeFloat(-1.1234)))));
+ 	assertTrue(eqv(makeComplex(makeFloat(-24), makeFloat(1.1234)),
+ 		       subtract(0, makeComplex(makeFloat(24), makeFloat(-1.1234)))));
+ 	assertTrue(eqv(makeComplex(makeFloat(toFixnum(makeRational(16, 17))), 
+ 				   makeFloat(1.1234)),
+ 		       subtract(1, makeComplex(makeFloat(toFixnum(makeRational(1, 17))), 
+ 					       makeFloat(-1.1234)))));
     },
 
     'rational / rational' : function() {
