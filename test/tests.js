@@ -3527,13 +3527,16 @@ describe('old tests from Moby Scheme', {
 			  0));
  	assertTrue(equals(asin(-1),
  			  multiply(pi, makeRational(-1, 2))));
- 	assertTrue(equals(asin(1),
- 			  divide(pi, 2)));
- 	assertTrue(equals(asin(makeRational(1, 4)),
- 			  makeFloat(0.25268025514207865)));	
- 	assertTrue(equals(asin(makeComplex(1, 5)),
- 			  makeComplex(makeFloat(0.1937931365549321),
- 				      makeFloat(2.3309746530493123))));
+  	assertTrue(equals(asin(1),
+  			  divide(pi, 2)));
+  	assertTrue(equals(asin(makeRational(1, 4)),
+  			  makeFloat(0.25268025514207865)));	
+  	assertTrue(diffPercent(realPart(asin(makeComplex(1, 5))),
+  			       makeFloat(0.1937931365549321))
+		   < 1e-2);
+   	assertTrue(diffPercent(imaginaryPart(asin(makeComplex(1, 5))),
+   			       makeFloat(2.3309746530493123))
+		   < 1e-2);
     },
     
     testTan : function(){
