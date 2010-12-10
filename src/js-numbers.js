@@ -3788,7 +3788,8 @@ if (typeof(exports) !== 'undefined') {
 	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
 	    var searchIter = function(n, guess) {
 		while(!(goodEnough(n, guess))) {
-		    guess = average(guess, floor(divide(n, guess)));
+		    guess = average(guess, 
+				    floor(divide(n, guess)));
 		}
 		return guess;
 	    };
@@ -3812,6 +3813,20 @@ if (typeof(exports) !== 'undefined') {
 						searchIter(tmpThis, tmpThis));
 		}
 	    };
+    })();
+
+
+    (function() {
+	// Get an approximation using integerSqrt, 
+	BigInteger.prototype.sqrt = function() {
+	    var approx = this.integerSqrt();
+	    if (eqv(sqr(approx), this)) {
+		return approx;
+	    }
+	    // TODO: get closer to the result by Newton's method if
+	    // we can do so by floating-point
+	    return approx;
+	}
     })();
 
 

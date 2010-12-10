@@ -2179,7 +2179,11 @@ describe('sqrt', {
     },
 
     'rationals': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqrt(makeRational(1, 4)),
+		       makeRational(1, 2)));
+	
+	assertTrue(eqv(sqrt(makeRational(-1, 4)),
+		       makeComplex(0, makeRational(1, 2))));
     },
 
     'floats': function() {
