@@ -2487,51 +2487,50 @@ describe('ceiling', {
 	assertEqv(negative_zero, ceiling(negative_zero));
     },
     'complex': function() {
-        assertTrue(eqv(nan, ceiling(makeComplex(nan, 0))));
-	    assertFails(function() { ceiling(makeComplex(0, nan))});
-	    assertFails(function() { ceiling(makeComplex(nan, 1))});
-	    assertFails(function() { ceiling(makeComplex(1, nan))});
-	    assertFails(function() { ceiling(makeComplex(nan, inf))});
-	    assertFails(function() { ceiling(makeComplex(inf, nan))});
-        assertEquals(nan,floor(makeComplex(nan, negative_zero)));
+        assertTrue(eqv(nan, ceiling(nan)));
+	assertFails(function() { ceiling(makeComplex(makeFloat(0), nan))});
+	assertFails(function() { ceiling(makeComplex(nan, makeFloat(1)))});
+	assertFails(function() { ceiling(makeComplex(makeFloat(1), nan))});
+	assertFails(function() { ceiling(makeComplex(nan, inf))});
+	assertFails(function() { ceiling(makeComplex(inf, nan))});
+        assertFails(function() { ceiling(makeComplex(nan, negative_zero))} );
      	assertFails(function() { ceiling(makeComplex(negative_zero, nan))});
      	assertFails(function() { ceiling(makeComplex(nan, nan))});
      	assertFails(function() { ceiling(makeComplex(inf,inf))});
-     	assertFails(function() { ceiling(makeComplex(0,inf))});
-     	assertTrue(eqv(inf, ceiling(makeComplex(inf,0))));
+     	assertFails(function() { ceiling(makeComplex(makeFloat(0),inf))});
+     	assertFails(function() { ceiling(makeComplex(inf,makeFloat(0)))});
         assertFails(function() { ceiling(makeComplex(negative_inf,negative_inf))});
         assertFails(function() { ceiling(makeComplex(makeBignum("0"),makeBignum("2")))});
         assertFails(function() { ceiling(makeComplex(makeBignum("1"),makeBignum("2")))});
 
         assertTrue(eqv(1103,
-		       ceiling(makeComplex(makeRational(makeBignum("9919"),
-						      makeBignum("9")),
-					 0))));
+ 		       ceiling(makeComplex(makeRational(makeBignum("9919"),
+ 							makeBignum("9")),
+ 					   0))));
 
         assertFails(function() { ceiling(makeComplex(makeRational(makeBignum("9919"),makeBignum("9")),makeBignum("200")))});
         assertFails(function() { ceiling(makeComplex(makeFloat(4.25), makeFloat(1.5)))});
 
         assertTrue(eqv(makeBignum("0"), ceiling(makeComplex(makeBignum("0"),
-							  makeBignum("0")))));
+							    makeBignum("0")))));
         assertTrue(eqv(makeBignum("-1"), ceiling(makeComplex(makeBignum("-1"),
-							   makeBignum("0")))));
+							     makeBignum("0")))));
         assertTrue(eqv(makeBignum("1"), ceiling(makeComplex(makeBignum("1"),
-							  makeBignum("0")))));
+							    makeBignum("0")))));
         assertTrue(eqv(makeBignum("1"), ceiling(makeComplex(makeRational(makeBignum("1")),
-							  makeBignum("0")))));
+							    makeBignum("0")))));
         assertTrue(eqv(makeBignum("2"), ceiling(makeComplex(makeRational(makeBignum("3"),
-								       makeBignum("2")),
-							  makeBignum("0")))));
+									 makeBignum("2")),
+							    makeBignum("0")))));
         assertTrue(eqv(makeBignum("1"),
 		       ceiling(makeComplex(
 			   makeRational(makeBignum("100000000000000000000"),
 					makeBignum("200000000000000000000")),
 			   makeBignum("0")))));
-        assertTrue(eqv(makeFloat(-1), ceiling(makeComplex(makeFloat(-1.999),
-							     makeFloat(0)))));
-        assertTrue(eqv(makeFloat(1234567891234568), 
-		       ceiling(makeComplex(makeFloat(1234567891234567.8),
-					   makeFloat(0)))));
+        assertFails(function() { ceiling(makeComplex(makeFloat(-1.999),
+ 						     makeFloat(0)))});
+        assertFails(function() { ceiling(makeComplex(makeFloat(1234567891234567.8),
+ 						     makeFloat(0)))});
     }
 });
 
