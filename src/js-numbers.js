@@ -684,6 +684,10 @@ if (typeof(exports) !== 'undefined') {
 
     // integerSqrt: scheme-number -> scheme-number
     var integerSqrt = function(x) {
+	if (! isInteger(x)) {
+	    throwRuntimeError('integer-sqrt: the argument ' + x.toString() +
+			      " is not an integer.", x);
+	}
 	if (typeof (x) === 'number') {
 	    if(x < 0) {
 	        return Complex.makeInstance(0,
@@ -692,7 +696,6 @@ if (typeof(exports) !== 'undefined') {
 		return Math.floor(Math.sqrt(x));
 	    }
 	}
-
 	return x.integerSqrt();
     };
 
@@ -1869,14 +1872,15 @@ if (typeof(exports) !== 'undefined') {
 
 
     FloatPoint.prototype.integerSqrt = function() {
+	if (this === NEGATIVE_ZERO) { return this; }
 	if (isInteger(this)) {
 	    if(this.n >= 0) {
-	        return FloatPoint.makeInstance(floor(sqrt(this.n)));
-	    }else {
-	        return Complex.makeInstance(0,
-	               FloatPoint.makeInstance(floor(sqrt(-this.n))))
+	        return FloatPoint.makeInstance(Math.floor(Math.sqrt(this.n)));
+	    } else {
+	        return Complex.makeInstance(
+		    INEXACT_ZERO,
+		    FloatPoint.makeInstance(Math.floor(Math.sqrt(-this.n))));
 	    }
-	    
 	} else {
 	    throwRuntimeError("integerSqrt: can only be applied to an integer", this);
 	}

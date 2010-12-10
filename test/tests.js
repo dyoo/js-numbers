@@ -3069,7 +3069,7 @@ describe('integerSqrt', {
         assertFails(function() { integerSqrt(makeRational(makeBignum("1"),makeBignum("4"))) });
         assertFails(function() { integerSqrt(makeRational(makeBignum("1"),makeBignum("5"))) });
         assertFails(function() { integerSqrt(makeRational(makeBignum("5"),makeBignum("2"))) });
-        
+       
         assertTrue(eqv(makeBignum("0"), 
 		       integerSqrt(makeRational(makeBignum("0"),makeBignum("-1")))));
         assertTrue(eqv(makeBignum("2"), 
@@ -3092,15 +3092,16 @@ describe('integerSqrt', {
         assertFails(function() { integerSqrt(makeFloat(-0.1))});
         assertFails(function() { integerSqrt(makeFloat(9999999999.000001))});	
         assertFails(function() { integerSqrt(makeFloat(negative_zero))});
-            
         assertTrue(eqv(makeFloat(0.0),
 		       integerSqrt(makeFloat(0.0))));
-        assertTrue(eqv(makeFloat(1.0),
+	assertTrue(eqv(makeFloat(1.0),
 		       integerSqrt(makeFloat(1.0))));
         assertTrue(eqv(makeFloat(111.0),
-		       integerSqrt(makeFloat(12345.0))));
+ 		       integerSqrt(makeFloat(12345.0))));
         assertTrue(eqv(makeComplex(0, makeFloat(111)), 
-		       integerSqrt(makeFloat(-12345.0))));
+ 		       integerSqrt(makeFloat(-12345.0))));
+	assertTrue(eqv(integerSqrt(negative_zero),
+		       negative_zero));
     },
 
     'complex': function() {
