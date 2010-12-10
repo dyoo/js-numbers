@@ -1510,13 +1510,14 @@ describe('subtract', {
     'negative zero': function() {
 	assertTrue(eqv(makeFloat(0.0),
 		       subtract(negative_zero, negative_zero)));
-	assertTrue(eqv(makeFloat(0.0),
-		       subtract(makeFloat(0), negative_zero)));
-	assertTrue(eqv(negative_zero,
-		       subtract(negative_zero, makeFloat(0))));
-
-	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
-		       subtract(0, makeComplex(makeFloat(0), makeFloat(0)))));
+ 	assertTrue(eqv(makeFloat(0.0),
+ 		       subtract(makeFloat(0), negative_zero)));
+ 	assertTrue(eqv(negative_zero,
+ 		       subtract(negative_zero, 0)));
+ 	assertTrue(eqv(negative_zero,
+ 		       subtract(negative_zero, makeFloat(0))));
+ 	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
+ 		       subtract(0, makeComplex(makeFloat(0), makeFloat(0)))));
     },
 
     'floating / complex' : function() {

@@ -1722,10 +1722,10 @@ if (typeof(exports) !== 'undefined') {
 	if (this.isFinite() && other.isFinite()) {
 	    var result = this.n - other.n;
 	    if (result === 0.0) {
-		if (other.n === NEGATIVE_ZERO) {
+		if (other === NEGATIVE_ZERO) {
 		    return FloatPoint.makeInstance(result);
 		}
-		else if (this.n === NEGATIVE_ZERO) {
+		else if (this === NEGATIVE_ZERO) {
 		    return NEGATIVE_ZERO;
 		}
 	    }
@@ -1743,8 +1743,8 @@ if (typeof(exports) !== 'undefined') {
 	} else {  // other.isFinite()
 	    return this;
 	}
-
     };
+
 
     FloatPoint.prototype.negate = function() {
 	if (this === NEGATIVE_ZERO) {
