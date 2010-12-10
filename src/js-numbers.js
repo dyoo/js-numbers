@@ -1756,7 +1756,14 @@ if (typeof(exports) !== 'undefined') {
     };
 
     FloatPoint.prototype.multiply = function(other) {
-	if (this.n === 0 || other.n === 0) { return FloatPoint.makeInstance(0.0); }
+	if (this.n === 0 || other.n === 0) { 
+	    if (this === NEGATIVE_ZERO && other === NEGATIVE_ZERO) {
+		return INEXACT_ZERO;
+	    } else if (this === NEGATIVE_ZERO || other === NEGATIVE_ZERO) {
+		return NEGATIVE_ZERO;
+	    }
+	    return INEXACT_ZERO;
+	}
 
 	if (this.isFinite() && other.isFinite()) {
 	    var product = this.n * other.n;

@@ -1611,16 +1611,16 @@ describe('multiply', {
     'negative zero': function() {
 	assertTrue(eqv(makeFloat(0),
 		       multiply(negative_zero, negative_zero)));
-	assertTrue(eqv(makeFloat(0),
-		       multiply(makeFloat(0), negative_zero)));
-	assertTrue(eqv(negative_zero,
-		       multiply(negative_zero, makeFloat(0))));
-	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
-		       multiply(0, makeComplex(makeFloat(0), makeFloat(0)))));
-	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
-		       multiply(-1, makeComplex(makeFloat(0), makeFloat(0)))));
-	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
-		       multiply(makeComplex(makeFloat(0), makeFloat(0)), -1)));
+  	assertTrue(eqv(negative_zero,
+  		       multiply(makeFloat(0), negative_zero)));
+  	assertTrue(eqv(negative_zero,
+  		       multiply(negative_zero, makeFloat(0))));
+ 	assertTrue(eqv(makeComplex(0, 0),
+ 		       multiply(0, makeComplex(makeFloat(0), makeFloat(0)))));
+ 	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
+ 		       multiply(-1, makeComplex(makeFloat(0), makeFloat(0)))));
+ 	assertTrue(eqv(makeComplex(negative_zero, negative_zero),
+ 		       multiply(makeComplex(makeFloat(0), makeFloat(0)), -1)));
     },
 
     '1 acts as the identity': function() {
