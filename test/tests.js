@@ -2167,7 +2167,15 @@ describe('sqrt', {
     },
 
     'bignums': function() {
-	// FIXME: we're missing this
+	assertTrue(eqv(sqrt(makeBignum("4")),
+		       2))
+
+	assertTrue(eqv(sqrt(makeBignum("-4")),
+		       makeComplex(0, 2)))
+
+	assertTrue(diffPercent(makeFloat(4893703081.846022), 
+			       sqrt(makeBignum("23948329853269253680")))
+		   < 1e-2)
     },
 
     'rationals': function() {
