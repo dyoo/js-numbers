@@ -2165,7 +2165,12 @@ if (typeof(exports) !== 'undefined') {
 	return Complex.makeInstance(r, i);
     };
 
+
+
+
+
     Complex.prototype.divide = function(other){
+	var a, b, c, d, r, x, y;
 	// If the other value is real, just do primitive division
 	if (other.isReal()) {
 	    return Complex.makeInstance(
@@ -2173,24 +2178,46 @@ if (typeof(exports) !== 'undefined') {
 		divide(this.i, other.r));
 	}
 
+	if (this.isInexact() || other.isInexact()) {
+	    // http://portal.acm.org/citation.cfm?id=1039814
+	    // We currently use Smith's method, though we should
+	    // probably switch over to Priest's method.
+	    a = this.r;
+	    b = this.i;
+	    c = other.r;
+	    d = other.i;
+	    if (lessThanOrEqual(abs(d), abs(c))) {
+		r = divide(d, c);
+		x = divide(add(a, multiply(b, r)),
+			   add(c, multiply(d, r)));
+		y = divide(subtract(b, multiply(a, r)),
+			   add(c, multiply(d, r)));
+	    } else {
+		r = divide(c, d);
+		x = divide(add(multiply(a, r), b),
+			   add(multiply(c, r), d));
+		y = divide(subtract(multiply(b, r), a),
+			   add(multiply(c, r), d));
+	    }
+	    return makeComplex(x, y);
+	} else {
+	    var con = conjugate(other);
+	    var up = multiply(this, con);
 
-	var con = conjugate(other);
-	var up = multiply(this, con);
+	    // Down is guaranteed to be real by this point.
+	    var down = realPart(multiply(other, con));
 
-	// Down is guaranteed to be real by this point.
-	var down = realPart(multiply(other, con));
-
-	var result = Complex.makeInstance(
-	    divide(realPart(up), down),
-	    divide(imaginaryPart(up), down));
-	return result;
+	    var result = Complex.makeInstance(
+		divide(realPart(up), down),
+		divide(imaginaryPart(up), down));
+	    return result;
+	}
     };
 
     Complex.prototype.conjugate = function(){
 	var result = Complex.makeInstance(
 	    this.r,
-	    subtract(0,
-		     this.i));
+	    subtract(0, this.i));
 
 	return result;
     };

@@ -87,7 +87,9 @@ describe('rational constructions', {
 
 describe('complex construction', {
     'polar' : function() {
-	// FIXME: add tests for polar construction
+	assertTrue(eqv(makeComplexPolar(1, 2),
+		       makeComplex(makeFloat(-0.4161468365471424),
+				   makeFloat(0.9092974268256817))));
     },
     'non-real inputs should raise errors' : function() { 
 	// FIXME: add tests for polar construction
@@ -1714,8 +1716,12 @@ describe('divide', {
 					  makeFloat(1e300)),
 			      makeComplex(makeFloat(4e300), 
 					  makeFloat(4e300))),
-		       makeFloat(.25)))
-	// FIXME: we're missing this
+		       makeComplex(makeFloat(.25), makeFloat(0.0))));
+	assertTrue(eqv(divide(makeComplex(2, 6),
+			      makeComplex(4, 1)),
+		       makeComplex(makeRational(14, 17),
+				   makeRational(22, 17))));
+		       
     },
 
     'division by zeros' : function() {
