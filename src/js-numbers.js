@@ -1574,7 +1574,7 @@ if (typeof(exports) !== 'undefined') {
 
     // Negative zero is a distinguished value representing -0.0.
     // There should only be one instance for -0.0.
-    var NEGATIVE_ZERO = new FloatPoint(0);
+    var NEGATIVE_ZERO = new FloatPoint(-0.0);
     var INEXACT_ZERO = new FloatPoint(0.0);
 
     FloatPoint.pi = new FloatPoint(Math.PI);
@@ -1590,6 +1590,12 @@ if (typeof(exports) !== 'undefined') {
 	    return FloatPoint.inf;
 	} else if (n === Number.NEGATIVE_INFINITY) {
 	    return FloatPoint.neginf;
+	} else if (n === 0) {
+	    if ((1/n) === -Infinity) {
+		return NEGATIVE_ZERO;
+	    } else {
+		return INEXACT_ZERO;
+	    }
 	}
 	return new FloatPoint(n);
     };
