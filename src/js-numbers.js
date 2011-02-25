@@ -304,38 +304,19 @@ if (typeof(exports) !== 'undefined') {
 	function(x, y) {
 	    return x.divide(y);
 	},
-	{ isYSpecialCase: function(y) { 
-	    return (eqv(y, INEXACT_ZERO) || eqv(y, NEGATIVE_ZERO))},
-	  onYSpecialCase: function(x, y) {
-	      var pos = (y !== NEGATIVE_ZERO);
-
-
-	      if (isReal(x)) {
-		  if (isExact(x)) {
-		      if (greaterThan(x, 0)) {
-			  return pos ? inf : neginf;
-		      } else if (lessThan(x, 0)) {
-			  return pos ? neginf : inf;
-		      } else {
-			  return 0;
-		      }
-		  } else {
-		      // both x and y are inexact
-		      if (isNaN(toFixnum(x))) {
-			  return NaN;
-		      } else if (greaterThan(x, 0)) {
-			  return pos ? inf : neginf;
-		      } else if (lessThan(x, 0)) {
-			  return pos ? neginf : inf;
-		      } else {
-			  return NaN;
-		      }
-		  }
-	      } else {
-		  if (x.level < y.level) x = x.liftTo(y);
-		  if (y.level < x.level) y = y.liftTo(x);
-		  return x.divide(y);
+	{ isXSpecialCase: function(x) {
+	    return (eqv(x, 0));
+	},
+	  onXSpecialCase: function(x, y) {
+	      if (eqv(y, 0)) {
+		  throwRuntimeError("/: division by zero", x, y);
 	      }
+	      return 0;
+	  },
+	  isYSpecialCase: function(y) { 
+	    return (eqv(y, 0)); },
+	  onYSpecialCase: function(x, y) {
+	      throwRuntimeError("/: division by zero", x, y);
 	  }
 	});
     
@@ -1748,46 +1729,11 @@ if (typeof(exports) !== 'undefined') {
     };
 
     FloatPoint.prototype.multiply = function(other) {
-	if (this.n === 0 || other.n === 0) { 
-	    if (this === NEGATIVE_ZERO && other === NEGATIVE_ZERO) {
-		return INEXACT_ZERO;
-	    } else if (this === NEGATIVE_ZERO || other === NEGATIVE_ZERO) {
-		return NEGATIVE_ZERO;
-	    }
-	    return INEXACT_ZERO;
-	}
-
-	if (this.isFinite() && other.isFinite()) {
-	    var product = this.n * other.n;
-	    if (product !== 0) {
-		return FloatPoint.makeInstance(product);
-	    }
-	    return sign(this) * sign(other) == 1 ?
-		FloatPoint.makeInstance(0) : NEGATIVE_ZERO;
-	} else if (isNaN(this.n) || isNaN(other.n)) {
-	    return NaN;
-	} else {
-	    return ((sign(this) * sign(other) === 1) ? inf : neginf);
-	}
+	return FloatPoint.makeInstance(this.n * other.n);
     };
 
     FloatPoint.prototype.divide = function(other) {
-	if (this.isFinite() && other.isFinite()) {
-	    if (other.n === 0) {
-		return throwRuntimeError("/: division by zero", this, other);
-	    }
-            return FloatPoint.makeInstance(this.n / other.n);
-	} else if (isNaN(this.n) || isNaN(other.n)) {
-	    return NaN;
-	} else if (! this.isFinite() && !other.isFinite()) {
-	    return NaN;
-	} else if (this.isFinite() && !other.isFinite()) {
-	    return FloatPoint.makeInstance(0.0);
-	} else if (! this.isFinite() && other.isFinite()) {
-	    return ((sign(this) * sign(other) === 1) ? inf : neginf);
-	} else {
-	    return throwRuntimeError("impossible", this, other);
-	}
+        return FloatPoint.makeInstance(this.n / other.n);
     };
 
 
@@ -1824,23 +1770,12 @@ if (typeof(exports) !== 'undefined') {
 
 
     FloatPoint.prototype.floor = function() {
-	if (! isFinite(this.n)) {
-	    return this;
-	} else if (this === NEGATIVE_ZERO) {
-	    return this;
-	} else {
-	    return FloatPoint.makeInstance(Math.floor(this.n));
-	}
+	return FloatPoint.makeInstance(Math.floor(this.n));
     };
 
     FloatPoint.prototype.ceiling = function() {
-	if (! isFinite(this.n)) {
-	    return this;
-	} else if (this === NEGATIVE_ZERO) {
-	    return this;
-	} return FloatPoint.makeInstance(Math.ceil(this.n));
+	return FloatPoint.makeInstance(Math.ceil(this.n));
     };
-
 
 
     FloatPoint.prototype.greaterThan = function(other) {

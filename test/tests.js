@@ -64,6 +64,8 @@ describe('rational constructions', {
 
 	value_of(isSchemeNumber(makeRational(17, -171)))
 	    .should_be_true();
+	value_of(toFixnum(makeRational(1, 5)) === 0.2)
+	    .should_be_true();
     },
 
 
@@ -1505,7 +1507,17 @@ describe('subtract', {
     'rational / complex' : function() {
 	// FIXME: we're missing this
     },
+
     'floating / floating' : function() {
+	assertTrue(eqv(subtract(makeFloat(1.2), makeFloat(0.2)),
+		       makeFloat(1.2-0.2)));
+
+	assertTrue(eqv(subtract(nan, nan),
+		       nan));
+	assertTrue(eqv(subtract(nan, makeFloat(3.0)), 
+		       nan));
+	assertTrue(eqv(subtract(nan, makeFloat(-3.0)), 
+		       nan));
 	// FIXME: we're missing this
     },
 
