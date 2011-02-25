@@ -1709,9 +1709,6 @@ if (typeof(exports) !== 'undefined') {
 
     FloatPoint.prototype.add = function(other) {
 	if (this.isFinite() && other.isFinite()) {
-	    if (this === NEGATIVE_ZERO && other === NEGATIVE_ZERO) {
-		return NEGATIVE_ZERO;
-	    }
 	    return FloatPoint.makeInstance(this.n + other.n);
 	} else {
 	    if (isNaN(this.n) || isNaN(other.n)) {
@@ -1729,16 +1726,7 @@ if (typeof(exports) !== 'undefined') {
 
     FloatPoint.prototype.subtract = function(other) {
 	if (this.isFinite() && other.isFinite()) {
-	    var result = this.n - other.n;
-	    if (result === 0.0) {
-		if (other === NEGATIVE_ZERO) {
-		    return FloatPoint.makeInstance(result);
-		}
-		else if (this === NEGATIVE_ZERO) {
-		    return NEGATIVE_ZERO;
-		}
-	    }
-	    return FloatPoint.makeInstance(result);
+	    return FloatPoint.makeInstance(this.n - other.n);
 	} else if (isNaN(this.n) || isNaN(other.n)) {
 	    return NaN;
 	} else if (! this.isFinite() && ! other.isFinite()) {
@@ -1756,11 +1744,6 @@ if (typeof(exports) !== 'undefined') {
 
 
     FloatPoint.prototype.negate = function() {
-	if (this === NEGATIVE_ZERO) {
-	    return FloatPoint.makeInstance(0);
-	} else if (this.n === 0) {
-	    return NEGATIVE_ZERO;
-	}
 	return FloatPoint.makeInstance(-this.n);
     };
 
