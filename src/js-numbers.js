@@ -3779,15 +3779,50 @@ if (typeof(exports) !== 'undefined') {
 
 
     (function() {
-	// Get an approximation using integerSqrt, 
+
+
+	// Classic implementation of Newton-Ralphson square-root search.
+	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
+	var searchIter = function(n, guess) {
+	    var maxIterations = 100;
+	    while(Math.abs(guess*guess - n) > 0.000001 && 
+		  (maxIterations--) > 0) {
+		guess = (guess + n/guess) / 2
+
+	    }
+	    return guess;
+	};
+	
+	// Get an approximation using integerSqrt, and then start another
+	// Newton-Ralphson search if necessary.
 	BigInteger.prototype.sqrt = function() {
 	    var approx = this.integerSqrt();
+	    var f;
 	    if (eqv(sqr(approx), this)) {
 		return approx;
 	    }
-	    // TODO: get closer to the result by Newton's method if
-	    // we can do so by floating-point
-	    return approx;
+	    
+	    if (isReal(approx)) {
+		if (isFinite(toFixnum(this)) && 
+		    isFinite(toFixnum(approx))) {
+		    return FloatPoint.makeInstance(
+			searchIter(toFixnum(this), toFixnum(approx)));
+		} else {
+		    return approx;
+		}
+	    } else {
+		if (isFinite(toFixnum(this)) &&
+		    isFinite(toFixnum(imaginaryPart(approx)))) {
+		    return Complex.makeInstance(
+			0, 
+			FloatPoint.makeInstance(
+			    searchIter(
+				(-toFixnum(this)),
+				toFixnum(imaginaryPart(approx)))));
+		} else {
+		    return approx;
+		}
+	    }
 	}
     })();
 
