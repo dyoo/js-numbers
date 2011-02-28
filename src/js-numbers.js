@@ -1341,8 +1341,6 @@ if (typeof(exports) !== 'undefined') {
 	return this.d;
     };
 
-    // FIXME: up to this point I've modified Rational to use the _integer functions.
-    // I need to fix up the rest of Rational.
     Rational.prototype.greaterThan = function(other) {
 	return _integerGreaterThan(_integerMultiply(this.n, other.d),
 				   _integerMultiply(this.d, other.n));
