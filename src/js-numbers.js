@@ -3749,81 +3749,49 @@ if (typeof(exports) !== 'undefined') {
 	// adapted for integer-sqrt.
 	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
 	    var searchIter = function(n, guess) {
-		while(!(goodEnough(n, guess))) {
-		    guess = average(guess, 
-				    floor(divide(n, guess)));
+		while(!(lessThanOrEqual(sqr(guess),n) &&
+			lessThan(n,sqr(add(guess, 1))))) {
+		    guess = floor(divide(add(guess,
+					     floor(divide(n, guess))),
+					 2));
 		}
 		return guess;
-	    };
-	    	    
-	    var average = function (x,y) {
-		return floor(divide(add(x,y), 2));
-	    };
-
-	    var goodEnough = function(n, guess) {
-		return (lessThanOrEqual(sqr(guess),n) &&
-			lessThan(n,sqr(add(guess, 1))));
 	    };
 
 	    // integerSqrt: -> scheme-number
 	    BigInteger.prototype.integerSqrt = function() {
-		if(this.s == 0) {
+		var n;
+		if(sign(this) >= 0) {
 		    return searchIter(this, this);
 		} else {
-		    var tmpThis = multiply(this, -1);
-		    return Complex.makeInstance(0, 
-						searchIter(tmpThis, tmpThis));
+		    n = this.negate();
+		    return Complex.makeInstance(0, searchIter(n, n));
 		}
 	    };
     })();
 
 
-    (function() {
-
-
-	// Classic implementation of Newton-Ralphson square-root search.
-	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
-	var searchIter = function(n, guess) {
-	    var maxIterations = 100;
-	    while(Math.abs(guess*guess - n) > 0.000001 && 
-		  (maxIterations--) > 0) {
-		guess = (guess + n/guess) / 2
-
-	    }
-	    return guess;
-	};
-	
+    (function() {	
 	// Get an approximation using integerSqrt, and then start another
 	// Newton-Ralphson search if necessary.
 	BigInteger.prototype.sqrt = function() {
-	    var approx = this.integerSqrt();
-	    var f;
+	    var approx = this.integerSqrt(), fix;
 	    if (eqv(sqr(approx), this)) {
 		return approx;
 	    }
-	    
-	    if (isReal(approx)) {
-		if (isFinite(toFixnum(this)) && 
-		    isFinite(toFixnum(approx))) {
-		    return FloatPoint.makeInstance(
-			searchIter(toFixnum(this), toFixnum(approx)));
+	    fix = toFixnum(this);
+	    if (isFinite(fix)) {
+		if (fix >= 0) {
+		    return FloatPoint.makeInstance(Math.sqrt(fix));
 		} else {
-		    return approx;
+		    return Complex.makeInstance(
+			0,
+			FloatPoint.makeInstance(Math.sqrt(-fix)));
 		}
 	    } else {
-		if (isFinite(toFixnum(this)) &&
-		    isFinite(toFixnum(imaginaryPart(approx)))) {
-		    return Complex.makeInstance(
-			0, 
-			FloatPoint.makeInstance(
-			    searchIter(
-				(-toFixnum(this)),
-				toFixnum(imaginaryPart(approx)))));
-		} else {
-		    return approx;
-		}
+		return approx;
 	    }
-	}
+	};
     })();
 
 

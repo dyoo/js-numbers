@@ -2194,6 +2194,13 @@ describe('sqrt', {
 	assertTrue(diffPercent(makeFloat(4893703081.846022), 
 			       sqrt(makeBignum("23948329853269253680")))
 		   < 1e-2)
+	assertTrue(diffPercent(sqrt(expt(15, 21)).toFixnum(),
+			       2233357359474.6265)
+		   < 2e-10);
+	assertTrue(eqv(sqrt(expt(15, 22)),
+		       expt(15, 11)));
+	assertTrue(eqv(sqrt(expt(15, 22)),
+		       expt(15, 11)));
     },
 
     'rationals': function() {
@@ -2233,6 +2240,7 @@ describe('abs', {
 		     abs(makeBignum("1")));
 	assertEquals(makeBignum("0"),
 		     abs(makeBignum("0")));
+
     },
     'rationals': function() {
 	assertEquals(makeRational(2, 1),
