@@ -300,6 +300,18 @@ TODO
 * Add real documentation.
 
 
+======================================================================
+
+Related work
+
+There appears to be another Scheme numeric tower implementation that
+just came out in the last month or so, by Matt Might and John Tobey:
+
+    https://github.com/jtobey/javascript-bignum
+    http://silentmatt.com/biginteger/
+
+
+
 
 ======================================================================
 History
