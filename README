@@ -295,8 +295,6 @@ TODO
 
   atan2, cosh, sinh, sgn
 
-* Bring over the numeric test cases from Moby.
-
 * Add real documentation.
 
 

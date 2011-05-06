@@ -4050,7 +4050,9 @@ if (typeof(exports) !== 'undefined') {
     Numbers['BigInteger'] = BigInteger;
     Numbers['Rational'] = Rational;
     Numbers['FloatPoint'] = FloatPoint;
-    Numbers['Complex'] = Complex;
-    
+    Numbers['Complex'] = Complex;   
+
+    Numbers['MIN_FIXNUM'] = MIN_FIXNUM;
+    Numbers['MAX_FIXNUM'] = MAX_FIXNUM;
 
 })();
