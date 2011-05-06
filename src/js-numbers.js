@@ -4043,4 +4043,14 @@ if (typeof(exports) !== 'undefined') {
 
     Numbers['toRepeatingDecimal'] = toRepeatingDecimal;
 
+
+
+    // The following exposes the class representations for easier
+    // integration with other projects.
+    Numbers['BigInteger'] = BigInteger;
+    Numbers['Rational'] = Rational;
+    Numbers['FloatPoint'] = FloatPoint;
+    Numbers['Complex'] = Complex;
+    
+
 })();
