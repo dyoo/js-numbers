@@ -165,6 +165,8 @@ describe('fromString', {
  	assertEquals(makeFloat(-0.123423), fromString("-.123423"));
  	assertEquals(makeFloat(123.45), fromString("123.45"));
  	assertEquals(makeFloat(4123.423), fromString("4.123423e3"));
+	assertEquals(makeFloat(1000000000000000.2),
+		     fromString("1000000000000000.2"));
  	assertEquals(makeFloat(10000000000000000.2),
  		     fromString("10000000000000000.2"));
     },
