@@ -158,15 +158,15 @@ describe('fromString', {
 
     'floats': function() {
 	assertEquals(makeFloat(42.1), fromString("42.1"));
-	assertEquals(makeFloat(0.1), fromString(".1"));
-	assertEquals(makeFloat(0.23), fromString("0.23"));
-	assertEquals(makeFloat(0.1), fromString("+.1"));
-	assertEquals(makeFloat(-0.1), fromString("-.1"));
-	assertEquals(makeFloat(-0.123423), fromString("-.123423"));
-	assertEquals(makeFloat(123.45), fromString("123.45"));
-	assertEquals(makeFloat(4123.423), fromString("4.123423e3"));
-	assertEquals(makeFloat(10000000000000000.2),
-		     fromString("10000000000000000.2"));
+ 	assertEquals(makeFloat(0.1), fromString(".1"));
+ 	assertEquals(makeFloat(0.23), fromString("0.23"));
+ 	assertEquals(makeFloat(0.1), fromString("+.1"));
+ 	assertEquals(makeFloat(-0.1), fromString("-.1"));
+ 	assertEquals(makeFloat(-0.123423), fromString("-.123423"));
+ 	assertEquals(makeFloat(123.45), fromString("123.45"));
+ 	assertEquals(makeFloat(4123.423), fromString("4.123423e3"));
+ 	assertEquals(makeFloat(10000000000000000.2),
+ 		     fromString("10000000000000000.2"));
     },
 
     'complex': function() {
@@ -226,11 +226,11 @@ describe('fromFixnum', {
     },
 
     'bignums': function() {
-	assertEquals(makeBignum("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
-		     fromFixnum(10e100));
+	assertTrue(equals(fromString("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+			  fromFixnum(10e100)));
 
-	assertEquals(makeBignum("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
-		     fromFixnum(10e200));
+	assertTrue(equals(fromString("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+			  fromFixnum(10e200)));
     },
 
     'floats': function() {
@@ -520,8 +520,8 @@ describe('eqv', {
     },
 
     'fixnum / float ' : function() {
-	value_of(eqv(fromFixnum(1024), makeFloat(1024))).should_be_false();
-	value_of(eqv(fromFixnum(1024), makeFloat(1024.0001))).should_be_false();
+	value_of(eqv(makeRational(1024), makeFloat(1024))).should_be_false();
+	value_of(eqv(makeRational(1024), makeFloat(1024.0001))).should_be_false();
     },
 
     'fixnum / complex' : function() {

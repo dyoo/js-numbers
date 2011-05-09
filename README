@@ -93,12 +93,16 @@ fromString: string -> (scheme-number | false)
     returns false.
 
 fromFixnum: javascript-number -> scheme-number
-    Convert from a javascript number to a scheme-number.
+    Convert from a javascript number to a scheme number.  If the
+    number looks like an integer, represents as an exact integer.
+    Otherwise, represents as a float.  If you need more precision over
+    the representation, use makeFloat or makeRational instead.
 
 makeRational: javascript-number javascript-number? -> scheme-number
     Low level constructor: Constructs a rational with the given
     numerator and denominator.  If only one argument is given, assumes
-    the denominator is 1.
+    the denominator is 1.  The numerator and denominator must be
+    integers.
 
 makeFloat: javascript-number -> scheme-number
     Low level constructor: constructs a floating-point number.
