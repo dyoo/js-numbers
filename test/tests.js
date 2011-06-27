@@ -3574,8 +3574,7 @@ describe('old tests from Moby Scheme', {
     },
     
     testAsin : function(){
-	assertTrue(equals(asin(0),
-			  0));
+	assertTrue(eqv(asin(0), 0));
  	assertTrue(equals(asin(-1),
  			  multiply(pi, makeRational(-1, 2))));
   	assertTrue(equals(asin(1),

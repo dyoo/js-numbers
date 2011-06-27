@@ -659,6 +659,7 @@ if (typeof(exports) !== 'undefined') {
 
     // asin: scheme-number -> scheme-number
     var asin = function(n) {
+        if (eqv(n, 0)) { return 0; }
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.asin(n));
 	}
