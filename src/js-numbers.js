@@ -2386,24 +2386,66 @@ if (typeof(exports) !== 'undefined') {
 
 
 
-    var rationalRegexp = new RegExp("^([+-]?\\d+)/(\\d+)$");
-    var complexRegexp = new RegExp("^([+-]?[\\d\\w/\\.]*)([+-])([\\d\\w/\\.]*)i$");
-    var digitRegexp = new RegExp("^[+-]?\\d+$");
-    var flonumRegexp = new RegExp("^([+-]?\\d*)\\.(\\d*)$");
-    var scientificPattern = new RegExp("^([+-]?\\d*\\.?\\d*)[Ee](\\+?\\d+)$");
+    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])?(.*)$")
+    var rationalRegexp = new RegExp("^([+-]?[0-9a-fA-F]+)/([0-9a-fA-F]+)$");
+    var complexRegexp = new RegExp("^([+-]?[0-9a-fA-F\\w/\\.]*)([+-])([0-9a-fA-F\\w/\\.]*)i$");
+    var digitRegexp = new RegExp("^[+-]?[0-9a-fA-F]+$");
+    var flonumRegexp = new RegExp("^([+-]?[0-9a-fA-F]*)\\.([0-9a-fA-F]*)$");
+    var scientificPattern = new RegExp("^([+-]?[0-9a-fA-F]*\\.?[0-9a-fA-F]*)[Ee](\\+?[0-9a-fA-F]+)$");
 
     // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
+	var radix = 10
+	// not used currently, because parsing exact non-decimal stirngs is
+	// unimplemented
+	var exactp = false
+
+	var hMatch = x.match(hashModifiersRegexp)
+	if (hMatch[1]) {
+	    var modifierString = hMatch[1];
+
+	    var exactFlag = modifierString.match(new RegExp("(#[ei])"))
+	    var radixFlag = modifierString.match(new RegExp("(#[bodx])"))
+
+	    if (exactFlag) {
+		var f = exactFlag[1].charAt(1)
+		exactp = f === 'e' ? true :
+			 f === 'i' ? false :
+			 throwRuntimeError("fromString: invalid exactness flag", this, r)
+	    }
+	    if (radixFlag) {
+		var f = radixFlag[1].charAt(1)
+		radix = f === 'b' ? 2 :
+			f === 'o' ? 8 :
+			f === 'd' ? 10 :
+			f === 'x' ? 16 :
+			throwRuntimeError("fromString: invalid radix flag", this, r)
+	    }
+	}
+
+	var numberString = hMatch ? hMatch[2] : x
+
+	return fromStringRaw(numberString, radix, exactp)
+    };
+
+    function fromStringRaw(x, radix, exactp) {
+	// exactp is currently unused
 	var aMatch = x.match(rationalRegexp);
 	if (aMatch) {
-	    return Rational.makeInstance(fromString(aMatch[1]),
-					 fromString(aMatch[2]));
+	    return Rational.makeInstance(fromStringRaw(aMatch[1], radix, exactp),
+					 fromStringRaw(aMatch[2], radix, exactp));
 	}
 
 	var cMatch = x.match(complexRegexp);
 	if (cMatch) {
-	    return Complex.makeInstance(fromString(cMatch[1] || "0"),
-					fromString(cMatch[2] + (cMatch[3] || "1")));
+	    return Complex.makeInstance(fromStringRaw( cMatch[1] || "0"
+						     , radix
+						     , exactp
+						     ),
+					fromStringRaw( cMatch[2] + (cMatch[3] || "1")
+						     , radix
+						     , exactp)
+						     );
 	}
 
 	// Floating point tests
@@ -2417,12 +2459,12 @@ if (typeof(exports) !== 'undefined') {
 	    return NEGATIVE_ZERO;
 	}
 	if (x.match(flonumRegexp) ||  x.match(scientificPattern)) {
-	    return FloatPoint.makeInstance(Number(x));
+	    return FloatPoint.makeInstance(parseFloat(x));
 	}
 
 	// Finally, integer tests.
 	if (x.match(digitRegexp)) {
-	    var n = Number(x);
+	    var n = parseInt(x, radix);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
 	    } else {
