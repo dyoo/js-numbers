@@ -2387,11 +2387,26 @@ if (typeof(exports) !== 'undefined') {
 
 
     var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])?(.*)$")
-    var rationalRegexp = new RegExp("^([+-]?[0-9a-fA-F]+)/([0-9a-fA-F]+)$");
-    var complexRegexp = new RegExp("^([+-]?[0-9a-fA-F\\w/\\.]*)([+-])([0-9a-fA-F\\w/\\.]*)i$");
-    var digitRegexp = new RegExp("^[+-]?[0-9a-fA-F]+$");
-    var flonumRegexp = new RegExp("^([+-]?[0-9a-fA-F]*)\\.([0-9a-fA-F]*)$");
-    var scientificPattern = new RegExp("^([+-]?[0-9a-fA-F]*\\.?[0-9a-fA-F]*)[Ee](\\+?[0-9a-fA-F]+)$");
+    function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
+    function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
+    function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
+    function flonumRegexp(digits) { return new RegExp("^([+-]?["+digits+"]*)\\.(["+digits+"]*)$"); }
+    function scientificPattern(digits, exp_mark)
+	{ return new RegExp("^([+-]?["+digits+"]*\\.?["+digits+"]*)["+exp_mark+"](\\+?["+digits+"]+)$"); }
+
+    function digitsForRadix(radix) {
+	return radix === 2  ? "01" :
+	       radix === 8  ? "0-7" :
+	       radix === 10 ? "0-9" :
+	       radix === 16 ? "0-9a-fA-F" :
+	       throwRuntimeError("digitsForRadix: invalid radix", this, radix)
+    }
+
+    function expMarkForRadix(radix) {
+	return (radix === 2 || radix === 8 || radix === 10) ? "defsl" :
+	       (radix === 16)                               ? "sl" :
+	       throwRuntimeError("expMarkForRadix: invalid radix", this, radix)
+    }
 
     // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
@@ -2430,22 +2445,27 @@ if (typeof(exports) !== 'undefined') {
 
     function fromStringRaw(x, radix, exactp) {
 	// exactp is currently unused
-	var aMatch = x.match(rationalRegexp);
-	if (aMatch) {
-	    return Rational.makeInstance(fromStringRaw(aMatch[1], radix, exactp),
-					 fromStringRaw(aMatch[2], radix, exactp));
+	var cMatch = x.match(complexRegexp(digitsForRadix(radix)));
+	if (cMatch) {
+	    return Complex.makeInstance(fromStringRawNoComplex( cMatch[1] || "0"
+							      , radix
+							      , exactp
+							      ),
+					fromStringRawNoComplex( cMatch[2] + (cMatch[3] || "1")
+							      , radix
+							      , exactp
+							      ));
 	}
 
-	var cMatch = x.match(complexRegexp);
-	if (cMatch) {
-	    return Complex.makeInstance(fromStringRaw( cMatch[1] || "0"
-						     , radix
-						     , exactp
-						     ),
-					fromStringRaw( cMatch[2] + (cMatch[3] || "1")
-						     , radix
-						     , exactp)
-						     );
+        return fromStringRawNoComplex(x, radix, exactp)
+    }
+
+    function fromStringRawNoComplex(x, radix, exactp) {
+	// exactp is currently unused
+	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
+	if (aMatch) {
+	    return Rational.makeInstance(fromStringRawNoComplex(aMatch[1], radix, exactp),
+					 fromStringRawNoComplex(aMatch[2], radix, exactp));
 	}
 
 	// Floating point tests
@@ -2458,12 +2478,23 @@ if (typeof(exports) !== 'undefined') {
 	if (x === "-0.0") {
 	    return NEGATIVE_ZERO;
 	}
-	if (x.match(flonumRegexp) ||  x.match(scientificPattern)) {
-	    return FloatPoint.makeInstance(parseFloat(x));
+
+	var fMatch = x.match(flonumRegexp(digitsForRadix(radix)))
+	if (fMatch) {
+	    return parseFloat(fMatch[1], fMatch[2], radix)
+	}
+
+	var sMatch = x.match(scientificPattern( digitsForRadix(radix)
+					      , expMarkForRadix(radix)
+					      ))
+	if (sMatch) {
+	    var coefficient = fromStringRawNoComplex(sMatch[1], radix, exactp)
+	    var exponent = parseInt(sMatch[2], radix, exactp)
+	    return FloatPoint.makeInstance(coefficient * Math.pow(radix, exponent));
 	}
 
 	// Finally, integer tests.
-	if (x.match(digitRegexp)) {
+	if (x.match(digitRegexp(digitsForRadix(radix)))) {
 	    var n = parseInt(x, radix);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
@@ -2475,8 +2506,15 @@ if (typeof(exports) !== 'undefined') {
 	}
     };
 
+    function parseFloat(integralPart, fractionalPart, radix) {
+	var integralPartValue = parseInt(integralPart, radix)
 
+	var fractionalNumerator = parseInt(fractionalPart, radix)
+        var fractionalDenominator = Math.pow(radix, fractionalPart.length)
+	var fractionalPartValue = fractionalNumerator / fractionalDenominator
 
+	return FloatPoint.makeInstance(integralPartValue + fractionalPartValue);
+    }
 
 
     //////////////////////////////////////////////////////////////////////
