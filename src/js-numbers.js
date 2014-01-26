@@ -2502,7 +2502,10 @@ if (typeof(exports) !== 'undefined') {
 		return n;
 	    }
 	} else {
-	    return false;
+	    throwRuntimeError("fromString: cannot parse " + x + " as an " +
+                              (exactp ? "exact" : "inexact") +
+                              " base " + radix + " number",
+                              this);
 	}
     };
 
