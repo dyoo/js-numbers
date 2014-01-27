@@ -2441,11 +2441,15 @@ if (typeof(exports) !== 'undefined') {
 	}
 
 	var numberString = hMatch ? hMatch[2] : x
+	// if the string begins with a hash modifier, then it must parse as a
+	// number, an invalid parse is an error, not false. False is returned
+	// when the item could potentially have been read as a symbol.
+	var mustBeANumberp = hMatch ? true : false
 
-	return fromStringRaw(numberString, radix, exactp)
+	return fromStringRaw(numberString, radix, exactp, mustBeANumberp)
     };
 
-    function fromStringRaw(x, radix, exactp) {
+    function fromStringRaw(x, radix, exactp, mustBeANumberp) {
 	// exactp is currently unused
 	var cMatch = x.match(complexRegexp(digitsForRadix(radix)));
 	if (cMatch) {
@@ -2459,10 +2463,10 @@ if (typeof(exports) !== 'undefined') {
 							      ));
 	}
 
-        return fromStringRawNoComplex(x, radix, exactp)
+        return fromStringRawNoComplex(x, radix, exactp, mustBeANumberp)
     }
 
-    function fromStringRawNoComplex(x, radix, exactp) {
+    function fromStringRawNoComplex(x, radix, exactp, mustBeANumberp) {
 	// exactp is currently unused
 	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
 	if (aMatch) {
@@ -2503,11 +2507,13 @@ if (typeof(exports) !== 'undefined') {
 	    } else {
 		return n;
 	    }
-	} else {
+	} else if (mustBeANumberp) {
 	    throwRuntimeError("fromString: cannot parse " + x + " as an " +
                               (exactp ? "exact" : "inexact") +
                               " base " + radix + " number",
                               this);
+	} else {
+	    return false;
 	}
     };
 
