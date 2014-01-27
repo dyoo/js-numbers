@@ -2386,7 +2386,7 @@ if (typeof(exports) !== 'undefined') {
 
 
 
-    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])?(.*)$")
+    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])(.*)$")
     function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
     function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
     function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
@@ -2416,7 +2416,7 @@ if (typeof(exports) !== 'undefined') {
 	var exactp = false
 
 	var hMatch = x.match(hashModifiersRegexp)
-	if (hMatch[1]) {
+	if (hMatch) {
 	    var modifierString = hMatch[1];
 
 	    var exactFlag = modifierString.match(new RegExp("(#[ei])"))
