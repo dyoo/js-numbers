@@ -2426,6 +2426,7 @@ if (typeof(exports) !== 'undefined') {
 		var f = exactFlag[1].charAt(1)
 		exactp = f === 'e' ? true :
 			 f === 'i' ? false :
+			 // this case is unreachable
 			 throwRuntimeError("fromString: invalid exactness flag", this, r)
 	    }
 	    if (radixFlag) {
@@ -2434,6 +2435,7 @@ if (typeof(exports) !== 'undefined') {
 			f === 'o' ? 8 :
 			f === 'd' ? 10 :
 			f === 'x' ? 16 :
+			 // this case is unreachable
 			throwRuntimeError("fromString: invalid radix flag", this, r)
 	    }
 	}
