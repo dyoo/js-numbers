@@ -2386,24 +2386,92 @@ if (typeof(exports) !== 'undefined') {
 
 
 
-    var rationalRegexp = new RegExp("^([+-]?\\d+)/(\\d+)$");
-    var complexRegexp = new RegExp("^([+-]?[\\d\\w/\\.]*)([+-])([\\d\\w/\\.]*)i$");
-    var digitRegexp = new RegExp("^[+-]?\\d+$");
-    var flonumRegexp = new RegExp("^([+-]?\\d*)\\.(\\d*)$");
-    var scientificPattern = new RegExp("^([+-]?\\d*\\.?\\d*)[Ee](\\+?\\d+)$");
+    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])(.*)$")
+    function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
+    function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
+    function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
+    function flonumRegexp(digits) { return new RegExp("^([+-]?["+digits+"]*)\\.(["+digits+"]*)$"); }
+    function scientificPattern(digits, exp_mark)
+	{ return new RegExp("^([+-]?["+digits+"]*\\.?["+digits+"]*)["+exp_mark+"](\\+?["+digits+"]+)$"); }
+
+    function digitsForRadix(radix) {
+	return radix === 2  ? "01" :
+	       radix === 8  ? "0-7" :
+	       radix === 10 ? "0-9" :
+	       radix === 16 ? "0-9a-fA-F" :
+	       throwRuntimeError("digitsForRadix: invalid radix", this, radix)
+    }
+
+    function expMarkForRadix(radix) {
+	return (radix === 2 || radix === 8 || radix === 10) ? "defsl" :
+	       (radix === 16)                               ? "sl" :
+	       throwRuntimeError("expMarkForRadix: invalid radix", this, radix)
+    }
 
     // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
-	var aMatch = x.match(rationalRegexp);
-	if (aMatch) {
-	    return Rational.makeInstance(fromString(aMatch[1]),
-					 fromString(aMatch[2]));
+	var radix = 10
+	// not used currently, because parsing exact non-decimal stirngs is
+	// unimplemented
+	var exactp = false
+
+	var hMatch = x.match(hashModifiersRegexp)
+	if (hMatch) {
+	    var modifierString = hMatch[1];
+
+	    var exactFlag = modifierString.match(new RegExp("(#[ei])"))
+	    var radixFlag = modifierString.match(new RegExp("(#[bodx])"))
+
+	    if (exactFlag) {
+		var f = exactFlag[1].charAt(1)
+		exactp = f === 'e' ? true :
+			 f === 'i' ? false :
+			 // this case is unreachable
+			 throwRuntimeError("fromString: invalid exactness flag", this, r)
+	    }
+	    if (radixFlag) {
+		var f = radixFlag[1].charAt(1)
+		radix = f === 'b' ? 2 :
+			f === 'o' ? 8 :
+			f === 'd' ? 10 :
+			f === 'x' ? 16 :
+			 // this case is unreachable
+			throwRuntimeError("fromString: invalid radix flag", this, r)
+	    }
 	}
 
-	var cMatch = x.match(complexRegexp);
+	var numberString = hMatch ? hMatch[2] : x
+	// if the string begins with a hash modifier, then it must parse as a
+	// number, an invalid parse is an error, not false. False is returned
+	// when the item could potentially have been read as a symbol.
+	var mustBeANumberp = hMatch ? true : false
+
+	return fromStringRaw(numberString, radix, exactp, mustBeANumberp)
+    };
+
+    function fromStringRaw(x, radix, exactp, mustBeANumberp) {
+	// exactp is currently unused
+	var cMatch = x.match(complexRegexp(digitsForRadix(radix)));
 	if (cMatch) {
-	    return Complex.makeInstance(fromString(cMatch[1] || "0"),
-					fromString(cMatch[2] + (cMatch[3] || "1")));
+	    return Complex.makeInstance(fromStringRawNoComplex( cMatch[1] || "0"
+							      , radix
+							      , exactp
+							      ),
+					fromStringRawNoComplex( cMatch[2] + (cMatch[3] || "1")
+							      , radix
+							      , exactp
+							      ));
+	}
+
+        return fromStringRawNoComplex(x, radix, exactp, mustBeANumberp)
+    }
+
+    function fromStringRawNoComplex(x, radix, exactp, mustBeANumberp) {
+	// exactp is currently unused
+	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
+	if (aMatch) {
+	    return Rational.makeInstance(fromStringRawNoComplex(aMatch[1], radix, exactp),
+					 fromStringRawNoComplex(aMatch[2], radix, exactp));
 	}
 
 	// Floating point tests
@@ -2416,25 +2484,48 @@ if (typeof(exports) !== 'undefined') {
 	if (x === "-0.0") {
 	    return NEGATIVE_ZERO;
 	}
-	if (x.match(flonumRegexp) ||  x.match(scientificPattern)) {
-	    return FloatPoint.makeInstance(Number(x));
+
+	var fMatch = x.match(flonumRegexp(digitsForRadix(radix)))
+	if (fMatch) {
+	    return parseFloat(fMatch[1], fMatch[2], radix)
+	}
+
+	var sMatch = x.match(scientificPattern( digitsForRadix(radix)
+					      , expMarkForRadix(radix)
+					      ))
+	if (sMatch) {
+	    var coefficient = fromStringRawNoComplex(sMatch[1], radix, exactp)
+	    var exponent = parseInt(sMatch[2], radix, exactp)
+	    return FloatPoint.makeInstance(coefficient * Math.pow(radix, exponent));
 	}
 
 	// Finally, integer tests.
-	if (x.match(digitRegexp)) {
-	    var n = Number(x);
+	if (x.match(digitRegexp(digitsForRadix(radix)))) {
+	    var n = parseInt(x, radix);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
 	    } else {
 		return n;
 	    }
+	} else if (mustBeANumberp) {
+	    throwRuntimeError("fromString: cannot parse " + x + " as an " +
+                              (exactp ? "exact" : "inexact") +
+                              " base " + radix + " number",
+                              this);
 	} else {
 	    return false;
 	}
     };
 
+    function parseFloat(integralPart, fractionalPart, radix) {
+	var integralPartValue = parseInt(integralPart, radix)
 
+	var fractionalNumerator = parseInt(fractionalPart, radix)
+        var fractionalDenominator = Math.pow(radix, fractionalPart.length)
+	var fractionalPartValue = fractionalNumerator / fractionalDenominator
 
+	return FloatPoint.makeInstance(integralPartValue + fractionalPartValue);
+    }
 
 
     //////////////////////////////////////////////////////////////////////
