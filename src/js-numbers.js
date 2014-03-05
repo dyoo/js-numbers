@@ -1581,7 +1581,11 @@ if (typeof(exports) !== 'undefined') {
 
 	if (d === undefined) { d = 1; }
 
-	if (_integerLessThan(d, 0)) {
+	if (_integerIsZero(d)) {
+	    throwRuntimeError("division by zero: "+n+"/"+d);
+	}
+
+  if (_integerLessThan(d, 0)) {
 	    n = negate(n);
 	    d = negate(d);
 	}
@@ -2427,7 +2431,7 @@ if (typeof(exports) !== 'undefined') {
 		exactp = f === 'e' ? true :
 			 f === 'i' ? false :
 			 // this case is unreachable
-			 throwRuntimeError("fromString: invalid exactness flag", this, r)
+			 throwRuntimeError("invalid exactness flag", this, r)
 	    }
 	    if (radixFlag) {
 		var f = radixFlag[1].charAt(1)
@@ -2436,7 +2440,7 @@ if (typeof(exports) !== 'undefined') {
 			f === 'd' ? 10 :
 			f === 'x' ? 16 :
 			 // this case is unreachable
-			throwRuntimeError("fromString: invalid radix flag", this, r)
+			throwRuntimeError("invalid radix flag", this, r)
 	    }
 	}
 
@@ -2508,7 +2512,7 @@ if (typeof(exports) !== 'undefined') {
 		return n;
 	    }
 	} else if (mustBeANumberp) {
-	    throwRuntimeError("fromString: cannot parse " + x + " as an " +
+	    throwRuntimeError("cannot parse " + x + " as an " +
                               (exactp ? "exact" : "inexact") +
                               " base " + radix + " number",
                               this);
