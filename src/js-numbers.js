@@ -2419,9 +2419,9 @@ if (typeof(exports) !== 'undefined') {
 	// unimplemented
 	var exactp = false
 
-	var hMatch = x.match(hashModifiersRegexp)
+	var hMatch = x.toLowerCase().match(hashModifiersRegexp)
 	if (hMatch) {
-	    var modifierString = hMatch[1];
+	    var modifierString = hMatch[1].toLowerCase();
 
 	    var exactFlag = modifierString.match(new RegExp("(#[ei])"))
 	    var radixFlag = modifierString.match(new RegExp("(#[bodx])"))
@@ -2429,16 +2429,16 @@ if (typeof(exports) !== 'undefined') {
 	    if (exactFlag) {
 		var f = exactFlag[1].charAt(1)
 		exactp = f === 'e' ? true :
-			 f === 'i' ? false :
+             f === 'i' ? false :
 			 // this case is unreachable
 			 throwRuntimeError("invalid exactness flag", this, r)
 	    }
 	    if (radixFlag) {
 		var f = radixFlag[1].charAt(1)
 		radix = f === 'b' ? 2 :
-			f === 'o' ? 8 :
-			f === 'd' ? 10 :
-			f === 'x' ? 16 :
+            f === 'o' ? 8 :
+            f === 'd' ? 10 :
+            f === 'x' ? 16 :
 			 // this case is unreachable
 			throwRuntimeError("invalid radix flag", this, r)
 	    }
@@ -2512,8 +2512,9 @@ if (typeof(exports) !== 'undefined') {
 		return n;
 	    }
 	} else if (mustBeANumberp) {
-      if(x.length===0) throwRuntimeError("no digits");
-	    else throwRuntimeError("cannot parse " + x + " as an " +
+//      if(x.length===0) throwRuntimeError("no digits");
+//	    else
+            throwRuntimeError("cannot parse " + x + " as an " +
                               (exactp ? "exact" : "inexact") +
                               " base " + radix + " number",
                               this);
