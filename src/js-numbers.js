@@ -2512,7 +2512,7 @@ if (typeof(exports) !== 'undefined') {
 		return n;
 	    }
 	} else if (mustBeANumberp) {
-//      if(x.length===0) throwRuntimeError("no digits");
+      if(x.length===0) throwRuntimeError("no digits");
 //	    else
             throwRuntimeError("cannot parse " + x + " as an " +
                               (exactp ? "exact" : "inexact") +
