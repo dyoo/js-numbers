@@ -3930,6 +3930,9 @@ if (typeof(exports) !== 'undefined') {
     })();
 
 
+    // sqrt: -> scheme-number
+    // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
+    // Produce the square root.
     (function() {	
 	// Get an approximation using integerSqrt, and then start another
 	// Newton-Ralphson search if necessary.
@@ -3953,14 +3956,6 @@ if (typeof(exports) !== 'undefined') {
 	};
     })();
 
-
-
-
-    
-    // sqrt: -> scheme-number
-    // http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
-    // Produce the square root.
-
     // floor: -> scheme-number
     // Produce the floor.
     BigInteger.prototype.floor = function() {
@@ -3973,27 +3968,57 @@ if (typeof(exports) !== 'undefined') {
         return this;
     }
 
+
+    // Until we have a feature-complete Big Number implementation, we'll
+    // convert BigInteger objects into FloatPoint objects and perform
+    // unsupported operations there.
+    function temporaryAccuracyLosingWorkAroundForBigNums(function_name) {
+      return function () { return this.toInexact()[function_name]() }
+    }
+
     // conjugate: -> scheme-number
     // Produce the conjugate.
+    BigInteger.prototype.conjugate = temporaryAccuracyLosingWorkAroundForBigNums("conjugate");
 
     // magnitude: -> scheme-number
     // Produce the magnitude.
+    BigInteger.prototype.magnitude = temporaryAccuracyLosingWorkAroundForBigNums("magnitude");
 
     // log: -> scheme-number
     // Produce the log.
+    BigInteger.prototype.log = temporaryAccuracyLosingWorkAroundForBigNums("log");
 
     // angle: -> scheme-number
     // Produce the angle.
+    BigInteger.prototype.angle = temporaryAccuracyLosingWorkAroundForBigNums("angle");
 
     // atan: -> scheme-number
     // Produce the arc tangent.
+    BigInteger.prototype.atan = temporaryAccuracyLosingWorkAroundForBigNums("atan");
+
+    // acos: -> scheme-number
+    // Produce the arc cosine.
+    BigInteger.prototype.acos = temporaryAccuracyLosingWorkAroundForBigNums("acos");
+
+    // asin: -> scheme-number
+    // Produce the arc sine.
+    BigInteger.prototype.asin = temporaryAccuracyLosingWorkAroundForBigNums("asin");
+
+    // tan: -> scheme-number
+    // Produce the tangent.
+    BigInteger.prototype.tan = temporaryAccuracyLosingWorkAroundForBigNums("tan");
 
     // cos: -> scheme-number
     // Produce the cosine.
+    BigInteger.prototype.cos = temporaryAccuracyLosingWorkAroundForBigNums("cos");
 
     // sin: -> scheme-number
     // Produce the sine.
+    BigInteger.prototype.sin = temporaryAccuracyLosingWorkAroundForBigNums("sin");
 
+    // exp: -> scheme-number
+    // Produce e raised to the given power.
+    BigInteger.prototype.exp = temporaryAccuracyLosingWorkAroundForBigNums("exp");
 
     // expt: scheme-number -> scheme-number
     // Produce the power to the input.
@@ -4002,15 +4027,6 @@ if (typeof(exports) !== 'undefined') {
     };
 
 
-
-    // exp: -> scheme-number
-    // Produce e raised to the given power.
-
-    // acos: -> scheme-number
-    // Produce the arc cosine.
-
-    // asin: -> scheme-number
-    // Produce the arc sine.
 
     BigInteger.prototype.imaginaryPart = function() {
 	    return 0;
@@ -4021,6 +4037,9 @@ if (typeof(exports) !== 'undefined') {
 
     // round: -> scheme-number
     // Round to the nearest integer.
+    BigInteger.prototype.round = function() {
+	    return this;
+    }
 
 
 
