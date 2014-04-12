@@ -169,6 +169,7 @@ describe('fromString', {
 		     fromString("1000000000000000.2"));
  	assertEquals(makeFloat(10000000000000000.2),
  		     fromString("10000000000000000.2"));
+	assertEquals(makeFloat(0.5), fromString(".5"));
     },
 
     'complex': function() {
