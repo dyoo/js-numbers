@@ -2394,7 +2394,7 @@ if (typeof(exports) !== 'undefined') {
     function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
     function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
     function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
-    function flonumRegexp(digits) { return new RegExp("^([+-]?["+digits+"]*)\\.(["+digits+"]*)$"); }
+    function flonumRegexp(digits) { return new RegExp("^([+-]?)(["+digits+"]*)\\.(["+digits+"]*)$"); }
     function scientificPattern(digits, exp_mark)
 	{ return new RegExp("^([+-]?["+digits+"]*\\.?["+digits+"]*)["+exp_mark+"](\\+?["+digits+"]+)$"); }
 
@@ -2491,7 +2491,7 @@ if (typeof(exports) !== 'undefined') {
 
 	var fMatch = x.match(flonumRegexp(digitsForRadix(radix)))
 	if (fMatch) {
-	    return parseFloat(fMatch[1], fMatch[2], radix)
+	    return parseFloat(fMatch[1], fMatch[2], fMatch[3], radix)
 	}
 
 	var sMatch = x.match(scientificPattern( digitsForRadix(radix)
@@ -2523,14 +2523,16 @@ if (typeof(exports) !== 'undefined') {
 	}
     };
 
-    function parseFloat(integralPart, fractionalPart, radix) {
-	var integralPartValue = parseInt(integralPart, radix)
+    function parseFloat(sign, integralPart, fractionalPart, radix) {
+	var sign = (sign == "-" ? -1 : 1);
+	var integralPartValue = integralPart === ""  ? 0  :
+                                parseInt(integralPart, radix)
 
 	var fractionalNumerator = parseInt(fractionalPart, radix)
         var fractionalDenominator = Math.pow(radix, fractionalPart.length)
 	var fractionalPartValue = fractionalNumerator / fractionalDenominator
 
-	return FloatPoint.makeInstance(integralPartValue + fractionalPartValue);
+	return FloatPoint.makeInstance(sign * (integralPartValue + fractionalPartValue));
     }
 
 
