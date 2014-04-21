@@ -2394,9 +2394,27 @@ if (typeof(exports) !== 'undefined') {
     function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
     function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
     function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
-    function flonumRegexp(digits) { return new RegExp("^([+-]?)(["+digits+"]*)\\.(["+digits+"]*)$"); }
-    function scientificPattern(digits, exp_mark)
-	{ return new RegExp("^([+-]?["+digits+"]*\\.?["+digits+"]*)["+exp_mark+"](\\+?["+digits+"]+)$"); }
+    /**
+    /* NB: !!!! flonum regexp only matches "X.", ".X", or "X.X", NOT "X", this
+    /* must be separately checked with digitRegexp.
+    /* I know this seems dumb, but the alternative would be that this regexp
+    /* returns six matches, which also seems dumb.
+    /***/
+    function flonumRegexp(digits) {
+	var decimalNumOnRight = "(["+digits+"]*)\\.(["+digits+"]+)"
+	var decimalNumOnLeft = "(["+digits+"]+)\\.(["+digits+"]*)"
+	return new RegExp("^(?:([+-]?)" +
+                          decimalNumOnRight+"|"+decimalNumOnLeft +
+                          ")$");
+    }
+    function scientificPattern(digits, exp_mark) {
+	var noDecimal = "["+digits+"]"
+	var decimalNumOnRight = "["+digits+"]*\\.["+digits+"]+"
+	var decimalNumOnLeft = "["+digits+"]+\\.["+digits+"]*"
+	return new RegExp("^(?:([+-]?" +
+			  "(?:"+noDecimal+"|"+decimalNumOnRight+"|"+decimalNumOnLeft+")" +
+			  ")["+exp_mark+"](\\+?["+digits+"]+))$");
+    }
 
     function digitsForRadix(radix) {
 	return radix === 2  ? "01" :
@@ -2491,7 +2509,9 @@ if (typeof(exports) !== 'undefined') {
 
 	var fMatch = x.match(flonumRegexp(digitsForRadix(radix)))
 	if (fMatch) {
-	    return parseFloat(fMatch[1], fMatch[2], fMatch[3], radix)
+	    var integralPart = fMatch[2] !== undefined ? fMatch[2] : fMatch[4];
+	    var fractionalPart = fMatch[3] !== undefined ? fMatch[3] : fMatch[5];
+	    return parseFloat(fMatch[1], integralPart, fractionalPart, radix)
 	}
 
 	var sMatch = x.match(scientificPattern( digitsForRadix(radix)
