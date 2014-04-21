@@ -2529,8 +2529,9 @@ if (typeof(exports) !== 'undefined') {
                                 parseInt(integralPart, radix)
 
 	var fractionalNumerator = parseInt(fractionalPart, radix)
-        var fractionalDenominator = Math.pow(radix, fractionalPart.length)
-	var fractionalPartValue = fractionalNumerator / fractionalDenominator
+	var fractionalDenominator = Math.pow(radix, fractionalPart.length)
+	var fractionalPartValue = fractionalPart === "" ? 0 :
+				  fractionalNumerator / fractionalDenominator
 
 	return FloatPoint.makeInstance(sign * (integralPartValue + fractionalPartValue));
     }
