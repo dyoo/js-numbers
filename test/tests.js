@@ -170,6 +170,15 @@ describe('fromString', {
  	assertEquals(makeFloat(10000000000000000.2),
  		     fromString("10000000000000000.2"));
 	assertEquals(makeFloat(0.5), fromString(".5"));
+	assertEquals(makeFloat(0.0), fromString("0."));
+	assertEquals(makeFloat(0.0), fromString("0.d1"));
+	assertEquals(makeFloat(0.0), fromString(".0d1"));
+	assertEquals(makeFloat(0.0), fromString("0.0d1"));
+	assertEquals(makeFloat(10.0), fromString("1.d1"));
+	assertEquals(makeFloat(1.0), fromString(".1d1"));
+	assertEquals(makeFloat(11.0), fromString("1.1d1"));
+	assertEquals(makeFloat(1), fromString("#d1"));
+	assertFalse(fromString("d1"));
     },
 
     'complex': function() {
