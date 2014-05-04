@@ -3996,7 +3996,10 @@ if (typeof(exports) !== 'undefined') {
     // convert BigInteger objects into FloatPoint objects and perform
     // unsupported operations there.
     function temporaryAccuracyLosingWorkAroundForBigNums(function_name) {
-      return function () { return this.toInexact()[function_name]() }
+      return function () {
+	var inexact = this.toInexact();
+	return inexact[function_name].apply(inexact, arguments);
+      }
     }
 
     // conjugate: -> scheme-number
@@ -4045,9 +4048,7 @@ if (typeof(exports) !== 'undefined') {
 
     // expt: scheme-number -> scheme-number
     // Produce the power to the input.
-    BigInteger.prototype.expt = function(n) {
-	return bnPow.call(this, n);
-    };
+    BigInteger.prototype.expt = temporaryAccuracyLosingWorkAroundForBigNums("expt");
 
 
 
