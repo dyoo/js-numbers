@@ -3116,7 +3116,7 @@ if (typeof(exports) !== 'undefined') {
     BigInteger.prototype.divRemTo = bnpDivRemTo;
     BigInteger.prototype.invDigit = bnpInvDigit;
     BigInteger.prototype.isEven = bnpIsEven;
-    BigInteger.prototype.exp = bnpExp;
+    BigInteger.prototype.bnpExp = bnpExp;
 
     // public
     BigInteger.prototype.toString = bnToString;
@@ -3467,7 +3467,7 @@ if (typeof(exports) !== 'undefined') {
     NullExp.prototype.sqrTo = nSqrTo;
 
     // (public) this^e
-    function bnPow(e) { return this.exp(e,new NullExp()); }
+    function bnPow(e) { return this.bnpExp(e,new NullExp()); }
 
     // (protected) r = lower n words of "this * a", a.t <= n
     // "this" should be the larger one if appropriate.
@@ -3770,6 +3770,7 @@ if (typeof(exports) !== 'undefined') {
     BigInteger.prototype.modPow = bnModPow;
     BigInteger.prototype.modInverse = bnModInverse;
     BigInteger.prototype.pow = bnPow;
+    BigInteger.prototype.expt = bnPow;
     BigInteger.prototype.gcd = bnGCD;
     BigInteger.prototype.isProbablePrime = bnIsProbablePrime;
 
@@ -4045,12 +4046,6 @@ if (typeof(exports) !== 'undefined') {
     // exp: -> scheme-number
     // Produce e raised to the given power.
     BigInteger.prototype.exp = temporaryAccuracyLosingWorkAroundForBigNums("exp");
-
-    // expt: scheme-number -> scheme-number
-    // Produce the power to the input.
-    BigInteger.prototype.expt = temporaryAccuracyLosingWorkAroundForBigNums("expt");
-
-
 
     BigInteger.prototype.imaginaryPart = function() {
 	    return 0;
