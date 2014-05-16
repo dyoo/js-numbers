@@ -2534,10 +2534,7 @@ if (typeof(exports) !== 'undefined') {
 	} else if (mustBeANumberp) {
       if(x.length===0) throwRuntimeError("no digits");
 //	    else
-            throwRuntimeError("cannot parse " + x + " as an " +
-                              (exactp ? "exact" : "inexact") +
-                              " base " + radix + " number",
-                              this);
+            throwRuntimeError("bad number: " + x, this);
 	} else {
 	    return false;
 	}
