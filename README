@@ -12,11 +12,13 @@ automatically coerse between fixnums, bignums, rationals, floating
 point, and complex numbers.
 
 
-Contributors: I want to thank the following people:
+Contributors: The following people have contributed to this library
 
     Zhe Zhang
     Ethan Cecchetti
     Ugur Cekmez
+    Dan King
+    Emmanuel Schanzer
 
 
 Other sources:
