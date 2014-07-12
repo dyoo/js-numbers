@@ -2408,7 +2408,7 @@ if (typeof(exports) !== 'undefined') {
                           ")$");
     }
     function scientificPattern(digits, exp_mark) {
-	var noDecimal = "["+digits+"]"
+	var noDecimal = "["+digits+"]+"
 	var decimalNumOnRight = "["+digits+"]*\\.["+digits+"]+"
 	var decimalNumOnLeft = "["+digits+"]+\\.["+digits+"]*"
 	return new RegExp("^(?:([+-]?" +
