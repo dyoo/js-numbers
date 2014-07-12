@@ -2392,7 +2392,47 @@ if (typeof(exports) !== 'undefined') {
 
     var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])(.*)$")
     function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
-    function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
+    function matchComplexRegexp(radix, x) {
+	var sign = "[+-]";
+	var maybeSign = "[+-]?";
+	var digits = digitsForRadix(radix)
+	var expmark = "["+expMarkForRadix(radix)+"]"
+	var digitSequence = "["+digits+"]+"
+
+	var unsignedRational = digitSequence+"/"+digitSequence
+	var rational = maybeSign + unsignedRational
+
+	var noDecimal = digitSequence
+	var decimalNumOnRight = "["+digits+"]*\\.["+digits+"]+"
+	var decimalNumOnLeft = "["+digits+"]+\\.["+digits+"]*"
+
+	var unsignedDecimal = "(?:" + noDecimal + "|" + decimalNumOnRight + "|" + decimalNumOnLeft + ")"
+
+	var special = "(?:inf\.0|nan\.0|inf\.f|nan\.f)"
+
+	var unsignedRealNoExp = "(?:" + unsignedDecimal + "|" + unsignedRational + ")"
+	var unsignedReal = unsignedRealNoExp + "(?:" + expmark + maybeSign + digitSequence + ")?"
+	var unsignedRealOrSpecial = "(?:" + unsignedReal + "|" + special + ")"
+	var real = "(?:" + maybeSign + unsignedReal + "|" + sign + special + ")"
+
+	var alt1 = new RegExp("^(" + rational + ")"
+                             + "(" + sign + unsignedRational + "?)"
+                             + "i$");
+	var alt2 = new RegExp("^(" + real + ")?"
+                             + "(" + sign + unsignedRealOrSpecial + "?)"
+                             + "i$");
+	var alt3 = new RegExp("^(" + real + ")@(" + real + ")$");
+
+	var match1 = x.match(alt1)
+	var match2 = x.match(alt2)
+	var match3 = x.match(alt3)
+
+	return match1 ? match1 :
+	       match2 ? match2 :
+	       match3 ? match3 :
+	     /* else */ false
+    }
+
     function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
     /**
     /* NB: !!!! flonum regexp only matches "X.", ".X", or "X.X", NOT "X", this
@@ -2473,16 +2513,18 @@ if (typeof(exports) !== 'undefined') {
 
     function fromStringRaw(x, radix, exactp, mustBeANumberp) {
 	// exactp is currently unused
-	var cMatch = x.match(complexRegexp(digitsForRadix(radix)));
+	var cMatch = matchComplexRegexp(radix, x);
 	if (cMatch) {
-	    return Complex.makeInstance(fromStringRawNoComplex( cMatch[1] || "0"
-							      , radix
-							      , exactp
-							      ),
-					fromStringRawNoComplex( cMatch[2] + (cMatch[3] || "1")
-							      , radix
-							      , exactp
-							      ));
+	  return Complex.makeInstance( fromStringRawNoComplex( cMatch[1] || "0"
+							     , radix
+							     , exactp
+							     )
+				     , fromStringRawNoComplex( cMatch[2] === "+" ? "1"  :
+							       cMatch[2] === "-" ? "-1" :
+							       cMatch[2]
+							     , radix
+							     , exactp
+							     ));
 	}
 
         return fromStringRawNoComplex(x, radix, exactp, mustBeANumberp)
