@@ -90,7 +90,7 @@ if (typeof(exports) !== 'undefined') {
     };
 
     var expandExponent = function(s) {
-	var match = s.match(scientificPattern), mantissaChunks, exponent;
+	var match = s.match(scientificPattern(digitsForRadix(10), expMarkForRadix(10))), mantissaChunks, exponent;
 	if (match) {
 	    mantissaChunks = match[1].match(/^([^.]*)(.*)$/);
 	    exponent = Number(match[2]);
