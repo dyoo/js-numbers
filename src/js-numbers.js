@@ -2473,9 +2473,7 @@ if (typeof(exports) !== 'undefined') {
     // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
 	var radix = 10
-	// not used currently, because parsing exact non-decimal stirngs is
-	// unimplemented
-	var exactp = false
+	var exactp = true
 
 	var hMatch = x.toLowerCase().match(hashModifiersRegexp)
 	if (hMatch) {
@@ -2512,7 +2510,6 @@ if (typeof(exports) !== 'undefined') {
     };
 
     function fromStringRaw(x, radix, exactp, mustBeANumberp) {
-	// exactp is currently unused
 	var cMatch = matchComplexRegexp(radix, x);
 	if (cMatch) {
 	  return Complex.makeInstance( fromStringRawNoComplex( cMatch[1] || "0"
@@ -2531,7 +2528,6 @@ if (typeof(exports) !== 'undefined') {
     }
 
     function fromStringRawNoComplex(x, radix, exactp, mustBeANumberp) {
-	// exactp is currently unused
 	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
 	if (aMatch) {
 	    return Rational.makeInstance(fromStringRawNoComplex(aMatch[1], radix, exactp),
@@ -2561,7 +2557,7 @@ if (typeof(exports) !== 'undefined') {
 					      ))
 	if (sMatch) {
 	    var coefficient = fromStringRawNoComplex(sMatch[1], radix, exactp)
-	    var exponent = parseInt(sMatch[2], radix, exactp)
+	    var exponent = fromStringRawNoComplex(sMatch[2], radix, exactp)
 	    return FloatPoint.makeInstance(coefficient * Math.pow(radix, exponent));
 	}
 
