@@ -2566,6 +2566,8 @@ if (typeof(exports) !== 'undefined') {
 	    var n = parseInt(x, radix);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
+	    } else if (!exactp) {
+		return FloatPoint.makeInstance(n);
 	    } else {
 		return n;
 	    }
