@@ -2471,9 +2471,9 @@ if (typeof(exports) !== 'undefined') {
     }
 
     // fromString: string -> (scheme-number | false)
-    var fromString = function(x) {
+    var fromString = function(x, exactp) {
 	var radix = 10
-	var exactp = false;
+	var exactp = typeof exactp !== 'undefined' ? exactp : false;
 
 	var hMatch = x.toLowerCase().match(hashModifiersRegexp)
 	if (hMatch) {
