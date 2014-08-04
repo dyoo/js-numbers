@@ -2584,7 +2584,7 @@ if (typeof(exports) !== 'undefined') {
                                 exactp ? parseExactInt(integralPart, radix) :
                                          parseInt(integralPart, radix)
 
-	var fractionalNumerator = exactp ? parseExactInt(integralPart, radix) :
+	var fractionalNumerator = exactp ? parseExactInt(fractionalPart, radix) :
                                            parseInt(fractionalPart, radix)
 	/* unfortunately, for these next two calculations, `expt` and `divide` */
 	/* will promote to Bignum and Rational, respectively, but we only want */

@@ -154,6 +154,10 @@ describe('fromString', {
 	assertEquals(makeRational(makeBignum("-13284973298"),
 				  makeBignum("239875239")),
 		     fromString("-13284973298/239875239"));
+	assertEquals(makeRational(32, 10),
+		     fromString("#e3.2"));
+	assertEquals(makeRational(5, 10),
+		     fromString("#e0.5"));
     },
 
     'floats': function() {
