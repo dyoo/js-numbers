@@ -758,6 +758,7 @@ describe('isExact', {
     },
 
     'rationals': function() {
+        assertTrue(isExact(fromString("#e3.2")));
 	assertTrue(isExact(makeRational(19)));
 	assertTrue(isExact(makeRational(0)));
 	assertTrue(isExact(makeRational(-1)));
