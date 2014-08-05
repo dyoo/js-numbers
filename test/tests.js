@@ -158,6 +158,14 @@ describe('fromString', {
 		     fromString("#e3.2"));
 	assertEquals(makeRational(5, 10),
 		     fromString("#e0.5"));
+	assertEquals(makeRational(100, 1),
+		     fromString("#e100."));
+	assertEquals(makeRational(1014, 10),
+		     fromString("#e101.4"));
+	assertEquals(makeRational(1, 10000),
+		     fromString("#e0.0001"));
+	assertEquals(makeRational(1, 10000),
+		     fromString("#e.0001"));
     },
 
     'floats': function() {
