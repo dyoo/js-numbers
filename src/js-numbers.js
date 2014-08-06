@@ -2470,10 +2470,29 @@ if (typeof(exports) !== 'undefined') {
 	       throwRuntimeError("expMarkForRadix: invalid radix", this, radix)
     }
 
-    // fromString: string -> (scheme-number | false)
-    var fromString = function(x, exactp) {
+    function Exactness(i) {
+      this.defaultp = function () { return i == 0; }
+      this.exactp = function () { return i == 1; }
+      this.inexactp = function () { return i == 2; }
+    }
+
+    Exactness.def = new Exactness(0);
+    Exactness.on = new Exactness(1);
+    Exactness.off = new Exactness(2);
+
+    Exactness.prototype.intAsExactp = function () { return this.defaultp() || this.exactp(); };
+    Exactness.prototype.floatAsInexactp = function () { return this.defaultp() || this.inexactp(); };
+
+
+    // fromString: string boolean -> (scheme-number | false)
+    var fromString = function(x, exactness) {
 	var radix = 10
-	var exactp = typeof exactp !== 'undefined' ? exactp : false;
+	var exactness = typeof exactness === 'undefined' ? Exactness.def :
+			exactness === true               ? Exactness.on :
+			exactness === false              ? Exactness.off :
+	   /* else */  throwRuntimeError( "exactness must be true or false"
+                                        , this
+                                        , r) ;
 
 	var hMatch = x.toLowerCase().match(hashModifiersRegexp)
 	if (hMatch) {
@@ -2484,8 +2503,8 @@ if (typeof(exports) !== 'undefined') {
 
 	    if (exactFlag) {
 		var f = exactFlag[1].charAt(1)
-		exactp = f === 'e' ? true :
-             f === 'i' ? false :
+		exactness = f === 'e' ? Exactness.on :
+			    f === 'i' ? Exactness.off :
 			 // this case is unreachable
 			 throwRuntimeError("invalid exactness flag", this, r)
 	    }
@@ -2506,32 +2525,38 @@ if (typeof(exports) !== 'undefined') {
 	// when the item could potentially have been read as a symbol.
 	var mustBeANumberp = hMatch ? true : false
 
-	return fromStringRaw(numberString, radix, exactp, mustBeANumberp)
+	return fromStringRaw(numberString, radix, exactness, mustBeANumberp)
     };
 
-    function fromStringRaw(x, radix, exactp, mustBeANumberp) {
+    function fromStringRaw(x, radix, exactness, mustBeANumberp) {
 	var cMatch = matchComplexRegexp(radix, x);
 	if (cMatch) {
 	  return Complex.makeInstance( fromStringRawNoComplex( cMatch[1] || "0"
 							     , radix
-							     , exactp
+							     , exactness
 							     )
 				     , fromStringRawNoComplex( cMatch[2] === "+" ? "1"  :
 							       cMatch[2] === "-" ? "-1" :
 							       cMatch[2]
 							     , radix
-							     , exactp
+							     , exactness
 							     ));
 	}
 
-        return fromStringRawNoComplex(x, radix, exactp, mustBeANumberp)
+        return fromStringRawNoComplex(x, radix, exactness, mustBeANumberp)
     }
 
-    function fromStringRawNoComplex(x, radix, exactp, mustBeANumberp) {
+    function fromStringRawNoComplex(x, radix, exactness, mustBeANumberp) {
 	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
 	if (aMatch) {
-	    return Rational.makeInstance(fromStringRawNoComplex(aMatch[1], radix, exactp),
-					 fromStringRawNoComplex(aMatch[2], radix, exactp));
+	    return Rational.makeInstance( fromStringRawNoComplex( aMatch[1]
+                                                                , radix
+                                                                , exactness
+                                                                )
+                                        , fromStringRawNoComplex( aMatch[2]
+                                                                , radix
+                                                                , exactness
+                                                                ));
 	}
 
 	// Floating point tests
@@ -2549,15 +2574,20 @@ if (typeof(exports) !== 'undefined') {
 	if (fMatch) {
 	    var integralPart = fMatch[2] !== undefined ? fMatch[2] : fMatch[4];
 	    var fractionalPart = fMatch[3] !== undefined ? fMatch[3] : fMatch[5];
-	    return parseFloat(fMatch[1], integralPart, fractionalPart, radix, exactp)
+	    return parseFloat( fMatch[1]
+                             , integralPart
+                             , fractionalPart
+                             , radix
+                             , exactness
+                             )
 	}
 
 	var sMatch = x.match(scientificPattern( digitsForRadix(radix)
 					      , expMarkForRadix(radix)
 					      ))
 	if (sMatch) {
-	    var coefficient = fromStringRawNoComplex(sMatch[1], radix, exactp)
-	    var exponent = fromStringRawNoComplex(sMatch[2], radix, exactp)
+	    var coefficient = fromStringRawNoComplex(sMatch[1], radix, exactness)
+	    var exponent = fromStringRawNoComplex(sMatch[2], radix, exactness)
 	    return multiply(coefficient, expt(radix, exponent));
 	}
 
@@ -2566,8 +2596,10 @@ if (typeof(exports) !== 'undefined') {
 	    var n = parseInt(x, radix);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
-	    } else {
+	    } else if (exactness.intAsExactp()) {
 		return n;
+	    } else {
+		return FloatPoint.makeInstance(n)
 	    }
 	} else if (mustBeANumberp) {
 	    if(x.length===0) throwRuntimeError("no digits");
@@ -2577,30 +2609,35 @@ if (typeof(exports) !== 'undefined') {
 	}
     };
 
-    function parseFloat(sign, integralPart, fractionalPart, radix, exactp) {
+    function parseFloat(sign, integralPart, fractionalPart, radix, exactness) {
 	var sign = (sign == "-" ? -1 : 1);
 	var integralPartValue = integralPart === ""  ? 0  :
-                                exactp ? parseExactInt(integralPart, radix) :
-                                         parseInt(integralPart, radix)
+				exactness.intAsExactp() ? parseExactInt(integralPart, radix) :
+							  parseInt(integralPart, radix)
 
 	var fractionalNumerator = fractionalPart === "" ? 0 :
-				  exactp ? parseExactInt(fractionalPart, radix) :
-					   parseInt(fractionalPart, radix)
+				  exactness.intAsExactp() ? parseExactInt(fractionalPart, radix) :
+							    parseInt(fractionalPart, radix)
 	/* unfortunately, for these next two calculations, `expt` and `divide` */
 	/* will promote to Bignum and Rational, respectively, but we only want */
 	/* these if we're parsing in exact mode */
-	var fractionalDenominator = exactp ? expt(radix, fractionalPart.length) :
-					     Math.pow(radix, fractionalPart.length)
+	var fractionalDenominator = exactness.intAsExactp() ? expt(radix, fractionalPart.length) :
+							      Math.pow(radix, fractionalPart.length)
 	var fractionalPartValue = fractionalPart === "" ? 0 :
-				  exactp ? divide(fractionalNumerator, fractionalDenominator) :
-				           fractionalNumerator / fractionalDenominator
+				  exactness.intAsExactp() ? divide(fractionalNumerator, fractionalDenominator) :
+							    fractionalNumerator / fractionalDenominator
 
-	return exactp ? multiply(sign, add(integralPartValue, fractionalPartValue)) :
-                        FloatPoint.makeInstance(sign * (integralPartValue + fractionalPartValue));
+	var forceInexact = function(o) {
+	    return typeof o === "number" ? FloatPoint.makeInstance(o) :
+					   o.toInexact();
+	}
+
+	return exactness.floatAsInexactp() ? forceInexact(multiply(sign, add( integralPartValue, fractionalPartValue))) :
+					     multiply(sign, add(integralPartValue, fractionalPartValue));
     }
 
     function parseExactInt(str, radix) {
-	return fromStringRawNoComplex(str, radix, true, true);
+	return fromStringRawNoComplex(str, radix, Exactness.on, true);
     }
 
     //////////////////////////////////////////////////////////////////////

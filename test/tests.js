@@ -182,6 +182,7 @@ describe('fromString', {
  	assertEquals(makeFloat(10000000000000000.2),
  		     fromString("10000000000000000.2"));
 	assertEquals(makeFloat(0.5), fromString(".5"));
+	assertEquals(makeFloat(0.0), fromString("#i0"));
 	assertEquals(makeFloat(0.0), fromString("0."));
 	assertEquals(makeFloat(0.0), fromString("0.d1"));
 	assertEquals(makeFloat(0.0), fromString(".0d1"));
@@ -780,6 +781,11 @@ describe('isExact', {
     },
 
     'floats': function() {
+	assertTrue(isExact(fromString("#e0")));
+	assertTrue(isExact(fromString("#e0.0")));
+	assertTrue(isExact(fromString("#e0.")));
+	assertTrue(isExact(fromString("#e.0")));
+	assertFalse(isExact(fromString("#i0")));
 	assertFalse(isExact(e));
 	assertFalse(isExact(pi));
 	assertFalse(isExact(inf));
