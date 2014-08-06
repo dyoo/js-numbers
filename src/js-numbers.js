@@ -2570,9 +2570,8 @@ if (typeof(exports) !== 'undefined') {
 		return n;
 	    }
 	} else if (mustBeANumberp) {
-      if(x.length===0) throwRuntimeError("no digits");
-//	    else
-            throwRuntimeError("bad number: " + x, this);
+	    if(x.length===0) throwRuntimeError("no digits");
+	    throwRuntimeError("bad number: " + x, this);
 	} else {
 	    return false;
 	}
