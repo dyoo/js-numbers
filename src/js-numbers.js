@@ -2453,7 +2453,7 @@ if (typeof(exports) !== 'undefined') {
 	var decimalNumOnLeft = "["+digits+"]+\\.["+digits+"]*"
 	return new RegExp("^(?:([+-]?" +
 			  "(?:"+noDecimal+"|"+decimalNumOnRight+"|"+decimalNumOnLeft+")" +
-			  ")["+exp_mark+"](\\+?["+digits+"]+))$");
+			  ")["+exp_mark+"]([+-]?["+digits+"]+))$");
     }
 
     function digitsForRadix(radix) {
