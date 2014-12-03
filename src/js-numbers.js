@@ -2443,9 +2443,9 @@ if (typeof(exports) !== 'undefined') {
     function flonumRegexp(digits) {
 	var decimalNumOnRight = "(["+digits+"]*)\\.(["+digits+"]+)"
 	var decimalNumOnLeft = "(["+digits+"]+)\\.(["+digits+"]*)"
-	return new RegExp("^(?:([+-]?)" +
+	return new RegExp("^(?:([+-]?)(" +
                           decimalNumOnRight+"|"+decimalNumOnLeft +
-                          ")$");
+                          "))$");
     }
     function scientificPattern(digits, exp_mark) {
 	var noDecimal = "["+digits+"]+"
@@ -2572,8 +2572,8 @@ if (typeof(exports) !== 'undefined') {
 
 	var fMatch = x.match(flonumRegexp(digitsForRadix(radix)))
 	if (fMatch) {
-	    var integralPart = fMatch[2] !== undefined ? fMatch[2] : fMatch[4];
-	    var fractionalPart = fMatch[3] !== undefined ? fMatch[3] : fMatch[5];
+	    var integralPart = fMatch[3] !== undefined ? fMatch[3] : fMatch[5];
+	    var fractionalPart = fMatch[4] !== undefined ? fMatch[4] : fMatch[6];
 	    return parseFloat( fMatch[1]
                              , integralPart
                              , fractionalPart
